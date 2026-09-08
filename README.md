@@ -12,7 +12,7 @@ Most modeling scripts use TensorFlow/Keras transfer learning with ImageNet-pretr
 ## To Do
 
 - find other examples of ecology and ml projects like this: check data included, how results gathered (notebook? .md?), repo organization
-- Important caveat: [OVR_test_on_other.py (line 81)] likely has a label issue: training uses Label == class_name as positive class 1, but testing uses plant_scientific_name != class_name as 1. It also compares underscored model names to species names that may contain spaces. So that evaluation path needs cleanup before trusting results.
+- sort out training, testing, and validation sets in this repo: not always super clear
 
 ## Complete
 
