@@ -7,16 +7,15 @@ import os
 import shutil
 import pandas as pd
 import numpy as np
+from pathlib import Path
 
 
-os.chdir('/mnt/sharedstorage/jsieg/butterflyAI/Monarch_images')
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+MONARCH_DIR = PROJECT_ROOT / "data" / "Monarch_images"
 
 #test_df = pd.read_csv('Monarch_images.csv')
 #this dataframe already has a column with the urls of each images, but not the class labels
-test_df = pd.read_csv('Monarch_image_predictions.csv')
-
-# Source folder containing unlabeled images
-#source_folder = "/mnt/sharedstorage/jsieg/butterflyAI/Monarch_images"
+test_df = pd.read_csv(MONARCH_DIR / 'Monarch_image_predictions.csv')
 
 # Destination folders
 #class0_folder = "Class_0"
@@ -41,10 +40,10 @@ test_df = pd.read_csv('Monarch_image_predictions.csv')
 
 print("Images moved successfully (not)")
 
-labels_df = pd.read_csv('Monarch_non_feeding_ls.csv')
+labels_df = pd.read_csv(MONARCH_DIR / 'Monarch_non_feeding_ls.csv')
 
 test_df["Label"] = np.where(test_df["FileName"].isin(labels_df["FileName"]), "Non_feeding", "Feeding")
 
-test_df.to_csv('/mnt/sharedstorage/jsieg/butterflyAI/Monarch_images/Monarch_image_labels.csv', encoding='utf-8', index=False)
+test_df.to_csv(MONARCH_DIR / 'Monarch_image_labels.csv', encoding='utf-8', index=False)
 
 print("Done")

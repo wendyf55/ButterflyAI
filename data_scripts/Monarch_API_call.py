@@ -21,6 +21,13 @@ import requests
 import json
 import os
 import time
+from pathlib import Path
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATA_DIR = PROJECT_ROOT / "data" # using path like this resolves it to <repo root>/data/Monarch_images
+# and helps with reproducbility - now this can run on any machine
+MONARCH_DIR = DATA_DIR / "Monarch_images"
 
 def query_taxa(TAXON_ID, nickname):
     api_url = "https://api.inaturalist.org/v1/observations"
@@ -83,9 +90,8 @@ if __name__ == "__main__":
     nickname = 'Monarch'
     obs_data = query_taxa(TAXON_ID, nickname)  # Now accumulates all pages
 
-    folder = "Monarch_images_test_set"
-    os.makedirs(folder, exist_ok=True)
-    filename = os.path.join(folder, nickname + '_metadata_testset.json')
+    os.makedirs(MONARCH_DIR, exist_ok=True)
+    filename = MONARCH_DIR / f"{nickname}_metadata_testset.json"
 
     # Save all collected observations to the JSON file
     with open(filename, "w") as f:

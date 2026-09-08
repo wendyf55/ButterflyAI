@@ -19,6 +19,13 @@ import json
 import requests
 import os
 from csv import writer
+from pathlib import Path
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATA_DIR = PROJECT_ROOT / "data"
+MONARCH_DIR = DATA_DIR / "Monarch_images"
+MONARCH_MANIFEST = DATA_DIR / "Monarch_images.csv"
 
 def download_images_from_json(metadata, download_dir):
 
@@ -67,7 +74,7 @@ def download_images_from_json(metadata, download_dir):
                             if chunk:
                                 img_file.write(chunk)
                     print(f"Saved image as {file_path}")
-                    with open('Monarch_images.csv', 'a') as f_object:
+                    with open(MONARCH_MANIFEST, 'a') as f_object:
                         writer_object = writer(f_object)
                         Img_ID = [file_name, nickname]
                         writer_object.writerow(Img_ID)
@@ -80,6 +87,6 @@ def download_images_from_json(metadata, download_dir):
 nickname = "Monarch"
 
 if __name__ == "__main__":
-	download_dir = 'Monarch_images/'
-	metadata = 'Monarch_images/Monarch_metadata.json' #EDIT
+	download_dir = MONARCH_DIR
+	metadata = MONARCH_DIR / 'Monarch_metadata.json' #EDIT
 	download_images_from_json(metadata, download_dir)

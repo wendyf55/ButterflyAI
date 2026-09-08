@@ -12,6 +12,7 @@ import csv
 
 import json
 import shutil
+from pathlib import Path
 
 
 from tensorflow.keras.applications.resnet50 import preprocess_input, ResNet50
@@ -24,6 +25,13 @@ from sklearn.metrics import classification_report, roc_curve, precision_recall_c
 from sklearn.metrics import accuracy_score, precision_score, f1_score
 
 from collections import defaultdict
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+TEST_CSV = PROJECT_ROOT / "BC2024_plant_otheronly.csv"
+TEST_IMAGE_DIR = PROJECT_ROOT / "BC2024_plant"
+MODEL_DIR = PROJECT_ROOT / "OVR_models"
+PREDICTIONS_DIR = PROJECT_ROOT / "Other_conundrum"
 
 
 #set seed so its always the same
@@ -39,11 +47,7 @@ np.random.seed(seed_value)
 tf.random.set_seed(seed_value)
 
 
-#os.chdir('/home/jsieg/butterflyAI/flower_only_dataset')
-
-os.chdir('/home/jsieg/butterflyAI/')
-
-test_df = pd.read_csv('BC2024_plant_otheronly.csv')
+test_df = pd.read_csv(TEST_CSV)
 
 test_df = test_df[test_df['plant_scientific_name'].str.contains(' ')]
 
@@ -52,20 +56,10 @@ print(test_df.head())
 
 
 
-# Path to your model folder
-model_dir = "/mnt/sharedstorage/jsieg/butterflyAI/OVR_models"
-
-
-
-# Change directory (optional)
-os.chdir('/mnt/sharedstorage/jsieg/butterflyAI/OVR_models')
-
 # List all .keras files
-model_files = [f for f in os.listdir(model_dir) if f.endswith(".keras")]
+model_files = [f for f in os.listdir(MODEL_DIR) if f.endswith(".keras")]
 
 for model_file in model_files:
-    
-    os.chdir('/home/jsieg/butterflyAI/BC2024_plant')
 
     # Extract class name from filename:
     # "ovr_model_Achillea_millefolium.keras" → "Achillea_millefolium"
@@ -74,7 +68,7 @@ for model_file in model_files:
     print(f"Loading model for class: {class_name}")
 
     # Load model
-    model = load_model(os.path.join(model_dir, model_file))
+    model = load_model(str(MODEL_DIR / model_file))
 
     binary_test_df = test_df.copy()
     binary_test_df["BinaryLabel"] = (binary_test_df['plant_scientific_name'] != class_name).astype(int)
@@ -92,6 +86,7 @@ for model_file in model_files:
     # Same as above but for your test dataset
     test_generator = test_datagen.flow_from_dataframe(
     dataframe = binary_test_df,
+    directory = str(TEST_IMAGE_DIR),
     x_col = "FileName",
     y_col = 'BinaryLabel',
     target_size = (img_height, img_width),
@@ -133,7 +128,8 @@ for model_file in model_files:
             
     print(f"Total predictions stored: {len(predictions_list)}")
     
-    save_path = f"/home/jsieg/butterflyAI/Other_conundrum/ovr_{class_name}_preds.json"
+    PREDICTIONS_DIR.mkdir(exist_ok=True)
+    save_path = PREDICTIONS_DIR / f"ovr_{class_name}_preds.json"
     
     # Save to JSON file
 
@@ -143,4 +139,3 @@ for model_file in model_files:
     print(f"Predictions saved to {save_path}")
     
     
-

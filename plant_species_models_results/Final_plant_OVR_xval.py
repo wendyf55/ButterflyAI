@@ -11,10 +11,15 @@ import tensorflow as tf
 
 import json
 import shutil
+from pathlib import Path
 
 from tensorflow.keras.applications.resnet50 import preprocess_input, ResNet50
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from collections import defaultdict
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PLANT_DATA_DIR = PROJECT_ROOT / "plant_data_specified"
 
 #does tf detect the GPU?
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
@@ -23,7 +28,7 @@ print("Devices: ", tf.config.list_physical_devices())
 cwd = os.getcwd()
 cwd
 
-os.chdir('plant_data_specified')
+os.chdir(PLANT_DATA_DIR)
 
 
 entries = os.listdir()
@@ -89,7 +94,7 @@ batch_size = 64 #32 - powers of 2
 k_folds = 5  # Number of folds for cross-validation
 
 # Load dataset
-all_df = pd.read_csv('Flower_only_specified.csv')
+all_df = pd.read_csv(PLANT_DATA_DIR / 'Flower_only_specified.csv')
 
 # Data generators
 train_datagen = ImageDataGenerator(
@@ -215,7 +220,7 @@ for class_index, class_name in enumerate(all_df['Label'].unique()):
         safe_name = class_name.replace(" ", "_").replace("/", "_")
 
         # Save model for this class (OVR classifier)
-        model.save(f"ovr_model_{safe_name}.keras")
+        model.save(str(PLANT_DATA_DIR / f"ovr_model_{safe_name}.keras"))
         print(f"Saved OVR model for class: {class_name} ➜ ovr_model_{safe_name}.keras")
 
         # Store accuracy and loss data
@@ -292,16 +297,16 @@ for class_index, class_name in enumerate(all_df['Label'].unique()):
     accuracy_loss_data[class_name] = class_accuracy_loss
 
 # Save dictionaries as JSON files
-with open('aug4_cv_results_ovr_xval.json', 'w') as f:
+with open(PLANT_DATA_DIR / 'aug4_cv_results_ovr_xval.json', 'w') as f:
     json.dump(cv_results, f, indent=4)
 
-with open('aug4_confusion_matrices_ovr_xval.json', 'w') as f:
+with open(PLANT_DATA_DIR / 'aug4_confusion_matrices_ovr_xval.json', 'w') as f:
     json.dump(confusion_matrices, f, indent=4)
 
-with open('aug4_accuracy_loss_data_ovr_xval.json', 'w') as f:
+with open(PLANT_DATA_DIR / 'aug4_accuracy_loss_data_ovr_xval.json', 'w') as f:
     json.dump(accuracy_loss_data, f, indent=4)
 
-os.chdir('/home/jsieg/butterflyAI')
+os.chdir(PROJECT_ROOT)
 
 
 entries = os.listdir()

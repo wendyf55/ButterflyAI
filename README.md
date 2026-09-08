@@ -11,18 +11,21 @@ Most modeling scripts use TensorFlow/Keras transfer learning with ImageNet-pretr
 
 ## To Do
 
-- fix all hardcoded paths
 - find and extract hardcoded config values, like TAXON_ID, start_page
 - find other examples of ecology and ml projects like this: check data included, how results gathered (notebook? .md?), repo organization
-- separate models and outputs by feeding/non feeding classifiers and plant species identification in feeding pics
 - create an environment
+
+## Complete
+
+- separate models and outputs by feeding/non feeding classifiers and plant species identification in feeding pics
+- fix hardcoded paths
 
 ## Repository Contents
 
 - `*.py`: scripts for data collection, labeling, training, and evaluation.
-- `Monarch_images/`: downloaded monarch photos plus monarch prediction/label CSVs.
-- `Monarch_images.csv`: top-level copy of the monarch image manifest.
-- `*.txt`: captured console output from model training/evaluation runs.
+- `data/Monarch_images/`: downloaded monarch photos plus monarch prediction/label CSVs.
+- `data/Monarch_images.csv`: top-level copy of the monarch image manifest.
+- `feeding_non_feeding_models_results/results/*.txt`: captured console output from model training/evaluation runs.
 - `.gitignore`: ignores saved Keras model files (`*.keras`).
 
 Expected training/test image folders referenced by scripts, but not present in this checkout:
@@ -42,34 +45,34 @@ Downloads occurrences from the iNaturalist observations API.
 
 - Data used: iNaturalist API results for a configured taxon: `TAXON_ID = 48662`, nickname `Monarch`, `quality_grade=research`, `place_id=97394`, and months June/July.
 - queries pages of iNaturalist observations, keeps research-grade observations, and stores the accumulated JSON metadata.
-- Results go to: `Monarch_images_test_set/Monarch_metadata_testset.json`.
+- Results go to: `data/Monarch_images/Monarch_metadata_testset.json`.
 
 ### `Monarch_download_from_API.py`
 
 Downloads image files from an iNaturalist metadata JSON file.
 
-- Data used: metadata JSON at `Monarch_images/Monarch_metadata.json`; each observation's first `observation_photos` item.
+- Data used: metadata JSON at `data/Monarch_images/Monarch_metadata.json`; each observation's first `observation_photos` item.
 - What it does: converts iNaturalist photo URLs from `square` to `medium`, downloads each image from the iNaturalist open-data S3 bucket, and records the image filename/species pair.
-- Results go to: downloaded JPEGs in `Monarch_images/`; appended manifest rows in `Monarch_images.csv`.
-- The script appends to `Monarch_images.csv`, so reruns can duplicate rows unless the file is cleaned first.
+- Results go to: downloaded JPEGs in `data/Monarch_images/`; appended manifest rows in `data/Monarch_images.csv`.
+- The script appends to `data/Monarch_images.csv`, so reruns can duplicate rows unless the file is cleaned first.
 
 ### `Monarch_feeding_test.py`
 
 Uses a trained feeding/non-feeding model to predict labels for monarch images.
 
-- Model used: saved Keras feeding classifier at `/mnt/sharedstorage/jsieg/butterflyAI/Final_Feeding_Images/REAL_AND_SUPER_Final_feeding_model_unfrozen.keras`.
-- Data used: `Monarch_images/Monarch_image_predictions.csv`, with images expected in `Monarch_images/`.
+- Model used: saved Keras feeding classifier at `Final_Feeding_Images/REAL_AND_SUPER_Final_feeding_model_unfrozen.keras`.
+- Data used: `data/Monarch_images/Monarch_image_predictions.csv`, with images expected in `data/Monarch_images/`.
 - What it does: loads the feeding model, generates feeding/non-feeding scores for monarch images, writes `prediction` and `score` columns, then sorts image files into `Class_0/` and `Class_1/` folders.
-- Results go to: `Monarch_images/Monarch_image_predictions.csv`; image files moved into `Monarch_images/Class_0/` and `Monarch_images/Class_1/`.
+- Results go to: `data/Monarch_images/Monarch_image_predictions.csv`; image files moved into `data/Monarch_images/Class_0/` and `data/Monarch_images/Class_1/`.
 - Notes: the classification threshold is `score > 0.1`. The script first tries to move images from `Class_0/` or `Class_1/` back into the main folder based on existing predictions, then predicts and moves them again.
 
 ### `label_monarchs.py`
 
 Creates manually corrected monarch feeding labels after reviewing model-sorted images.
 
-- Data used: `Monarch_images/Monarch_image_predictions.csv` plus `Monarch_images/Monarch_non_feeding_ls.csv`, a manually curated list of non-feeding filenames.
+- Data used: `data/Monarch_images/Monarch_image_predictions.csv` plus `data/Monarch_images/Monarch_non_feeding_ls.csv`, a manually curated list of non-feeding filenames.
 - What it does: adds a `Label` column: filenames in `Monarch_non_feeding_ls.csv` become `Non_feeding`; all others become `Feeding`.
-- Results go to: `Monarch_images/Monarch_image_labels.csv`.
+- Results go to: `data/Monarch_images/Monarch_image_labels.csv`.
 - The checked-in `Monarch_image_labels.csv` has columns `FileName, Species, prediction, score, Label`.
 
 ### `Final_feeding_model_train_on_ALL.py`
@@ -123,7 +126,7 @@ Trains one-vs-rest plant classifiers with 5-fold cross-validation.
 
 Applies saved one-vs-rest plant models to a gold-standard dataset of other butterfly species.
 
-- Model used: every `.keras` file in `butterflyAI/OVR_models`; these are expected to be the `ovr_model_<plant_name>.keras` models from `Final_plant_OVR_xval.py`.
+- Model used: every `.keras` file in `OVR_models/`; these are expected to be the `ovr_model_<plant_name>.keras` models from `Final_plant_OVR_xval.py`.
 - Data used: `BC2024_plant_otheronly.csv`; images are read from `BC2024_plant/`. Expected columns include `FileName` and `plant_scientific_name`.
 - What it does: loops through each OVR model, loads the model, builds a binary test label for that plant model, predicts class/confidence for each image, prints confidence summaries, and saves per-image predictions.
 - Results go to: `Other_conundrum/ovr_<class_name>_preds.json`.
@@ -141,14 +144,14 @@ Tests how plant-classifier performance changes as the training dataset size chan
 
 ## Data Files In This Checkout
 
-- `Monarch_images/Monarch_images.csv` and top-level `Monarch_images.csv`: manifests with `FileName,Species`; 8,018 monarch image rows plus header.
-- `Monarch_images/Monarch_image_predictions.csv`: monarch manifest plus model `prediction` and `score`.
-- `Monarch_images/Monarch_non_feeding_ls.csv`: manually curated list of filenames considered non-feeding.
-- `Monarch_images/Monarch_image_labels.csv`: monarch manifest plus final `Label` assigned from the manual non-feeding list.
-- `Monarch_xval_output.txt`: captured feeding-model cross-validation run.
-- `Output_feeding_flower_only_real_test.txt`: captured real-only feeding-model comparison run.
-- `Output_feeding_flower_only_ALL_test.txt`: captured all-data feeding-model comparison run.
-- `Output_feeding_test_on_BIMBY2024.txt`: captured evaluation on a BIMBY 2024 feeding/non-feeding dataset. The corresponding script is not currently checked in.
+- `data/Monarch_images/Monarch_images.csv` and `data/Monarch_images.csv`: manifests with `FileName,Species`; 8,018 monarch image rows plus header.
+- `data/Monarch_images/Monarch_image_predictions.csv`: monarch manifest plus model `prediction` and `score`.
+- `data/Monarch_images/Monarch_non_feeding_ls.csv`: manually curated list of filenames considered non-feeding.
+- `data/Monarch_images/Monarch_image_labels.csv`: monarch manifest plus final `Label` assigned from the manual non-feeding list.
+- `feeding_non_feeding_models_results/results/Monarch_xval_output.txt`: captured feeding-model cross-validation run.
+- `feeding_non_feeding_models_results/results/Output_feeding_flower_only_real_test.txt`: captured real-only feeding-model comparison run.
+- `feeding_non_feeding_models_results/results/Output_feeding_flower_only_ALL_test.txt`: captured all-data feeding-model comparison run.
+- `feeding_non_feeding_models_results/results/Output_feeding_test_on_BIMBY2024.txt`: captured evaluation on a BIMBY 2024 feeding/non-feeding dataset. The corresponding script is not currently checked in.
 
 ## Typical Workflow
 

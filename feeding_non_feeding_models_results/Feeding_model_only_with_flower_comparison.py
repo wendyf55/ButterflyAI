@@ -14,8 +14,12 @@ from matplotlib import pyplot as plt
 import random
 import pandas as pd
 from tensorflow.keras.optimizers import Adam
+from pathlib import Path
 
 seed_value= 321 
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+FEEDING_DATA_DIR = PROJECT_ROOT / "Final_Feeding_Images"
 
 from tensorflow.keras.applications.resnet50 import preprocess_input, ResNet50
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -25,7 +29,7 @@ from sklearn.metrics import precision_recall_curve, average_precision_score
 
 
 #The folder Final_Feeding_Images contains the 2023 BC BIMBY feeding and non-feeding photos as well as the superimposed photos 
-os.chdir('Final_Feeding_Images')
+os.chdir(FEEDING_DATA_DIR)
 
 cwd = os.getcwd()
 cwd
@@ -38,7 +42,7 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 
 #DataFilenamesRedo.csv is in the Final_Feeding_Images folder and has the feeding status and whether the image is real or not
-full_df = pd.read_csv('DataFilenamesRedo.csv')
+full_df = pd.read_csv(FEEDING_DATA_DIR / 'DataFilenamesRedo.csv')
 
 stratify_col = (
     full_df["label"].astype(str) + "_" +

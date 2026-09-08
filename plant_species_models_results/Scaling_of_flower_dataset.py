@@ -11,6 +11,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import random
 import pandas as pd
+from pathlib import Path
 
 import json
 import shutil
@@ -20,6 +21,9 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 from sklearn.model_selection import train_test_split
 
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+FLOWER_DATA_DIR = PROJECT_ROOT / "specified_flower_photos_detectron_ALL"
 
 cwd = os.getcwd()
 cwd
@@ -35,7 +39,7 @@ np.random.seed(seed_value)
 
 tf.random.set_seed(seed_value)
 
-os.chdir('specified_flower_photos_detectron_ALL')
+os.chdir(FLOWER_DATA_DIR)
 
 entries = os.listdir()
 
@@ -44,7 +48,7 @@ img_height, img_width = (224, 224)
 batch_size = 64 #32 - powers of 2
 
 #all_df = pd.read_csv('PlantIDs_API.csv')
-all_df = pd.read_csv('specified_flower_photos_detectron.csv')
+all_df = pd.read_csv(FLOWER_DATA_DIR / 'specified_flower_photos_detectron.csv')
 
 train_df, test_df = train_test_split(all_df, test_size=0.2, random_state=42)
 
@@ -209,4 +213,4 @@ for p in percentages:
 
 
 results_df = pd.DataFrame(results)
-results_df.to_csv("Scaling_test_results.csv", index=False)
+results_df.to_csv(FLOWER_DATA_DIR / "Scaling_test_results.csv", index=False)
