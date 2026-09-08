@@ -23,24 +23,40 @@ import os
 import time
 from pathlib import Path
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / "data" # using path like this resolves it to <repo root>/data/Monarch_images
 # and helps with reproducbility - now this can run on any machine
 MONARCH_DIR = DATA_DIR / "Monarch_images"
 
-def query_taxa(TAXON_ID, nickname):
+TAXON_ID = 48662
+NICKNAME = "Monarch"
+START_PAGE = 51
+NUM_PAGES = 2
+PER_PAGE = 200
+PLACE_ID = 97394
+MONTHS = "6,7"
+QUALITY_GRADE = "research"
+
+def query_taxa(
+    taxon_id=TAXON_ID,
+    start_page=START_PAGE,
+    num_pages=NUM_PAGES,
+    per_page=PER_PAGE,
+    place_id=PLACE_ID,
+    months=MONTHS,
+    quality_grade=QUALITY_GRADE,):
+
     api_url = "https://api.inaturalist.org/v1/observations"
+
     params = {
-        "taxon_id": TAXON_ID,
-        "per_page": 200,
+        "taxon_id": taxon_id,
+        "per_page": per_page,
         "page": 1,
-        "quality_grade": "research", 
-        "place_id": 97394,   
-        "month": "6,7" 
+        "quality_grade": quality_grade,
+        "place_id": place_id,
+        "month": months,
     }
-    
-    page = 51
+
     observations = []  # Accumulate all results here
 
     start_page = 51
@@ -86,14 +102,11 @@ def query_taxa(TAXON_ID, nickname):
 
 
 if __name__ == "__main__":
-    TAXON_ID = 48662
-    nickname = 'Monarch'
-    obs_data = query_taxa(TAXON_ID, nickname)  # Now accumulates all pages
+    obs_data = query_taxa()
 
     os.makedirs(MONARCH_DIR, exist_ok=True)
-    filename = MONARCH_DIR / f"{nickname}_metadata_testset.json"
+    filename = MONARCH_DIR / f"{NICKNAME}_metadata_testset.json"
 
-    # Save all collected observations to the JSON file
     with open(filename, "w") as f:
         json.dump({"total_results": len(obs_data), "results": obs_data}, f, indent=2)
 

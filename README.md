@@ -13,12 +13,12 @@ Most modeling scripts use TensorFlow/Keras transfer learning with ImageNet-pretr
 
 - find and extract hardcoded config values, like TAXON_ID, start_page
 - find other examples of ecology and ml projects like this: check data included, how results gathered (notebook? .md?), repo organization
-- create an environment
 
 ## Complete
 
 - separate models and outputs by feeding/non feeding classifiers and plant species identification in feeding pics
 - fix hardcoded paths
+- create an environment
 
 ## Repository Contents
 
