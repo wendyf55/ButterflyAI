@@ -22,7 +22,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 from tensorflow.keras.models import load_model
 
 from sklearn.metrics import classification_report, roc_curve, precision_recall_curve, auc, confusion_matrix
-from sklearn.metrics import accuracy_score, precision_score, f1_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 from collections import defaultdict
 
@@ -32,6 +32,8 @@ TEST_CSV = PROJECT_ROOT / "BC2024_plant_otheronly.csv"
 TEST_IMAGE_DIR = PROJECT_ROOT / "BC2024_plant"
 MODEL_DIR = PROJECT_ROOT / "OVR_models"
 PREDICTIONS_DIR = PROJECT_ROOT / "Other_conundrum"
+METRICS_JSON = PREDICTIONS_DIR / "ovr_model_metrics.json"
+METRICS_CSV = PREDICTIONS_DIR / "ovr_model_metrics.csv"
 SEED_VALUE = 871
 MODEL_PREFIX = "ovr_model_"
 MODEL_SUFFIX = ".keras"
@@ -41,6 +43,11 @@ PREDICTION_THRESHOLD = 0.5
 IMG_HEIGHT = 224
 IMG_WIDTH = 224
 BATCH_SIZE = 32
+
+
+def normalize_species_name(species_name):
+    species_name = str(species_name).replace("_", " ").strip()
+    return " ".join(species_name.split())
 
 #set seed so its always the same
 #321
@@ -55,8 +62,9 @@ tf.random.set_seed(SEED_VALUE)
 
 
 test_df = pd.read_csv(TEST_CSV)
-
-test_df = test_df[test_df['plant_scientific_name'].str.contains(' ')]
+test_df = test_df.copy()
+test_df["normalized_plant_scientific_name"] = test_df["plant_scientific_name"].apply(normalize_species_name)
+test_df = test_df[test_df["normalized_plant_scientific_name"].str.contains(" ", na=False)]
 
 print(test_df.head())
 
@@ -64,21 +72,26 @@ print(test_df.head())
 
 
 # List all .keras files
+PREDICTIONS_DIR.mkdir(exist_ok=True)
 model_files = [f for f in os.listdir(MODEL_DIR) if f.endswith(MODEL_SUFFIX)]
+model_metrics = []
 
 for model_file in model_files:
 
     # Extract class name from filename:
     # "ovr_model_Achillea_millefolium.keras" → "Achillea_millefolium"
     class_name = model_file.replace(MODEL_PREFIX, "").replace(MODEL_SUFFIX, "")
+    target_species = normalize_species_name(class_name)
 
-    print(f"Loading model for class: {class_name}")
+    print(f"Loading model for class: {target_species}")
 
     # Load model
     model = load_model(str(MODEL_DIR / model_file))
 
     binary_test_df = test_df.copy()
-    binary_test_df["BinaryLabel"] = (binary_test_df['plant_scientific_name'] != class_name).astype(int)
+    binary_test_df["BinaryLabel"] = (
+        binary_test_df["normalized_plant_scientific_name"] == target_species
+    ).astype(int)
 
     print(binary_test_df.head())
 
@@ -110,8 +123,13 @@ for model_file in model_files:
     
     # Convert probabilities to predicted class: 0 or 1
     predicted_classes = (preds >= PREDICTION_THRESHOLD).astype(int)
-    # Confidence is the sigmoid probability itsel
+    # Confidence is the sigmoid probability for the target plant species.
     predicted_confidences = preds.copy()
+    validated_test_df = binary_test_df.set_index("FileName").loc[test_generator.filenames].reset_index()
+    true_classes = validated_test_df["BinaryLabel"].to_numpy()
+    assert len(true_classes) == len(predicted_classes), (
+        f"Mismatch: y_true={len(true_classes)}, y_pred={len(predicted_classes)}"
+    )
     
     class_confidence_dict = defaultdict(list)
     
@@ -123,19 +141,60 @@ for model_file in model_files:
         mean_conf = np.mean(class_confidence_dict[cls])
         count = len(class_confidence_dict[cls])
         print(f"Predicted Class {cls}: {count} images, Mean confidence = {mean_conf:.4f}")  
+
+    conf_matrix = confusion_matrix(true_classes, predicted_classes, labels=[0, 1])
+    report = classification_report(
+        true_classes,
+        predicted_classes,
+        labels=[0, 1],
+        target_names=["other_plants", target_species],
+        output_dict=True,
+        zero_division=0,
+    )
+
+    metrics = {
+        "model_file": model_file,
+        "target_species": target_species,
+        "threshold": PREDICTION_THRESHOLD,
+        "n_images": int(len(true_classes)),
+        "n_target_images": int(true_classes.sum()),
+        "n_other_images": int(len(true_classes) - true_classes.sum()),
+        "predicted_target_images": int(predicted_classes.sum()),
+        "predicted_other_images": int(len(predicted_classes) - predicted_classes.sum()),
+        "accuracy": float(accuracy_score(true_classes, predicted_classes)),
+        "precision": float(precision_score(true_classes, predicted_classes, zero_division=0)),
+        "recall": float(recall_score(true_classes, predicted_classes, zero_division=0)),
+        "f1_score": float(f1_score(true_classes, predicted_classes, zero_division=0)),
+        "confusion_matrix": conf_matrix.tolist(),
+        "classification_report": report,
+    }
+    model_metrics.append(metrics)
+
+    print(f"Accuracy: {metrics['accuracy']:.4f}")
+    print(f"Precision: {metrics['precision']:.4f}")
+    print(f"Recall: {metrics['recall']:.4f}")
+    print(f"F1 score: {metrics['f1_score']:.4f}")
+    print(f"Confusion matrix [[TN, FP], [FN, TP]]: {metrics['confusion_matrix']}")
         
     # Save per-image prediction to a list of dicts (using filenames
     predictions_list = []
-    for filename, cls, conf in zip(test_generator.filenames, predicted_classes, predicted_confidences):
+    for filename, true_cls, cls, conf, plant_name in zip(
+        test_generator.filenames,
+        true_classes,
+        predicted_classes,
+        predicted_confidences,
+        validated_test_df["plant_scientific_name"],
+    ):
         predictions_list.append({
             "filename": filename,
+            "plant_scientific_name": plant_name,
+            "true_class": int(true_cls),
             "predicted_class": int(cls),     # ensure JSON serializable
             "confidence": float(conf)        # ensure JSON serializable
             })
             
     print(f"Total predictions stored: {len(predictions_list)}")
     
-    PREDICTIONS_DIR.mkdir(exist_ok=True)
     save_path = PREDICTIONS_DIR / f"{PREDICTION_FILE_PREFIX}{class_name}{PREDICTION_FILE_SUFFIX}"
     
     # Save to JSON file
@@ -146,3 +205,28 @@ for model_file in model_files:
     print(f"Predictions saved to {save_path}")
     
     
+with open(METRICS_JSON, "w") as f:
+    json.dump(model_metrics, f, indent=4)
+
+metrics_df = pd.DataFrame([
+    {
+        "model_file": metrics["model_file"],
+        "target_species": metrics["target_species"],
+        "threshold": metrics["threshold"],
+        "n_images": metrics["n_images"],
+        "n_target_images": metrics["n_target_images"],
+        "n_other_images": metrics["n_other_images"],
+        "predicted_target_images": metrics["predicted_target_images"],
+        "predicted_other_images": metrics["predicted_other_images"],
+        "accuracy": metrics["accuracy"],
+        "precision": metrics["precision"],
+        "recall": metrics["recall"],
+        "f1_score": metrics["f1_score"],
+        "confusion_matrix": metrics["confusion_matrix"],
+    }
+    for metrics in model_metrics
+])
+metrics_df.to_csv(METRICS_CSV, index=False)
+
+print(f"Metrics saved to {METRICS_JSON}")
+print(f"Metrics summary saved to {METRICS_CSV}")
