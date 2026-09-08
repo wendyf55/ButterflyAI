@@ -3,8 +3,6 @@
 #I downloaded a bunch of monarch images, then manually sorted them into two separate folders for feeding and non-feeding
 #Create a csv of each image filename and what their class is based on which folder they were in 
 
-import os
-import shutil
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -22,6 +20,8 @@ FEEDING_LABEL = "Feeding"
 #this dataframe already has a column with the urls of each images, but not the class labels
 test_df = pd.read_csv(PREDICTIONS_CSV)
 
+# Deprecated: this older workflow moved predicted images between class folders.
+# Keeping the block for reference while labels are now assigned from the manual CSV.
 # Destination folders
 #class0_folder = "Class_0"
 #class1_folder = "Class_1"
@@ -42,13 +42,10 @@ test_df = pd.read_csv(PREDICTIONS_CSV)
 #        source_path = os.path.join(class0_folder, filename)
 
 #    shutil.move(source_path, destination_path)
-
-print("Images moved successfully (not)")
-
 labels_df = pd.read_csv(NON_FEEDING_CSV)
 
 test_df["Label"] = np.where(test_df["FileName"].isin(labels_df["FileName"]), NON_FEEDING_LABEL, FEEDING_LABEL)
 
 test_df.to_csv(LABELS_CSV, encoding='utf-8', index=False)
 
-print("Done")
+print(f"Saved labels to {LABELS_CSV}")
