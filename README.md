@@ -166,12 +166,7 @@ Tests how plant-classifier performance changes as the training dataset size chan
 
 ## Environment Notes
 
-The scripts use:
+To create the environment:
 
-- `tensorflow` / `keras`
-- `tf_keras` in `Monarch_feeding_test.py`
-- `pandas`
-- `numpy`
-- `scikit-learn`
-- `matplotlib`
-- `requests`
+mamba env create -f environment.yml
+mamba activate butterflyai
