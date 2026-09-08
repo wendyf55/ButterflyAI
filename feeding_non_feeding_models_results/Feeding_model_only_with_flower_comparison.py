@@ -16,10 +16,22 @@ import pandas as pd
 from tensorflow.keras.optimizers import Adam
 from pathlib import Path
 
-seed_value= 321 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 FEEDING_DATA_DIR = PROJECT_ROOT / "Final_Feeding_Images"
+TRAINING_CSV = FEEDING_DATA_DIR / "DataFilenamesRedo.csv"
+SEED_VALUE = 321
+IMG_HEIGHT = 224
+IMG_WIDTH = 224
+BATCH_SIZE = 32
+VAL_BATCH_SIZE = 1
+GENERATOR_SEED = 123
+EPOCHS = 20
+VALIDATION_SIZE = 0.2
+TRAIN_ON_REAL_ONLY = True
+EARLY_STOPPING_PATIENCE = 10
+DROPOUT_RATE = 0.5
+DENSE_UNITS = 512
+PREDICTION_THRESHOLD = 0.5
 
 from tensorflow.keras.applications.resnet50 import preprocess_input, ResNet50
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -35,14 +47,14 @@ cwd = os.getcwd()
 cwd
 
 # The ResNet50 model expects images to be 224x224, so we set those values here
-img_height, img_width = (224,224)
-batch_size = 32
+img_height, img_width = (IMG_HEIGHT, IMG_WIDTH)
+batch_size = BATCH_SIZE
 
 from sklearn.model_selection import train_test_split
 import pandas as pd
 
 #DataFilenamesRedo.csv is in the Final_Feeding_Images folder and has the feeding status and whether the image is real or not
-full_df = pd.read_csv(FEEDING_DATA_DIR / 'DataFilenamesRedo.csv')
+full_df = pd.read_csv(TRAINING_CSV)
 
 stratify_col = (
     full_df["label"].astype(str) + "_" +
@@ -51,8 +63,8 @@ stratify_col = (
 
 train_df, val_df = train_test_split(
     full_df,
-    test_size=0.2,
-    random_state=seed_value,
+    test_size=VALIDATION_SIZE,
+    random_state=SEED_VALUE,
     stratify=stratify_col
 )
 
@@ -72,7 +84,7 @@ print(train_real_df.head)
 print(train_all_df.head)
 print(val_df.head)
 
-train_df = train_real_df #only train on real data
+train_df = train_real_df if TRAIN_ON_REAL_ONLY else train_all_df
 
 #CREATE MODEL
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout
@@ -83,13 +95,13 @@ import random
 
 #set seed so its always the same
 
-os.environ['PYTHONHASHSEED']=str(seed_value)
+os.environ['PYTHONHASHSEED']=str(SEED_VALUE)
  
-random.seed(seed_value)
+random.seed(SEED_VALUE)
 
-np.random.seed(seed_value)
+np.random.seed(SEED_VALUE)
 
-tf.random.set_seed(seed_value)
+tf.random.set_seed(SEED_VALUE)
 
 
 # The code in my tutorial had a few additional layers, but I would try this out too. Sometimes simpler is better
@@ -103,9 +115,9 @@ x = base_model.output
 #change from 0.1 to 0.2 to 0.5 to reduce overfitting
 #x = Dropout(0.1)(x)
 x = GlobalAveragePooling2D()(x)
-x = Dropout(0.5)(x)
-x = Dense(512, activation='relu')(x)
-x = Dropout(0.5)(x)
+x = Dropout(DROPOUT_RATE)(x)
+x = Dense(DENSE_UNITS, activation='relu')(x)
+x = Dropout(DROPOUT_RATE)(x)
 predictions = Dense(1, activation = 'sigmoid')(x)
 
 #base_model = ResNet50(include_top=False, weights='imagenet')
@@ -123,7 +135,7 @@ predictions = Dense(1, activation = 'sigmoid')(x)
 model = Model(inputs = base_model.input, outputs = predictions)
 model.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
-early_stopping = EarlyStopping(monitor='val_loss', patience=10)
+early_stopping = EarlyStopping(monitor='val_loss', patience=EARLY_STOPPING_PATIENCE)
 
 accuracy_per_fold = []
 loss_per_fold = []
@@ -151,16 +163,16 @@ val_generator = datagen.flow_from_dataframe(
         x_col='filename',
         y_col='label',
         target_size = (img_height, img_width),
-        batch_size = 1,
+        batch_size = VAL_BATCH_SIZE,
         class_mode = 'binary',
         shuffle = False,
-        seed = 123
+        seed = GENERATOR_SEED
     )
 
 
 history = model.fit(
         train_generator,
-        epochs=20
+        epochs=EPOCHS
     )
 
 #check accuracy metrics
@@ -169,8 +181,8 @@ from sklearn.metrics import accuracy_score, precision_score, f1_score
 
 test_generator = val_generator
 
-np.random.seed(seed_value)
-tf.random.set_seed(seed_value)
+np.random.seed(SEED_VALUE)
+tf.random.set_seed(SEED_VALUE)
 
 valid_loss, valid_acc = model.evaluate(test_generator, verbose = 1) 
 
@@ -179,7 +191,7 @@ print(valid_loss, valid_acc)
 preds = model.predict(test_generator)
 
 
-predicted_classes = (preds > 0.5).astype(int).flatten()  # Flatten in case preds is a 2D array
+predicted_classes = (preds > PREDICTION_THRESHOLD).astype(int).flatten()  # Flatten in case preds is a 2D array
 
 true_classes = test_generator.classes
 

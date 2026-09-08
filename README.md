@@ -11,7 +11,6 @@ Most modeling scripts use TensorFlow/Keras transfer learning with ImageNet-pretr
 
 ## To Do
 
-- find and extract hardcoded config values, like TAXON_ID, start_page
 - find other examples of ecology and ml projects like this: check data included, how results gathered (notebook? .md?), repo organization
 
 ## Complete
@@ -19,6 +18,7 @@ Most modeling scripts use TensorFlow/Keras transfer learning with ImageNet-pretr
 - separate models and outputs by feeding/non feeding classifiers and plant species identification in feeding pics
 - fix hardcoded paths
 - create an environment
+- find and extract hardcoded config values, like TAXON_ID, start_page
 
 ## Repository Contents
 

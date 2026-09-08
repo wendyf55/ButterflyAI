@@ -26,6 +26,12 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / "data"
 MONARCH_DIR = DATA_DIR / "Monarch_images"
 MONARCH_MANIFEST = DATA_DIR / "Monarch_images.csv"
+METADATA_FILE = MONARCH_DIR / "Monarch_metadata.json"
+IMAGE_URL_SIZE_FROM = "square"
+IMAGE_URL_SIZE_TO = "medium"
+
+#edit this line every time
+NICKNAME = "Monarch"
 
 def download_images_from_json(metadata, download_dir):
 
@@ -54,7 +60,7 @@ def download_images_from_json(metadata, download_dir):
         observation_photos = observation.get("observation_photos", [])
         if observation_photos:  # Ensure there is at least one photo
             photo = observation_photos[0]  # Select only the first photo
-            image_url = photo.get("photo", {}).get("url", "").replace("square", "medium")
+            image_url = photo.get("photo", {}).get("url", "").replace(IMAGE_URL_SIZE_FROM, IMAGE_URL_SIZE_TO)
             photo_id = photo.get("photo", {}).get("id")
             
 
@@ -62,7 +68,7 @@ def download_images_from_json(metadata, download_dir):
             if image_url and "inaturalist-open-data.s3.amazonaws.com" in image_url:
                 #photo_id = default_photo.get("id", "unknown")
                 
-                print(f"Downloading photo ID {photo_id} from {image_url} of {nickname}")
+                print(f"Downloading photo ID {photo_id} from {image_url} of {NICKNAME}")
                 try:
                     img_response = requests.get(image_url, stream=True)
                     img_response.raise_for_status()
@@ -76,17 +82,14 @@ def download_images_from_json(metadata, download_dir):
                     print(f"Saved image as {file_path}")
                     with open(MONARCH_MANIFEST, 'a') as f_object:
                         writer_object = writer(f_object)
-                        Img_ID = [file_name, nickname]
+                        Img_ID = [file_name, NICKNAME]
                         writer_object.writerow(Img_ID)
                         f_object.close()
 
                 except Exception as e:
                     print(f"Failed to download photo ID {photo_id}: {e}")
 
-#edit this line every time
-nickname = "Monarch"
-
 if __name__ == "__main__":
 	download_dir = MONARCH_DIR
-	metadata = MONARCH_DIR / 'Monarch_metadata.json' #EDIT
+	metadata = METADATA_FILE #EDIT
 	download_images_from_json(metadata, download_dir)

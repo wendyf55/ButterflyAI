@@ -32,19 +32,26 @@ TEST_CSV = PROJECT_ROOT / "BC2024_plant_otheronly.csv"
 TEST_IMAGE_DIR = PROJECT_ROOT / "BC2024_plant"
 MODEL_DIR = PROJECT_ROOT / "OVR_models"
 PREDICTIONS_DIR = PROJECT_ROOT / "Other_conundrum"
-
+SEED_VALUE = 871
+MODEL_PREFIX = "ovr_model_"
+MODEL_SUFFIX = ".keras"
+PREDICTION_FILE_PREFIX = "ovr_"
+PREDICTION_FILE_SUFFIX = "_preds.json"
+PREDICTION_THRESHOLD = 0.5
+IMG_HEIGHT = 224
+IMG_WIDTH = 224
+BATCH_SIZE = 32
 
 #set seed so its always the same
-seed_value= 871
 #321
 
-os.environ['PYTHONHASHSEED']=str(seed_value)
+os.environ['PYTHONHASHSEED']=str(SEED_VALUE)
 
-random.seed(seed_value)
+random.seed(SEED_VALUE)
 
-np.random.seed(seed_value)
+np.random.seed(SEED_VALUE)
 
-tf.random.set_seed(seed_value)
+tf.random.set_seed(SEED_VALUE)
 
 
 test_df = pd.read_csv(TEST_CSV)
@@ -57,13 +64,13 @@ print(test_df.head())
 
 
 # List all .keras files
-model_files = [f for f in os.listdir(MODEL_DIR) if f.endswith(".keras")]
+model_files = [f for f in os.listdir(MODEL_DIR) if f.endswith(MODEL_SUFFIX)]
 
 for model_file in model_files:
 
     # Extract class name from filename:
     # "ovr_model_Achillea_millefolium.keras" → "Achillea_millefolium"
-    class_name = model_file.replace("ovr_model_", "").replace(".keras", "")
+    class_name = model_file.replace(MODEL_PREFIX, "").replace(MODEL_SUFFIX, "")
 
     print(f"Loading model for class: {class_name}")
 
@@ -80,8 +87,8 @@ for model_file in model_files:
                                  )
 
     # The ResNet50 model expects images to be 224x224, so we set those values here
-    img_height, img_width = (224,224)
-    batch_size = 32
+    img_height, img_width = (IMG_HEIGHT, IMG_WIDTH)
+    batch_size = BATCH_SIZE
 
     # Same as above but for your test dataset
     test_generator = test_datagen.flow_from_dataframe(
@@ -102,7 +109,7 @@ for model_file in model_files:
     preds = model.predict(test_generator, verbose=1).ravel()
     
     # Convert probabilities to predicted class: 0 or 1
-    predicted_classes = (preds >= 0.5).astype(int)
+    predicted_classes = (preds >= PREDICTION_THRESHOLD).astype(int)
     # Confidence is the sigmoid probability itsel
     predicted_confidences = preds.copy()
     
@@ -129,7 +136,7 @@ for model_file in model_files:
     print(f"Total predictions stored: {len(predictions_list)}")
     
     PREDICTIONS_DIR.mkdir(exist_ok=True)
-    save_path = PREDICTIONS_DIR / f"ovr_{class_name}_preds.json"
+    save_path = PREDICTIONS_DIR / f"{PREDICTION_FILE_PREFIX}{class_name}{PREDICTION_FILE_SUFFIX}"
     
     # Save to JSON file
 

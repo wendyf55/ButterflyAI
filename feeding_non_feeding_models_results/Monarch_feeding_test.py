@@ -16,14 +16,21 @@ from pathlib import Path
 from tensorflow.keras.applications.resnet50 import preprocess_input, ResNet50
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-seed_value = 321
-
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 FEEDING_DATA_DIR = PROJECT_ROOT / "Final_Feeding_Images"
 MONARCH_DIR = PROJECT_ROOT / "data" / "Monarch_images"
+SEED_VALUE = 321
+MODEL_FILENAME = "REAL_AND_SUPER_Final_feeding_model_unfrozen.keras"
+PREDICTIONS_CSV = MONARCH_DIR / "Monarch_image_predictions.csv"
+CLASS0_DIR = MONARCH_DIR / "Class_0"
+CLASS1_DIR = MONARCH_DIR / "Class_1"
+IMG_HEIGHT = 224
+IMG_WIDTH = 224
+BATCH_SIZE = 32
+PREDICTION_THRESHOLD = 0.1
 
-model_path = FEEDING_DATA_DIR / "REAL_AND_SUPER_Final_feeding_model_unfrozen.keras"
+model_path = FEEDING_DATA_DIR / MODEL_FILENAME
 
 print(os.path.exists(model_path))
 model = load_model(str(model_path))
@@ -31,14 +38,14 @@ model = load_model(str(model_path))
 #model = load_model(FEEDING_DATA_DIR / 'REAL_AND_SUPER_Final_feeding_model_unfrozen.keras')
 
 #test_df = pd.read_csv('Monarch_images.csv')
-test_df = pd.read_csv(MONARCH_DIR / 'Monarch_image_predictions.csv')
+test_df = pd.read_csv(PREDICTIONS_CSV)
 
 # Source folder containing your unlabeled images
 source_folder = MONARCH_DIR
 
 # Destination folders
-class0_folder = MONARCH_DIR / "Class_0"
-class1_folder = MONARCH_DIR / "Class_1"
+class0_folder = CLASS0_DIR
+class1_folder = CLASS1_DIR
 
 os.makedirs(class0_folder, exist_ok=True)
 os.makedirs(class1_folder, exist_ok=True)
@@ -62,8 +69,8 @@ print("Images moved successfully")
 # Preprocessing
 datagen = ImageDataGenerator(preprocessing_function=preprocess_input)
 
-img_height, img_width = 224, 224
-batch_size = 32
+img_height, img_width = IMG_HEIGHT, IMG_WIDTH
+batch_size = BATCH_SIZE
 
 # Generator for unlabeled images
 generator = datagen.flow_from_dataframe(
@@ -84,13 +91,13 @@ preds = model.predict(generator)
 scores = preds.flatten()
 
 # Binary prediction using 0.5 threshold
-predicted_classes = (scores > 0.1).astype(int)
+predicted_classes = (scores > PREDICTION_THRESHOLD).astype(int)
 
 # Add results to the dataframe
 test_df['prediction'] = predicted_classes
 test_df['score'] = scores
 
-test_df.to_csv(MONARCH_DIR / 'Monarch_image_predictions.csv', encoding='utf-8', index=False)
+test_df.to_csv(PREDICTIONS_CSV, encoding='utf-8', index=False)
 
 
 print("Csv saved")
@@ -100,8 +107,8 @@ print("Csv saved")
 source_folder = MONARCH_DIR
 
 # Destination folders
-class0_folder = MONARCH_DIR / "Class_0"
-class1_folder = MONARCH_DIR / "Class_1"
+class0_folder = CLASS0_DIR
+class1_folder = CLASS1_DIR
 
 os.makedirs(class0_folder, exist_ok=True)
 os.makedirs(class1_folder, exist_ok=True)

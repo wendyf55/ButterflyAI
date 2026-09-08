@@ -16,7 +16,6 @@ run butterflyAI_image_download.py to download images stored in the json download
 
 """
 
-
 import requests
 import json
 import os
@@ -28,6 +27,7 @@ DATA_DIR = PROJECT_ROOT / "data" # using path like this resolves it to <repo roo
 # and helps with reproducbility - now this can run on any machine
 MONARCH_DIR = DATA_DIR / "Monarch_images"
 
+API_URL = "https://api.inaturalist.org/v1/observations"
 TAXON_ID = 48662
 NICKNAME = "Monarch"
 START_PAGE = 51
@@ -36,6 +36,8 @@ PER_PAGE = 200
 PLACE_ID = 97394
 MONTHS = "6,7"
 QUALITY_GRADE = "research"
+REQUEST_DELAY_SECONDS = 2
+METADATA_OUTPUT_FILENAME = f"{NICKNAME}_metadata_testset.json"
 
 def query_taxa(
     taxon_id=TAXON_ID,
@@ -44,9 +46,9 @@ def query_taxa(
     per_page=PER_PAGE,
     place_id=PLACE_ID,
     months=MONTHS,
-    quality_grade=QUALITY_GRADE,):
-
-    api_url = "https://api.inaturalist.org/v1/observations"
+    quality_grade=QUALITY_GRADE,
+    request_delay_seconds=REQUEST_DELAY_SECONDS,
+):
 
     params = {
         "taxon_id": taxon_id,
@@ -59,16 +61,13 @@ def query_taxa(
 
     observations = []  # Accumulate all results here
 
-    start_page = 51
-    num_pages = 2
-
     #while True:
     for page in range(start_page, start_page + num_pages):
         print(f"Fetching page {page}...")
         params["page"] = page
 
         try:
-            response = requests.get(api_url, params=params)
+            response = requests.get(API_URL, params=params)
             response.raise_for_status()  # Raise error for bad response
 
             data = response.json()
@@ -90,7 +89,7 @@ def query_taxa(
 
             # Move to the next page
             page += 1
-            time.sleep(2)  # Increase delay to avoid getting blocked
+            time.sleep(request_delay_seconds)  # Increase delay to avoid getting blocked
 
         except requests.exceptions.HTTPError as err:
             print(f"HTTP Error: {err}")
@@ -105,7 +104,7 @@ if __name__ == "__main__":
     obs_data = query_taxa()
 
     os.makedirs(MONARCH_DIR, exist_ok=True)
-    filename = MONARCH_DIR / f"{NICKNAME}_metadata_testset.json"
+    filename = MONARCH_DIR / METADATA_OUTPUT_FILENAME
 
     with open(filename, "w") as f:
         json.dump({"total_results": len(obs_data), "results": obs_data}, f, indent=2)

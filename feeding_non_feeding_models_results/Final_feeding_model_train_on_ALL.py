@@ -11,10 +11,19 @@ import random
 import pandas as pd
 from pathlib import Path
 
-seed_value= 321
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 FEEDING_DATA_DIR = PROJECT_ROOT / "Final_Feeding_Images"
+TRAINING_CSV = FEEDING_DATA_DIR / "DataFilenamesRedo_train.csv"
+MODEL_OUTPUT = FEEDING_DATA_DIR / "REAL_AND_SUPER_Final_feeding_model_unfrozen.keras"
+SEED_VALUE = 321
+IMG_HEIGHT = 224
+IMG_WIDTH = 224
+BATCH_SIZE = 32
+GENERATOR_SEED = 123
+EPOCHS = 20
+DROPOUT_RATE = 0.5
+DENSE_UNITS = 512
+TRAINABLE_BLOCK = "conv5_block"
 
 from tensorflow.keras.applications.resnet50 import preprocess_input, ResNet50
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -27,14 +36,14 @@ cwd = os.getcwd()
 cwd
 
 # The ResNet50 model expects images to be 224x224, so we set those values here
-img_height, img_width = (224,224)
-batch_size = 32
+img_height, img_width = (IMG_HEIGHT, IMG_WIDTH)
+batch_size = BATCH_SIZE
 
 from sklearn.model_selection import train_test_split
 import pandas as pd
 
 #DataFilenamesRedo.csv is in the Final_Feeding_Images folder and has the feeding status and whether the image is real or not
-full_df = pd.read_csv(FEEDING_DATA_DIR / 'DataFilenamesRedo_train.csv')
+full_df = pd.read_csv(TRAINING_CSV)
 
 #run code with just real images (all_df, name is misleading, watch out!)
 # train_df = full_df[full_df['photo_type'] == 'real']
@@ -51,13 +60,13 @@ import random
 
 #set seed so its always the same
 
-os.environ['PYTHONHASHSEED']=str(seed_value)
+os.environ['PYTHONHASHSEED']=str(SEED_VALUE)
  
-random.seed(seed_value)
+random.seed(SEED_VALUE)
 
-np.random.seed(seed_value)
+np.random.seed(SEED_VALUE)
 
-tf.random.set_seed(seed_value)
+tf.random.set_seed(SEED_VALUE)
 
 
 # The code in my tutorial had a few additional layers, but I would try this out too. Sometimes simpler is better
@@ -80,12 +89,12 @@ tf.random.set_seed(seed_value)
 base_model = ResNet50(include_top=False, weights='imagenet')
 x = base_model.output
 x = GlobalAveragePooling2D()(x)
-x = Dropout(0.5)(x)
+x = Dropout(DROPOUT_RATE)(x)
 
-x = Dense(512)(x)
+x = Dense(DENSE_UNITS)(x)
 x = BatchNormalization()(x)
 x = Activation('relu')(x)
-x = Dropout(0.5)(x)
+x = Dropout(DROPOUT_RATE)(x)
 
 predictions = Dense(1, activation='sigmoid')(x)
 
@@ -93,7 +102,7 @@ model = Model(inputs = base_model.input, outputs = predictions)
 
 
 for layer in base_model.layers:
-        if "conv5_block" in layer.name: #tune just the final block ~15-20 layers
+        if TRAINABLE_BLOCK in layer.name: #tune just the final block ~15-20 layers
             layer.trainable = True
         else:
             layer.trainable = False
@@ -114,7 +123,7 @@ train_generator = train_datagen.flow_from_dataframe(
     target_size = (img_height, img_width),
     batch_size = batch_size,
     class_mode = 'binary',
-    seed = 123,
+    seed = GENERATOR_SEED,
     shuffle = True
 )
 
@@ -126,6 +135,6 @@ print("Training class indices: ", train_generator.class_indices)
 print("Training labels count: ", train_df['label'].value_counts())
 
 history = model.fit(train_generator, 
-          epochs = 20)
+          epochs = EPOCHS)
 
-model.save(str(FEEDING_DATA_DIR / 'REAL_AND_SUPER_Final_feeding_model_unfrozen.keras'))
+model.save(str(MODEL_OUTPUT))

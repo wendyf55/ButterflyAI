@@ -24,41 +24,54 @@ from sklearn.model_selection import train_test_split
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 FLOWER_DATA_DIR = PROJECT_ROOT / "specified_flower_photos_detectron_ALL"
+TRAINING_CSV = FLOWER_DATA_DIR / "specified_flower_photos_detectron.csv"
+SCALING_RESULTS_CSV = FLOWER_DATA_DIR / "Scaling_test_results.csv"
+SEED_VALUE = 321
+IMG_HEIGHT = 224
+IMG_WIDTH = 224
+BATCH_SIZE = 64 #32 - powers of 2
+TEST_SIZE = 0.2
+TRAINING_PERCENTAGES = [0.05, 0.10, 0.20, 0.50, 0.75, 1.00]
+EPOCHS = 20
+LEARNING_RATE = 1e-5
+DROPOUT_RATE = 0.5
+DENSE_UNITS = 512
+NUM_CLASSES = 10
+TRAINABLE_BLOCK = "conv5_block"
 
 cwd = os.getcwd()
 cwd
 
 #set seed so its always the same
-seed_value= 321
 
-os.environ['PYTHONHASHSEED']=str(seed_value)
+os.environ['PYTHONHASHSEED']=str(SEED_VALUE)
 
-random.seed(seed_value)
+random.seed(SEED_VALUE)
 
-np.random.seed(seed_value)
+np.random.seed(SEED_VALUE)
 
-tf.random.set_seed(seed_value)
+tf.random.set_seed(SEED_VALUE)
 
 os.chdir(FLOWER_DATA_DIR)
 
 entries = os.listdir()
 
 # The ResNet50 model expects images to be 224x224, so we set those values here
-img_height, img_width = (224, 224)
-batch_size = 64 #32 - powers of 2
+img_height, img_width = (IMG_HEIGHT, IMG_WIDTH)
+batch_size = BATCH_SIZE
 
 #all_df = pd.read_csv('PlantIDs_API.csv')
-all_df = pd.read_csv(FLOWER_DATA_DIR / 'specified_flower_photos_detectron.csv')
+all_df = pd.read_csv(TRAINING_CSV)
 
-train_df, test_df = train_test_split(all_df, test_size=0.2, random_state=42)
+train_df, test_df = train_test_split(all_df, test_size=TEST_SIZE, random_state=SEED_VALUE)
 
-percentages = [0.05, 0.10, 0.20, 0.50, 0.75, 1.00]
+percentages = TRAINING_PERCENTAGES
 
 results = []
 
 for p in percentages:
     # sample p% of the dataframe
-    new_df = train_df.sample(frac=p, random_state=42)
+    new_df = train_df.sample(frac=p, random_state=SEED_VALUE)
 
     train_datagen = ImageDataGenerator(preprocessing_function = preprocess_input,
                                    horizontal_flip = True,
@@ -109,20 +122,20 @@ for p in percentages:
     base_model = ResNet50(include_top=False, weights='imagenet')
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
-    x = Dropout(0.5)(x)
-    x = Dense(512, activation='relu')(x)
-    x = Dropout(0.5)(x)
-    predictions = Dense(10, activation = 'softmax')(x)
+    x = Dropout(DROPOUT_RATE)(x)
+    x = Dense(DENSE_UNITS, activation='relu')(x)
+    x = Dropout(DROPOUT_RATE)(x)
+    predictions = Dense(NUM_CLASSES, activation = 'softmax')(x)
     model = Model(inputs=base_model.input, outputs=predictions)
 
     for layer in base_model.layers:
-        if "conv5_block" in layer.name: #tune just the final block ~15-20 layers
+        if TRAINABLE_BLOCK in layer.name: #tune just the final block ~15-20 layers
             layer.trainable = True
         else:
             layer.trainable = False
 
     # Compile the model (ensuring it's ready for training)
-    model.compile(optimizer=Adam(learning_rate=1e-5), loss = 'categorical_crossentropy', metrics = ['accuracy'])
+    model.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss = 'categorical_crossentropy', metrics = ['accuracy'])
 
 
     ###### Set the epochs to however many you want
@@ -151,7 +164,7 @@ for p in percentages:
 
     # Use in training
     history = model.fit(train_generator,
-                        epochs=20,
+                        epochs=EPOCHS,
                         class_weight=class_weights)
 
     from sklearn.metrics import classification_report, confusion_matrix
@@ -213,4 +226,4 @@ for p in percentages:
 
 
 results_df = pd.DataFrame(results)
-results_df.to_csv(FLOWER_DATA_DIR / "Scaling_test_results.csv", index=False)
+results_df.to_csv(SCALING_RESULTS_CSV, index=False)

@@ -20,6 +20,23 @@ from collections import defaultdict
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PLANT_DATA_DIR = PROJECT_ROOT / "plant_data_specified"
+TRAINING_CSV = PLANT_DATA_DIR / "Flower_only_specified.csv"
+CV_RESULTS_JSON = PLANT_DATA_DIR / "aug4_cv_results_ovr_xval.json"
+CONFUSION_MATRICES_JSON = PLANT_DATA_DIR / "aug4_confusion_matrices_ovr_xval.json"
+ACCURACY_LOSS_JSON = PLANT_DATA_DIR / "aug4_accuracy_loss_data_ovr_xval.json"
+SEED_VALUE = 321
+IMG_HEIGHT = 224
+IMG_WIDTH = 224
+BATCH_SIZE = 64 #32 - powers of 2
+K_FOLDS = 5
+KFOLD_RANDOM_STATE = 42
+RESAMPLE_RANDOM_STATE = 42
+EPOCHS = 20
+EARLY_STOPPING_PATIENCE = 5
+LEARNING_RATE = 1e-5
+DROPOUT_RATE = 0.5
+DENSE_UNITS = 512
+PREDICTION_THRESHOLD = 0.5
 
 #does tf detect the GPU?
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
@@ -43,15 +60,14 @@ import random
 import os
 import numpy as np
 #set seed so its always the same
-seed_value= 321
 
-os.environ['PYTHONHASHSEED']=str(seed_value)
+os.environ['PYTHONHASHSEED']=str(SEED_VALUE)
 
-random.seed(seed_value)
+random.seed(SEED_VALUE)
 
-np.random.seed(seed_value)
+np.random.seed(SEED_VALUE)
 
-tf.random.set_seed(seed_value)
+tf.random.set_seed(SEED_VALUE)
 
 #first model , dropout - 0,5, dense - 512
 def create_ovr_model():
@@ -59,18 +75,18 @@ def create_ovr_model():
   base_model = ResNet50(include_top=False, weights='imagenet')
   x = base_model.output
   x = GlobalAveragePooling2D()(x)
-  x = Dropout(0.5)(x)
-  x = Dense(512)(x)
+  x = Dropout(DROPOUT_RATE)(x)
+  x = Dense(DENSE_UNITS)(x)
   x = BatchNormalization()(x)
   x = Activation('relu')(x)
-  x = Dropout(0.5)(x)
+  x = Dropout(DROPOUT_RATE)(x)
   predictions = Dense(1, activation='sigmoid')(x)
   model = Model(inputs=base_model.input, outputs=predictions)
 
   
 
   # Compile the model (ensuring it's ready for training)
-  model.compile(optimizer=Adam(learning_rate=1e-5),
+  model.compile(optimizer=Adam(learning_rate=LEARNING_RATE),
                   loss='binary_crossentropy',
                   metrics=['accuracy'])
 
@@ -89,12 +105,12 @@ from sklearn.metrics import precision_recall_curve, classification_report, confu
 import numpy as np
 
 # Parameters
-img_height, img_width = (224, 224)
-batch_size = 64 #32 - powers of 2
-k_folds = 5  # Number of folds for cross-validation
+img_height, img_width = (IMG_HEIGHT, IMG_WIDTH)
+batch_size = BATCH_SIZE
+k_folds = K_FOLDS  # Number of folds for cross-validation
 
 # Load dataset
-all_df = pd.read_csv(PLANT_DATA_DIR / 'Flower_only_specified.csv')
+all_df = pd.read_csv(TRAINING_CSV)
 
 # Data generators
 train_datagen = ImageDataGenerator(
@@ -119,7 +135,7 @@ for class_index, class_name in enumerate(all_df['Label'].unique()):
     all_df_copy['BinaryLabel'] = (all_df_copy['Label'] == class_name).astype(int)
     
     # Stratified K-Fold
-    skf = StratifiedKFold(n_splits=k_folds, shuffle=True, random_state=42)
+    skf = StratifiedKFold(n_splits=k_folds, shuffle=True, random_state=KFOLD_RANDOM_STATE)
     
     fold_metrics = []
     #conf_matrix = {}
@@ -139,12 +155,12 @@ for class_index, class_name in enumerate(all_df['Label'].unique()):
 
         if len(majority_train) > len(minority_train):
             majority_train_resampled = resample(
-                majority_train, replace=False, n_samples=len(minority_train), random_state=42
+                majority_train, replace=False, n_samples=len(minority_train), random_state=RESAMPLE_RANDOM_STATE
             )
         else:
             majority_train_resampled = majority_train
 
-        balanced_train = pd.concat([majority_train_resampled, minority_train]).sample(frac=1, random_state=42)
+        balanced_train = pd.concat([majority_train_resampled, minority_train]).sample(frac=1, random_state=RESAMPLE_RANDOM_STATE)
 
          # Print class distribution after resampling
         # print("\nAfter resampling:")
@@ -161,7 +177,7 @@ for class_index, class_name in enumerate(all_df['Label'].unique()):
 
         if len(majority_val) > len(minority_val):
             majority_val_resampled = resample(
-                majority_val, replace=False, n_samples=len(minority_val), random_state=42
+                majority_val, replace=False, n_samples=len(minority_val), random_state=RESAMPLE_RANDOM_STATE
             )
             print("val resampled")
         else:
@@ -169,7 +185,7 @@ for class_index, class_name in enumerate(all_df['Label'].unique()):
             print("val not resampled")
  
         balanced_val = pd.concat([majority_val_resampled, minority_val])
-        balanced_val = balanced_val.sample(frac=1, random_state=42).reset_index(drop=True)
+        balanced_val = balanced_val.sample(frac=1, random_state=RESAMPLE_RANDOM_STATE).reset_index(drop=True)
 
         # Convert labels to string for generators
         
@@ -207,11 +223,11 @@ for class_index, class_name in enumerate(all_df['Label'].unique()):
 
         # Create and train model
         model = create_ovr_model()
-        early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+        early_stopping = EarlyStopping(monitor='val_loss', patience=EARLY_STOPPING_PATIENCE, restore_best_weights=True)
 
         history = model.fit(
             train_generator,
-            epochs= 20,
+            epochs=EPOCHS,
             validation_data=val_generator,
             callbacks=[early_stopping]
         )
@@ -260,7 +276,7 @@ for class_index, class_name in enumerate(all_df['Label'].unique()):
         # Apply new threshold
         #y_pred = (y_pred_probs > best_threshold).astype(int)
         
-        y_pred = (y_pred_probs > 0.5).astype(int)  # Convert probabilities to binary predictions
+        y_pred = (y_pred_probs > PREDICTION_THRESHOLD).astype(int)  # Convert probabilities to binary predictions
 
         # Compute precision, recall, and F1-score
         report = classification_report(y_true, y_pred, output_dict=True)
@@ -297,13 +313,13 @@ for class_index, class_name in enumerate(all_df['Label'].unique()):
     accuracy_loss_data[class_name] = class_accuracy_loss
 
 # Save dictionaries as JSON files
-with open(PLANT_DATA_DIR / 'aug4_cv_results_ovr_xval.json', 'w') as f:
+with open(CV_RESULTS_JSON, 'w') as f:
     json.dump(cv_results, f, indent=4)
 
-with open(PLANT_DATA_DIR / 'aug4_confusion_matrices_ovr_xval.json', 'w') as f:
+with open(CONFUSION_MATRICES_JSON, 'w') as f:
     json.dump(confusion_matrices, f, indent=4)
 
-with open(PLANT_DATA_DIR / 'aug4_accuracy_loss_data_ovr_xval.json', 'w') as f:
+with open(ACCURACY_LOSS_JSON, 'w') as f:
     json.dump(accuracy_loss_data, f, indent=4)
 
 os.chdir(PROJECT_ROOT)
