@@ -15,6 +15,7 @@ Most modeling scripts use TensorFlow/Keras transfer learning with ImageNet-pretr
 - find and extract hardcoded config values, like TAXON_ID, start_page
 - find other examples of ecology and ml projects like this: check data included, how results gathered (notebook? .md?), repo organization
 - separate models and outputs by feeding/non feeding classifiers and plant species identification in feeding pics
+- create an environment
 
 ## Repository Contents
 
@@ -171,5 +172,3 @@ The scripts use:
 - `scikit-learn`
 - `matplotlib`
 - `requests`
-
-No `requirements.txt` or environment file is currently checked in. Reproducibility would improve a lot if the next cleanup adds one and replaces hard-coded absolute paths with configurable paths.
