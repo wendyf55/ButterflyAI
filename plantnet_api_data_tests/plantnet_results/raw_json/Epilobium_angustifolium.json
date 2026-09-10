@@ -1,0 +1,91 @@
+{
+  "query": {
+    "project": "all",
+    "images": [
+      "5da0c2582bf1addd7f4dd8f386e8d535"
+    ],
+    "organs": [
+      "flower"
+    ],
+    "includeRelatedImages": false,
+    "noReject": false,
+    "type": null
+  },
+  "predictedOrgans": [
+    {
+      "image": "5da0c2582bf1addd7f4dd8f386e8d535",
+      "filename": "Epilobium_angustifolium.jpg",
+      "organ": "habit",
+      "score": 0.68068
+    }
+  ],
+  "language": "en",
+  "preferedReferential": "k-world-flora",
+  "bestMatch": "Epilobium angustifolium L.",
+  "results": [
+    {
+      "score": 0.994,
+      "species": {
+        "scientificNameWithoutAuthor": "Epilobium angustifolium",
+        "scientificNameAuthorship": "L.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Epilobium",
+          "scientificNameAuthorship": "",
+          "scientificName": "Epilobium"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Onagraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Onagraceae"
+        },
+        "commonNames": [
+          "Fireweed",
+          "Rosebay willowherb",
+          "Great willowherb"
+        ],
+        "scientificName": "Epilobium angustifolium L."
+      },
+      "gbif": {
+        "id": "8053718"
+      },
+      "powo": {
+        "id": "92411-2"
+      },
+      "iucn": {
+        "id": "164212",
+        "category": "LC"
+      }
+    },
+    {
+      "score": 0.00183,
+      "species": {
+        "scientificNameWithoutAuthor": "Epilobium dodonaei",
+        "scientificNameAuthorship": "Vill.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Epilobium",
+          "scientificNameAuthorship": "",
+          "scientificName": "Epilobium"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Onagraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Onagraceae"
+        },
+        "commonNames": [
+          "Fireweed",
+          "Rosemary leaved Willowherb",
+          "Rosemary willowherb"
+        ],
+        "scientificName": "Epilobium dodonaei Vill."
+      },
+      "gbif": {
+        "id": "12041591"
+      },
+      "powo": {
+        "id": "611790-1"
+      }
+    }
+  ],
+  "version": "2026-03-20 (7.5)",
+  "remainingIdentificationRequests": 481
+}

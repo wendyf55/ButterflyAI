@@ -1,0 +1,171 @@
+{
+  "query": {
+    "project": "all",
+    "images": [
+      "a89cad774b82a2a9dd415ea81d86b5e8"
+    ],
+    "organs": [
+      "flower"
+    ],
+    "includeRelatedImages": false,
+    "noReject": false,
+    "type": null
+  },
+  "predictedOrgans": [
+    {
+      "image": "a89cad774b82a2a9dd415ea81d86b5e8",
+      "filename": "grindelia_squarrosa.jpg",
+      "organ": "flower",
+      "score": 0.91203
+    }
+  ],
+  "language": "en",
+  "preferedReferential": "k-world-flora",
+  "bestMatch": "Grindelia squarrosa (Pursh) Dunal",
+  "results": [
+    {
+      "score": 0.35516,
+      "species": {
+        "scientificNameWithoutAuthor": "Grindelia squarrosa",
+        "scientificNameAuthorship": "(Pursh) Dunal",
+        "genus": {
+          "scientificNameWithoutAuthor": "Grindelia",
+          "scientificNameAuthorship": "",
+          "scientificName": "Grindelia"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Curly cup gumweed",
+          "Curlycup Gumweed",
+          "Gumweed"
+        ],
+        "scientificName": "Grindelia squarrosa (Pursh) Dunal"
+      },
+      "gbif": {
+        "id": "3146219"
+      },
+      "powo": {
+        "id": "210665-1"
+      }
+    },
+    {
+      "score": 0.33416,
+      "species": {
+        "scientificNameWithoutAuthor": "Grindelia subalpina",
+        "scientificNameAuthorship": "Greene",
+        "genus": {
+          "scientificNameWithoutAuthor": "Grindelia",
+          "scientificNameAuthorship": "",
+          "scientificName": "Grindelia"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Subalpine gumweed"
+        ],
+        "scientificName": "Grindelia subalpina Greene"
+      },
+      "gbif": {
+        "id": "3146273"
+      },
+      "powo": {
+        "id": "113634-2"
+      }
+    },
+    {
+      "score": 0.06866,
+      "species": {
+        "scientificNameWithoutAuthor": "Grindelia hirsutula",
+        "scientificNameAuthorship": "Hook. & Arn.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Grindelia",
+          "scientificNameAuthorship": "",
+          "scientificName": "Grindelia"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Hairy gumweed",
+          "Grindelia",
+          "Bract gumweed"
+        ],
+        "scientificName": "Grindelia hirsutula Hook. & Arn."
+      },
+      "gbif": {
+        "id": "3146233"
+      },
+      "powo": {
+        "id": "210605-1"
+      }
+    },
+    {
+      "score": 0.04427,
+      "species": {
+        "scientificNameWithoutAuthor": "Grindelia integrifolia",
+        "scientificNameAuthorship": "DC.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Grindelia",
+          "scientificNameAuthorship": "",
+          "scientificName": "Grindelia"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Puget Sound gumweed",
+          "Willamette Valley Gumweed",
+          "Gumweed"
+        ],
+        "scientificName": "Grindelia integrifolia DC."
+      },
+      "gbif": {
+        "id": "3146296"
+      },
+      "powo": {
+        "id": "210611-1"
+      }
+    },
+    {
+      "score": 0.01254,
+      "species": {
+        "scientificNameWithoutAuthor": "Chrysopsis gossypina",
+        "scientificNameAuthorship": "(Michx.) Elliott",
+        "genus": {
+          "scientificNameWithoutAuthor": "Chrysopsis",
+          "scientificNameAuthorship": "",
+          "scientificName": "Chrysopsis"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Cottony goldenaster",
+          "Cottony Golden Aster"
+        ],
+        "scientificName": "Chrysopsis gossypina (Michx.) Elliott"
+      },
+      "gbif": {
+        "id": "5385918"
+      },
+      "powo": {
+        "id": "194152-1"
+      }
+    }
+  ],
+  "version": "2026-03-20 (7.5)",
+  "remainingIdentificationRequests": 476
+}

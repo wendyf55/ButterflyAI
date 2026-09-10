@@ -1,0 +1,170 @@
+{
+  "query": {
+    "project": "all",
+    "images": [
+      "638eb227171ebe38d29e83b59db71101"
+    ],
+    "organs": [
+      "flower"
+    ],
+    "includeRelatedImages": false,
+    "noReject": false,
+    "type": null
+  },
+  "predictedOrgans": [
+    {
+      "image": "638eb227171ebe38d29e83b59db71101",
+      "filename": "tanacetum_vulgare.jpg",
+      "organ": "flower",
+      "score": 0.77721
+    }
+  ],
+  "language": "en",
+  "preferedReferential": "k-world-flora",
+  "bestMatch": "Tanacetum vulgare L.",
+  "results": [
+    {
+      "score": 0.96134,
+      "species": {
+        "scientificNameWithoutAuthor": "Tanacetum vulgare",
+        "scientificNameAuthorship": "L.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Tanacetum",
+          "scientificNameAuthorship": "",
+          "scientificName": "Tanacetum"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Common tansy",
+          "Tansy",
+          "Golden buttons"
+        ],
+        "scientificName": "Tanacetum vulgare L."
+      },
+      "gbif": {
+        "id": "3118274"
+      },
+      "powo": {
+        "id": "252568-1"
+      }
+    },
+    {
+      "score": 0.00395,
+      "species": {
+        "scientificNameWithoutAuthor": "Tanacetum bipinnatum",
+        "scientificNameAuthorship": "Sch.Bip.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Tanacetum",
+          "scientificNameAuthorship": "",
+          "scientificName": "Tanacetum"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Lake Huron tansy",
+          "Camphor tansy",
+          "Dwarf tansy"
+        ],
+        "scientificName": "Tanacetum bipinnatum Sch.Bip."
+      },
+      "gbif": {
+        "id": "3118382"
+      },
+      "powo": {
+        "id": "252247-1"
+      }
+    },
+    {
+      "score": 0.00211,
+      "species": {
+        "scientificNameWithoutAuthor": "Tanacetum audibertii",
+        "scientificNameAuthorship": "DC.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Tanacetum",
+          "scientificNameAuthorship": "",
+          "scientificName": "Tanacetum"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [],
+        "scientificName": "Tanacetum audibertii DC."
+      },
+      "gbif": {
+        "id": "3118325"
+      },
+      "powo": {
+        "id": "252238-1"
+      }
+    },
+    {
+      "score": 0.00204,
+      "species": {
+        "scientificNameWithoutAuthor": "Achillea filipendulina",
+        "scientificNameAuthorship": "Lam.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Achillea",
+          "scientificNameAuthorship": "",
+          "scientificName": "Achillea"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Fernleaf yarrow",
+          "Fern leaf yarrow",
+          "Golden Yarrow"
+        ],
+        "scientificName": "Achillea filipendulina Lam."
+      },
+      "gbif": {
+        "id": "3120284"
+      },
+      "powo": {
+        "id": "173972-1"
+      }
+    },
+    {
+      "score": 0.00143,
+      "species": {
+        "scientificNameWithoutAuthor": "Achillea ageratum",
+        "scientificNameAuthorship": "L.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Achillea",
+          "scientificNameAuthorship": "",
+          "scientificName": "Achillea"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Sweet Nancy",
+          "Sweet yarrow",
+          "Mace"
+        ],
+        "scientificName": "Achillea ageratum L."
+      },
+      "gbif": {
+        "id": "3120391"
+      },
+      "powo": {
+        "id": "173792-1"
+      }
+    }
+  ],
+  "version": "2026-03-20 (7.5)",
+  "remainingIdentificationRequests": 474
+}

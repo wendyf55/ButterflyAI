@@ -1,0 +1,174 @@
+{
+  "query": {
+    "project": "all",
+    "images": [
+      "0df0a7fb71bdacf6b96ab2b4b1aa1644"
+    ],
+    "organs": [
+      "flower"
+    ],
+    "includeRelatedImages": false,
+    "noReject": false,
+    "type": null
+  },
+  "predictedOrgans": [
+    {
+      "image": "0df0a7fb71bdacf6b96ab2b4b1aa1644",
+      "filename": "dicentra_formosa.jpg",
+      "organ": "flower",
+      "score": 0.64011
+    }
+  ],
+  "language": "en",
+  "preferedReferential": "k-world-flora",
+  "bestMatch": "Dicentra formosa (Andrews) Walp.",
+  "results": [
+    {
+      "score": 0.54779,
+      "species": {
+        "scientificNameWithoutAuthor": "Dicentra formosa",
+        "scientificNameAuthorship": "(Andrews) Walp.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Dicentra",
+          "scientificNameAuthorship": "",
+          "scientificName": "Dicentra"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Papaveraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Papaveraceae"
+        },
+        "commonNames": [
+          "Pacific bleeding heart",
+          "Bleeding heart",
+          "Western Bleeding Heart"
+        ],
+        "scientificName": "Dicentra formosa (Andrews) Walp."
+      },
+      "gbif": {
+        "id": "2888553"
+      },
+      "powo": {
+        "id": "30038428-2"
+      }
+    },
+    {
+      "score": 0.03892,
+      "species": {
+        "scientificNameWithoutAuthor": "Dicentra eximia",
+        "scientificNameAuthorship": "(Ker Gawl.) Torr.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Dicentra",
+          "scientificNameAuthorship": "",
+          "scientificName": "Dicentra"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Papaveraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Papaveraceae"
+        },
+        "commonNames": [
+          "Turkey corn",
+          "Wild bleeding heart",
+          "Fringed Bleeding Heart"
+        ],
+        "scientificName": "Dicentra eximia (Ker Gawl.) Torr."
+      },
+      "gbif": {
+        "id": "2888546"
+      },
+      "powo": {
+        "id": "1003783-2"
+      }
+    },
+    {
+      "score": 0.0034,
+      "species": {
+        "scientificNameWithoutAuthor": "Lamprocapnos spectabilis",
+        "scientificNameAuthorship": "(L.) Fukuhara",
+        "genus": {
+          "scientificNameWithoutAuthor": "Lamprocapnos",
+          "scientificNameAuthorship": "",
+          "scientificName": "Lamprocapnos"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Papaveraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Papaveraceae"
+        },
+        "commonNames": [
+          "Bleeding heart",
+          "Asian bleeding heart",
+          "Lady in a Bath"
+        ],
+        "scientificName": "Lamprocapnos spectabilis (L.) Fukuhara"
+      },
+      "gbif": {
+        "id": "2888564"
+      },
+      "powo": {
+        "id": "995841-1"
+      }
+    },
+    {
+      "score": 0.003,
+      "species": {
+        "scientificNameWithoutAuthor": "Adlumia fungosa",
+        "scientificNameAuthorship": "(Aiton) Britton, Sterns & Poggenb.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Adlumia",
+          "scientificNameAuthorship": "",
+          "scientificName": "Adlumia"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Papaveraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Papaveraceae"
+        },
+        "commonNames": [
+          "Allegheny vine",
+          "Climbing fumitory",
+          "Mountain fringe"
+        ],
+        "scientificName": "Adlumia fungosa (Aiton) Britton, Sterns & Poggenb."
+      },
+      "gbif": {
+        "id": "2888561"
+      },
+      "powo": {
+        "id": "671671-1"
+      }
+    },
+    {
+      "score": 0.00141,
+      "species": {
+        "scientificNameWithoutAuthor": "Dicentra canadensis",
+        "scientificNameAuthorship": "(Goldie) Walp.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Dicentra",
+          "scientificNameAuthorship": "",
+          "scientificName": "Dicentra"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Papaveraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Papaveraceae"
+        },
+        "commonNames": [
+          "Squirrel corn",
+          "Turkey corn",
+          "Ajidamoo miiskish mandaamin"
+        ],
+        "scientificName": "Dicentra canadensis (Goldie) Walp."
+      },
+      "gbif": {
+        "id": "2888554"
+      },
+      "powo": {
+        "id": "672637-1"
+      }
+    }
+  ],
+  "version": "2026-03-20 (7.5)",
+  "remainingIdentificationRequests": 477
+}

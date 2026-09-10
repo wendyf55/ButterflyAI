@@ -1,0 +1,144 @@
+{
+  "query": {
+    "project": "all",
+    "images": [
+      "0245b74db6847123834858afa9ed777e"
+    ],
+    "organs": [
+      "flower"
+    ],
+    "includeRelatedImages": false,
+    "noReject": false,
+    "type": null
+  },
+  "predictedOrgans": [
+    {
+      "image": "0245b74db6847123834858afa9ed777e",
+      "filename": "chicory.jpg",
+      "organ": "flower",
+      "score": 0.67737
+    }
+  ],
+  "language": "en",
+  "preferedReferential": "k-world-flora",
+  "bestMatch": "Cichorium pumilum Jacq.",
+  "results": [
+    {
+      "score": 0.85683,
+      "species": {
+        "scientificNameWithoutAuthor": "Cichorium pumilum",
+        "scientificNameAuthorship": "Jacq.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Cichorium",
+          "scientificNameAuthorship": "",
+          "scientificName": "Cichorium"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Dwarf Chicory",
+          "Wild annual Endive",
+          "Wild Endive"
+        ],
+        "scientificName": "Cichorium pumilum Jacq."
+      },
+      "gbif": {
+        "id": "5392270"
+      },
+      "powo": {
+        "id": "194540-1"
+      }
+    },
+    {
+      "score": 0.0687,
+      "species": {
+        "scientificNameWithoutAuthor": "Cichorium endivia",
+        "scientificNameAuthorship": "L.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Cichorium",
+          "scientificNameAuthorship": "",
+          "scientificName": "Cichorium"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Endive Chicory",
+          "Endive",
+          "Cultivated endive"
+        ],
+        "scientificName": "Cichorium endivia L."
+      },
+      "gbif": {
+        "id": "5392243"
+      },
+      "powo": {
+        "id": "194527-1"
+      }
+    },
+    {
+      "score": 0.01758,
+      "species": {
+        "scientificNameWithoutAuthor": "Cichorium intybus",
+        "scientificNameAuthorship": "L.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Cichorium",
+          "scientificNameAuthorship": "",
+          "scientificName": "Cichorium"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Chicory",
+          "Wild chicory",
+          "Wild succory"
+        ],
+        "scientificName": "Cichorium intybus L."
+      },
+      "gbif": {
+        "id": "5392252"
+      },
+      "powo": {
+        "id": "194533-1"
+      }
+    },
+    {
+      "score": 0.0068,
+      "species": {
+        "scientificNameWithoutAuthor": "Cichorium spinosum",
+        "scientificNameAuthorship": "L.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Cichorium",
+          "scientificNameAuthorship": "",
+          "scientificName": "Cichorium"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Spiny Chicory",
+          "Chicory"
+        ],
+        "scientificName": "Cichorium spinosum L."
+      },
+      "gbif": {
+        "id": "5392268"
+      },
+      "powo": {
+        "id": "194543-1"
+      }
+    }
+  ],
+  "version": "2026-03-20 (7.5)",
+  "remainingIdentificationRequests": 493
+}

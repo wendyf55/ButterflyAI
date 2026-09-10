@@ -1,5 +1,7 @@
 """
-Identify flower photos (data/test_flower_photos) with the Pl@ntNet API.
+Identify local flower photos with the Pl@ntNet API.
+
+Outputs are written into plantnet_api_data_tests/plantnet_results by default.
 """
 
 import argparse
@@ -7,6 +9,7 @@ import csv
 import json
 import mimetypes
 import os
+import re
 import time
 from pathlib import Path
 from dotenv import load_dotenv
@@ -15,9 +18,11 @@ import requests
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_IMAGE_DIR = PROJECT_ROOT / "data" / "test_flower_photos"
-DEFAULT_OUTPUT_CSV = DEFAULT_IMAGE_DIR / "plantnet_identifications.csv"
-DEFAULT_RAW_DIR = DEFAULT_IMAGE_DIR / "plantnet_raw"
+DEFAULT_IMAGE_DIR = PROJECT_ROOT / "plantnet_api_data_tests"
+DEFAULT_RESULTS_DIR = DEFAULT_IMAGE_DIR / "plantnet_results"
+DEFAULT_OUTPUT_CSV = DEFAULT_RESULTS_DIR / "plantnet_identifications.csv"
+DEFAULT_REPORT_PATH = DEFAULT_RESULTS_DIR / "plantnet_accuracy_report.txt"
+DEFAULT_RAW_DIR = DEFAULT_RESULTS_DIR / "raw_json"
 DOTENV_PATH = PROJECT_ROOT / ".env"
 
 API_BASE_URL = "https://my-api.plantnet.org/v2/identify"
@@ -45,6 +50,8 @@ OUTPUT_FIELDNAMES = [
     "plantnet_version",
     "remainingIdentificationRequests",
     "raw_json",
+    "is_correct",
+    "match_basis",
 ]
 
 # create a new kind of exception called PlantNetRequestError
@@ -62,6 +69,36 @@ def find_images(image_dir): # return a sorted list of JPG/JPEG/PNG files in this
             image_paths.append(path)
 
     return sorted(image_paths)
+
+
+def clean_text(text):
+    return re.sub(r"[^a-z0-9]+", " ", str(text).lower()).strip()
+
+
+def expected_label_from_filename(image_path):
+    return image_path.stem.replace("_", " ")
+
+
+def score_prediction(expected_label, row):
+    expected_words = clean_text(expected_label).split()
+    predicted_text = clean_text(
+        " ".join(
+            [
+                row["bestMatch"],
+                row["top_scientific_name"],
+                row["top_full_scientific_name"],
+                row["top_common_names"],
+            ]
+        )
+    )
+
+    if expected_words and all(word in predicted_text for word in expected_words):
+        return True, "all expected filename words found in PlantNet top result"
+
+    if expected_words and any(word in predicted_text for word in expected_words):
+        return False, "partial expected filename words found in PlantNet top result"
+
+    return False, "no expected filename words found in PlantNet top result"
 
 
 def identify_image(image_path, api_key, project, organ, language, nb_results):
@@ -108,7 +145,7 @@ def summarize_result(image_path, result):
 
     return {
         "FileName": image_path.name,
-        "expected_label": image_path.stem.replace("_", " "),
+        "expected_label": expected_label_from_filename(image_path),
         "status": "ok",
         "error": "",
         "bestMatch": result.get("bestMatch", ""),
@@ -124,15 +161,19 @@ def summarize_result(image_path, result):
         "plantnet_version": result.get("version", ""),
         "remainingIdentificationRequests": result.get("remainingIdentificationRequests", ""),
         "raw_json": "",
+        "is_correct": "",
+        "match_basis": "",
     }
 
 
 def summarize_error(image_path, error):
     row = dict.fromkeys(OUTPUT_FIELDNAMES, "")
     row["FileName"] = image_path.name
-    row["expected_label"] = image_path.stem.replace("_", " ")
+    row["expected_label"] = expected_label_from_filename(image_path)
     row["status"] = "error"
     row["error"] = str(error)
+    row["is_correct"] = "False"
+    row["match_basis"] = "request failed"
     return row
 
 
@@ -147,10 +188,51 @@ def write_rows(rows, output_csv):
         writer.writerows(rows)
 
 
+def write_accuracy_report(rows, report_path, image_dir):
+    successful_rows = [row for row in rows if row["status"] == "ok"]
+    correct_rows = [row for row in successful_rows if row["is_correct"] == "True"]
+    failed_rows = [row for row in rows if row["status"] == "error"]
+
+    total = len(rows)
+    successful_count = len(successful_rows)
+    correct_count = len(correct_rows)
+    accuracy = correct_count / successful_count if successful_count else 0
+
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(report_path, "w", encoding="utf-8") as report_file:
+        report_file.write("PlantNet API Accuracy Report\n")
+        report_file.write("============================\n\n")
+        report_file.write(f"Image folder: {image_dir}\n")
+        report_file.write(f"Total images attempted: {total}\n")
+        report_file.write(f"Successful API responses: {successful_count}\n")
+        report_file.write(f"Failed API responses: {len(failed_rows)}\n")
+        report_file.write(f"Correct top-result matches: {correct_count}\n")
+        report_file.write(f"Accuracy on successful responses: {accuracy:.3f}\n\n")
+
+        report_file.write("Scoring rule\n")
+        report_file.write("------------\n")
+        report_file.write(
+            "Expected labels are inferred from filenames. A result is counted as correct "
+            "when every word in the filename label appears in PlantNet's top scientific "
+            "name, best match, or common names.\n\n"
+        )
+
+        report_file.write("Per-image results\n")
+        report_file.write("-----------------\n")
+        for row in rows:
+            report_file.write(
+                f"{row['FileName']}: expected '{row['expected_label']}', "
+                f"PlantNet top result '{row['top_full_scientific_name'] or row['bestMatch']}', "
+                f"correct={row['is_correct']} ({row['match_basis']})\n"
+            )
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Identify test flower photos with Pl@ntNet.")
     parser.add_argument("--image-dir", type=Path, default=DEFAULT_IMAGE_DIR)
+    parser.add_argument("--results-dir", type=Path, default=DEFAULT_RESULTS_DIR)
     parser.add_argument("--output-csv", type=Path, default=DEFAULT_OUTPUT_CSV)
+    parser.add_argument("--report-path", type=Path, default=DEFAULT_REPORT_PATH)
     parser.add_argument("--raw-dir", type=Path, default=DEFAULT_RAW_DIR)
     parser.add_argument("--project", default=os.environ.get("PLANTNET_PROJECT", DEFAULT_PROJECT))
     parser.add_argument("--organ", default=os.environ.get("PLANTNET_ORGAN", DEFAULT_ORGAN))
@@ -165,6 +247,11 @@ def parse_args():
 def main():
     load_dotenv()
     args = parse_args()
+    if args.results_dir != DEFAULT_RESULTS_DIR:
+        args.output_csv = args.results_dir / "plantnet_identifications.csv"
+        args.report_path = args.results_dir / "plantnet_accuracy_report.txt"
+        args.raw_dir = args.results_dir / "raw_json"
+
     images = find_images(args.image_dir)
     if args.limit is not None:
         images = images[: args.limit]
@@ -207,13 +294,18 @@ def main():
 
         row = summarize_result(image_path, result)
         row["raw_json"] = str(raw_output_path.relative_to(PROJECT_ROOT))
+        is_correct, match_basis = score_prediction(row["expected_label"], row)
+        row["is_correct"] = str(is_correct)
+        row["match_basis"] = match_basis
         rows.append(row)
 
         if index < len(images):
             time.sleep(args.delay)
 
     write_rows(rows, args.output_csv)
+    write_accuracy_report(rows, args.report_path, args.image_dir)
     print(f"Saved {len(rows)} identifications to {args.output_csv}")
+    print(f"Saved accuracy report to {args.report_path}")
 
 
 if __name__ == "__main__":

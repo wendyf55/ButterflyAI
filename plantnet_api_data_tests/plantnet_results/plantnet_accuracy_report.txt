@@ -1,0 +1,26 @@
+PlantNet API Accuracy Report
+============================
+
+Image folder: /Users/wfrankel/Desktop/Tseng-Lab/ButterflyAI/plantnet_api_data_tests
+Total images attempted: 10
+Successful API responses: 10
+Failed API responses: 0
+Correct top-result matches: 7
+Accuracy on successful responses: 0.700
+
+Scoring rule
+------------
+Expected labels are inferred from filenames. A result is counted as correct when every word in the filename label appears in PlantNet's top scientific name, best match, or common names.
+
+Per-image results
+-----------------
+Calochortus macrocarpus.jpg: expected 'Calochortus macrocarpus', PlantNet top result 'Calochortus macrocarpus Douglas', correct=True (all expected filename words found in PlantNet top result)
+Cichorium_intybus.jpg: expected 'Cichorium intybus', PlantNet top result 'Cichorium pumilum Jacq.', correct=False (partial expected filename words found in PlantNet top result)
+Epilobium_angustifolium.jpg: expected 'Epilobium angustifolium', PlantNet top result 'Epilobium angustifolium L.', correct=True (all expected filename words found in PlantNet top result)
+Erigeron_philadelphicus.jpg: expected 'Erigeron philadelphicus', PlantNet top result 'Erigeron glabellus Nutt.', correct=False (partial expected filename words found in PlantNet top result)
+Leucanthemum_vulgare.jpg: expected 'Leucanthemum vulgare', PlantNet top result 'Leucanthemum ircutianum DC.', correct=False (partial expected filename words found in PlantNet top result)
+Pilosella_aurantiaca.jpg: expected 'Pilosella aurantiaca', PlantNet top result 'Pilosella aurantiaca (L.) F.W.Schultz & Sch.Bip.', correct=True (all expected filename words found in PlantNet top result)
+dicentra_formosa.jpg: expected 'dicentra formosa', PlantNet top result 'Dicentra formosa (Andrews) Walp.', correct=True (all expected filename words found in PlantNet top result)
+grindelia_squarrosa.jpg: expected 'grindelia squarrosa', PlantNet top result 'Grindelia squarrosa (Pursh) Dunal', correct=True (all expected filename words found in PlantNet top result)
+impatiens_glandulifera.jpg: expected 'impatiens glandulifera', PlantNet top result 'Impatiens glandulifera Royle', correct=True (all expected filename words found in PlantNet top result)
+tanacetum_vulgare.jpg: expected 'tanacetum vulgare', PlantNet top result 'Tanacetum vulgare L.', correct=True (all expected filename words found in PlantNet top result)

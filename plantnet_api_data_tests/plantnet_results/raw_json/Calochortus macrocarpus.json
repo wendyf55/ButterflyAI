@@ -1,0 +1,167 @@
+{
+  "query": {
+    "project": "all",
+    "images": [
+      "7ac3229cf53a3070465121950f8b914c"
+    ],
+    "organs": [
+      "flower"
+    ],
+    "includeRelatedImages": false,
+    "noReject": false,
+    "type": null
+  },
+  "predictedOrgans": [
+    {
+      "image": "7ac3229cf53a3070465121950f8b914c",
+      "filename": "Calochortus macrocarpus.jpg",
+      "organ": "flower",
+      "score": 0.86947
+    }
+  ],
+  "language": "en",
+  "preferedReferential": "k-world-flora",
+  "bestMatch": "Calochortus macrocarpus Douglas",
+  "results": [
+    {
+      "score": 0.82253,
+      "species": {
+        "scientificNameWithoutAuthor": "Calochortus macrocarpus",
+        "scientificNameAuthorship": "Douglas",
+        "genus": {
+          "scientificNameWithoutAuthor": "Calochortus",
+          "scientificNameAuthorship": "",
+          "scientificName": "Calochortus"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Liliaceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Liliaceae"
+        },
+        "commonNames": [
+          "Sagebrush mariposa lily",
+          "Green band Mariposa Lily",
+          "Sagebrush mariposa tulip"
+        ],
+        "scientificName": "Calochortus macrocarpus Douglas"
+      },
+      "gbif": {
+        "id": "2750714"
+      },
+      "powo": {
+        "id": "532431-1"
+      }
+    },
+    {
+      "score": 0.02059,
+      "species": {
+        "scientificNameWithoutAuthor": "Calochortus nitidus",
+        "scientificNameAuthorship": "Douglas",
+        "genus": {
+          "scientificNameWithoutAuthor": "Calochortus",
+          "scientificNameAuthorship": "",
+          "scientificName": "Calochortus"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Liliaceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Liliaceae"
+        },
+        "commonNames": [
+          "Broadfruit mariposa lily",
+          "Broad fruit mariposa-lily"
+        ],
+        "scientificName": "Calochortus nitidus Douglas"
+      },
+      "gbif": {
+        "id": "2750707"
+      },
+      "powo": {
+        "id": "532445-1"
+      }
+    },
+    {
+      "score": 0.0049,
+      "species": {
+        "scientificNameWithoutAuthor": "Calochortus longibarbatus",
+        "scientificNameAuthorship": "S.Watson",
+        "genus": {
+          "scientificNameWithoutAuthor": "Calochortus",
+          "scientificNameAuthorship": "",
+          "scientificName": "Calochortus"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Liliaceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Liliaceae"
+        },
+        "commonNames": [
+          "Longbeard Mariposa lily"
+        ],
+        "scientificName": "Calochortus longibarbatus S.Watson"
+      },
+      "gbif": {
+        "id": "2750734"
+      },
+      "powo": {
+        "id": "532425-1"
+      }
+    },
+    {
+      "score": 0.00384,
+      "species": {
+        "scientificNameWithoutAuthor": "Calochortus eurycarpus",
+        "scientificNameAuthorship": "S.Watson",
+        "genus": {
+          "scientificNameWithoutAuthor": "Calochortus",
+          "scientificNameAuthorship": "",
+          "scientificName": "Calochortus"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Liliaceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Liliaceae"
+        },
+        "commonNames": [
+          "White mariposa lily"
+        ],
+        "scientificName": "Calochortus eurycarpus S.Watson"
+      },
+      "gbif": {
+        "id": "2750812"
+      },
+      "powo": {
+        "id": "532401-1"
+      }
+    },
+    {
+      "score": 0.00225,
+      "species": {
+        "scientificNameWithoutAuthor": "Calochortus lyallii",
+        "scientificNameAuthorship": "Baker",
+        "genus": {
+          "scientificNameWithoutAuthor": "Calochortus",
+          "scientificNameAuthorship": "",
+          "scientificName": "Calochortus"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Liliaceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Liliaceae"
+        },
+        "commonNames": [
+          "Lyall's mariposa lily"
+        ],
+        "scientificName": "Calochortus lyallii Baker"
+      },
+      "gbif": {
+        "id": "2750807"
+      },
+      "powo": {
+        "id": "532429-1"
+      }
+    }
+  ],
+  "version": "2026-03-20 (7.5)",
+  "remainingIdentificationRequests": 483
+}

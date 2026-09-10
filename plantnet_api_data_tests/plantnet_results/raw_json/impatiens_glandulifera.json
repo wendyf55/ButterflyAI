@@ -1,0 +1,170 @@
+{
+  "query": {
+    "project": "all",
+    "images": [
+      "92b512072bec99c8c5370fb112822e3c"
+    ],
+    "organs": [
+      "flower"
+    ],
+    "includeRelatedImages": false,
+    "noReject": false,
+    "type": null
+  },
+  "predictedOrgans": [
+    {
+      "image": "92b512072bec99c8c5370fb112822e3c",
+      "filename": "impatiens_glandulifera.jpg",
+      "organ": "flower",
+      "score": 0.84421
+    }
+  ],
+  "language": "en",
+  "preferedReferential": "k-world-flora",
+  "bestMatch": "Impatiens glandulifera Royle",
+  "results": [
+    {
+      "score": 0.19089,
+      "species": {
+        "scientificNameWithoutAuthor": "Impatiens glandulifera",
+        "scientificNameAuthorship": "Royle",
+        "genus": {
+          "scientificNameWithoutAuthor": "Impatiens",
+          "scientificNameAuthorship": "",
+          "scientificName": "Impatiens"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Balsaminaceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Balsaminaceae"
+        },
+        "commonNames": [
+          "Himalayan balsam",
+          "Indian balsam",
+          "Policeman's helmet"
+        ],
+        "scientificName": "Impatiens glandulifera Royle"
+      },
+      "gbif": {
+        "id": "2891770"
+      },
+      "powo": {
+        "id": "30221088-2"
+      }
+    },
+    {
+      "score": 0.03368,
+      "species": {
+        "scientificNameWithoutAuthor": "Impatiens balfourii",
+        "scientificNameAuthorship": "Hook.f.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Impatiens",
+          "scientificNameAuthorship": "",
+          "scientificName": "Impatiens"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Balsaminaceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Balsaminaceae"
+        },
+        "commonNames": [
+          "Balfour's Touch Me-Not",
+          "Kashmir Balsam",
+          "Balfour's jewelweed"
+        ],
+        "scientificName": "Impatiens balfourii Hook.f."
+      },
+      "gbif": {
+        "id": "2891783"
+      },
+      "powo": {
+        "id": "373976-1"
+      }
+    },
+    {
+      "score": 0.01316,
+      "species": {
+        "scientificNameWithoutAuthor": "Impatiens bicolor",
+        "scientificNameAuthorship": "Royle",
+        "genus": {
+          "scientificNameWithoutAuthor": "Impatiens",
+          "scientificNameAuthorship": "",
+          "scientificName": "Impatiens"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Balsaminaceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Balsaminaceae"
+        },
+        "commonNames": [
+          "Two colored impatiens"
+        ],
+        "scientificName": "Impatiens bicolor Royle"
+      },
+      "gbif": {
+        "id": "7309714"
+      },
+      "powo": {
+        "id": "373985-1"
+      }
+    },
+    {
+      "score": 0.00513,
+      "species": {
+        "scientificNameWithoutAuthor": "Impatiens sodenii",
+        "scientificNameAuthorship": "Engl. & Warb.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Impatiens",
+          "scientificNameAuthorship": "",
+          "scientificName": "Impatiens"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Balsaminaceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Balsaminaceae"
+        },
+        "commonNames": [
+          "Shrub balsam",
+          "Oliver's touch me-not",
+          "Poor man's rhododendron"
+        ],
+        "scientificName": "Impatiens sodenii Engl. & Warb."
+      },
+      "gbif": {
+        "id": "4193715"
+      },
+      "powo": {
+        "id": "374351-1"
+      }
+    },
+    {
+      "score": 0.00444,
+      "species": {
+        "scientificNameWithoutAuthor": "Impatiens arguta",
+        "scientificNameAuthorship": "Hook.f. & Thomson",
+        "genus": {
+          "scientificNameWithoutAuthor": "Impatiens",
+          "scientificNameAuthorship": "",
+          "scientificName": "Impatiens"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Balsaminaceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Balsaminaceae"
+        },
+        "commonNames": [
+          "Toothed busy lizzie"
+        ],
+        "scientificName": "Impatiens arguta Hook.f. & Thomson"
+      },
+      "gbif": {
+        "id": "4192927"
+      },
+      "powo": {
+        "id": "373962-1"
+      }
+    }
+  ],
+  "version": "2026-03-20 (7.5)",
+  "remainingIdentificationRequests": 475
+}

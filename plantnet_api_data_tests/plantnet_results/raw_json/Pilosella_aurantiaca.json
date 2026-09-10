@@ -1,0 +1,170 @@
+{
+  "query": {
+    "project": "all",
+    "images": [
+      "0abd9e5428593aacd5831f71c98cb8b7"
+    ],
+    "organs": [
+      "flower"
+    ],
+    "includeRelatedImages": false,
+    "noReject": false,
+    "type": null
+  },
+  "predictedOrgans": [
+    {
+      "image": "0abd9e5428593aacd5831f71c98cb8b7",
+      "filename": "Pilosella_aurantiaca.jpg",
+      "organ": "flower",
+      "score": 0.79224
+    }
+  ],
+  "language": "en",
+  "preferedReferential": "k-world-flora",
+  "bestMatch": "Pilosella aurantiaca (L.) F.W.Schultz & Sch.Bip.",
+  "results": [
+    {
+      "score": 0.73143,
+      "species": {
+        "scientificNameWithoutAuthor": "Pilosella aurantiaca",
+        "scientificNameAuthorship": "(L.) F.W.Schultz & Sch.Bip.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Pilosella",
+          "scientificNameAuthorship": "",
+          "scientificName": "Pilosella"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Orange Hawkweed",
+          "Fox And-Cubs",
+          "Devil's paintbrush"
+        ],
+        "scientificName": "Pilosella aurantiaca (L.) F.W.Schultz & Sch.Bip."
+      },
+      "gbif": {
+        "id": "3122924"
+      },
+      "powo": {
+        "id": "238000-1"
+      }
+    },
+    {
+      "score": 0.14278,
+      "species": {
+        "scientificNameWithoutAuthor": "Pilosella guthnikiana",
+        "scientificNameAuthorship": "(Hegetschw.) Soj\u00e1k",
+        "genus": {
+          "scientificNameWithoutAuthor": "Pilosella",
+          "scientificNameAuthorship": "",
+          "scientificName": "Pilosella"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Fox and Cubs"
+        ],
+        "scientificName": "Pilosella guthnikiana (Hegetschw.) Soj\u00e1k"
+      },
+      "gbif": {
+        "id": "3123405"
+      },
+      "powo": {
+        "id": "238124-1"
+      }
+    },
+    {
+      "score": 0.00274,
+      "species": {
+        "scientificNameWithoutAuthor": "Crepis aurea",
+        "scientificNameAuthorship": "(L.) Cass.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Crepis",
+          "scientificNameAuthorship": "",
+          "scientificName": "Crepis"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Golden hawk's beard",
+          "Golden Hawksbeard",
+          "Baker\u2019s hawks beard"
+        ],
+        "scientificName": "Crepis aurea (L.) Cass."
+      },
+      "gbif": {
+        "id": "5403355"
+      },
+      "powo": {
+        "id": "199689-1"
+      }
+    },
+    {
+      "score": 0.00216,
+      "species": {
+        "scientificNameWithoutAuthor": "Pilosella stoloniflora",
+        "scientificNameAuthorship": "(Waldst. & Kit.) F.W.Schultz & Sch.Bip.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Pilosella",
+          "scientificNameAuthorship": "",
+          "scientificName": "Pilosella"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Hybrid Fox and-cubs"
+        ],
+        "scientificName": "Pilosella stoloniflora (Waldst. & Kit.) F.W.Schultz & Sch.Bip."
+      },
+      "gbif": {
+        "id": "3123249"
+      },
+      "powo": {
+        "id": "238320-1"
+      }
+    },
+    {
+      "score": 0.00201,
+      "species": {
+        "scientificNameWithoutAuthor": "Pilosella cymosa",
+        "scientificNameAuthorship": "(L.) F.W.Schultz & Sch.Bip.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Pilosella",
+          "scientificNameAuthorship": "",
+          "scientificName": "Pilosella"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Hawkweed",
+          "Cymose mouse ear hawkweed",
+          "Tall Hawkweed"
+        ],
+        "scientificName": "Pilosella cymosa (L.) F.W.Schultz & Sch.Bip."
+      },
+      "gbif": {
+        "id": "3123422"
+      },
+      "powo": {
+        "id": "238062-1"
+      }
+    }
+  ],
+  "version": "2026-03-20 (7.5)",
+  "remainingIdentificationRequests": 478
+}

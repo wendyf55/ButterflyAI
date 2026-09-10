@@ -1,0 +1,171 @@
+{
+  "query": {
+    "project": "all",
+    "images": [
+      "b5e9856cf1a38ee4fad4bd228a23fcee"
+    ],
+    "organs": [
+      "flower"
+    ],
+    "includeRelatedImages": false,
+    "noReject": false,
+    "type": null
+  },
+  "predictedOrgans": [
+    {
+      "image": "b5e9856cf1a38ee4fad4bd228a23fcee",
+      "filename": "philadelphia_fleabane.jpg",
+      "organ": "flower",
+      "score": 0.89416
+    }
+  ],
+  "language": "en",
+  "preferedReferential": "k-world-flora",
+  "bestMatch": "Erigeron glabellus Nutt.",
+  "results": [
+    {
+      "score": 0.63484,
+      "species": {
+        "scientificNameWithoutAuthor": "Erigeron glabellus",
+        "scientificNameAuthorship": "Nutt.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Erigeron",
+          "scientificNameAuthorship": "",
+          "scientificName": "Erigeron"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Streamside Fleabane",
+          "Smooth fleabane",
+          "Western rough fleabane"
+        ],
+        "scientificName": "Erigeron glabellus Nutt."
+      },
+      "gbif": {
+        "id": "3147000"
+      },
+      "powo": {
+        "id": "203893-1"
+      }
+    },
+    {
+      "score": 0.15286,
+      "species": {
+        "scientificNameWithoutAuthor": "Erigeron philadelphicus",
+        "scientificNameAuthorship": "L.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Erigeron",
+          "scientificNameAuthorship": "",
+          "scientificName": "Erigeron"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Philadelphia fleabane",
+          "Robin's plantain",
+          "Daisy fleabane"
+        ],
+        "scientificName": "Erigeron philadelphicus L."
+      },
+      "gbif": {
+        "id": "3119285"
+      },
+      "powo": {
+        "id": "204312-1"
+      }
+    },
+    {
+      "score": 0.02622,
+      "species": {
+        "scientificNameWithoutAuthor": "Erigeron speciosus",
+        "scientificNameAuthorship": "(Lindl.) DC.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Erigeron",
+          "scientificNameAuthorship": "",
+          "scientificName": "Erigeron"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Garden fleabane",
+          "Aspen fleabane",
+          "Aspen daisy"
+        ],
+        "scientificName": "Erigeron speciosus (Lindl.) DC."
+      },
+      "gbif": {
+        "id": "3147146"
+      },
+      "powo": {
+        "id": "204526-1"
+      }
+    },
+    {
+      "score": 0.02079,
+      "species": {
+        "scientificNameWithoutAuthor": "Erigeron formosissimus",
+        "scientificNameAuthorship": "Greene",
+        "genus": {
+          "scientificNameWithoutAuthor": "Erigeron",
+          "scientificNameAuthorship": "",
+          "scientificName": "Erigeron"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Beautiful fleabane"
+        ],
+        "scientificName": "Erigeron formosissimus Greene"
+      },
+      "gbif": {
+        "id": "3147027"
+      },
+      "powo": {
+        "id": "93782-2"
+      }
+    },
+    {
+      "score": 0.01024,
+      "species": {
+        "scientificNameWithoutAuthor": "Erigeron decumbens",
+        "scientificNameAuthorship": "Nutt.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Erigeron",
+          "scientificNameAuthorship": "",
+          "scientificName": "Erigeron"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Willamette fleabane",
+          "Willamette daisy"
+        ],
+        "scientificName": "Erigeron decumbens Nutt."
+      },
+      "gbif": {
+        "id": "7845106"
+      },
+      "powo": {
+        "id": "203761-1"
+      }
+    }
+  ],
+  "version": "2026-03-20 (7.5)",
+  "remainingIdentificationRequests": 489
+}

@@ -1,0 +1,173 @@
+{
+  "query": {
+    "project": "all",
+    "images": [
+      "3501c0ac37d19fa013ce9883aa0a6d99"
+    ],
+    "organs": [
+      "flower"
+    ],
+    "includeRelatedImages": false,
+    "noReject": false,
+    "type": null
+  },
+  "predictedOrgans": [
+    {
+      "image": "3501c0ac37d19fa013ce9883aa0a6d99",
+      "filename": "oxeye_daisy.jpg",
+      "organ": "flower",
+      "score": 0.78044
+    }
+  ],
+  "language": "en",
+  "preferedReferential": "k-world-flora",
+  "bestMatch": "Leucanthemum ircutianum DC.",
+  "results": [
+    {
+      "score": 0.30549,
+      "species": {
+        "scientificNameWithoutAuthor": "Leucanthemum ircutianum",
+        "scientificNameAuthorship": "DC.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Leucanthemum",
+          "scientificNameAuthorship": "",
+          "scientificName": "Leucanthemum"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Ox Eye Daisy",
+          "Oxeye daisy",
+          "Daisy"
+        ],
+        "scientificName": "Leucanthemum ircutianum DC."
+      },
+      "gbif": {
+        "id": "5401008"
+      },
+      "powo": {
+        "id": "230023-1"
+      }
+    },
+    {
+      "score": 0.16485,
+      "species": {
+        "scientificNameWithoutAuthor": "Leucanthemopsis alpina",
+        "scientificNameAuthorship": "(L.) Heywood",
+        "genus": {
+          "scientificNameWithoutAuthor": "Leucanthemopsis",
+          "scientificNameAuthorship": "",
+          "scientificName": "Leucanthemopsis"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Alpine moon daisy",
+          "Alpine Marguerite",
+          "Alpine Marigold"
+        ],
+        "scientificName": "Leucanthemopsis alpina (L.) Heywood"
+      },
+      "gbif": {
+        "id": "3122039"
+      },
+      "powo": {
+        "id": "229940-1"
+      }
+    },
+    {
+      "score": 0.03884,
+      "species": {
+        "scientificNameWithoutAuthor": "Leucanthemum adustum",
+        "scientificNameAuthorship": "(W.D.J.Koch) Gremli",
+        "genus": {
+          "scientificNameWithoutAuthor": "Leucanthemum",
+          "scientificNameAuthorship": "",
+          "scientificName": "Leucanthemum"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Mountain Daisy",
+          "Alpine oxeye daisy",
+          "Saw leaved moon daisy"
+        ],
+        "scientificName": "Leucanthemum adustum (W.D.J.Koch) Gremli"
+      },
+      "gbif": {
+        "id": "5400974"
+      },
+      "powo": {
+        "id": "50870549-1"
+      }
+    },
+    {
+      "score": 0.03475,
+      "species": {
+        "scientificNameWithoutAuthor": "Leucanthemum vulgare",
+        "scientificNameAuthorship": "Lam.",
+        "genus": {
+          "scientificNameWithoutAuthor": "Leucanthemum",
+          "scientificNameAuthorship": "",
+          "scientificName": "Leucanthemum"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Ox Eye Daisy",
+          "Oxeye daisy",
+          "Moon daisy"
+        ],
+        "scientificName": "Leucanthemum vulgare Lam."
+      },
+      "gbif": {
+        "id": "8848598"
+      },
+      "powo": {
+        "id": "30296198-2"
+      }
+    },
+    {
+      "score": 0.03171,
+      "species": {
+        "scientificNameWithoutAuthor": "Leucanthemum \u00d7 superbum",
+        "scientificNameAuthorship": "(Bergmans ex J.W.Ingram) D.H.Kent",
+        "genus": {
+          "scientificNameWithoutAuthor": "Leucanthemum",
+          "scientificNameAuthorship": "",
+          "scientificName": "Leucanthemum"
+        },
+        "family": {
+          "scientificNameWithoutAuthor": "Asteraceae",
+          "scientificNameAuthorship": "",
+          "scientificName": "Asteraceae"
+        },
+        "commonNames": [
+          "Shasta Daisy",
+          "Large Ox eye Daisy"
+        ],
+        "scientificName": "Leucanthemum \u00d7 superbum (Bergmans ex J.W.Ingram) D.H.Kent"
+      },
+      "gbif": {
+        "id": "5401007"
+      },
+      "powo": {
+        "id": "947628-1"
+      }
+    }
+  ],
+  "version": "2026-03-20 (7.5)",
+  "remainingIdentificationRequests": 490
+}
