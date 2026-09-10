@@ -9,6 +9,7 @@ dependencies:
   - scikit-learn
   - matplotlib
   - requests
+  - python-dotenv
   - pip:
       - tensorflow
       - tensorflow-metal

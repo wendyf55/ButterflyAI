@@ -5,3 +5,7 @@ AGENTS.md
 __pycache__/
 
 eodays.md
+
+.env
+
+test_flower_photos/
