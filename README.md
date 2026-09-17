@@ -9,6 +9,15 @@ Research Questions:
 
 Most modeling scripts use TensorFlow/Keras transfer learning with ImageNet-pretrained ResNet50.
 
+## Missing data — BC2024_plant/
+
+`plant_id_model/OVR_test_on_other.py` expects `BC2024_plant/` (test images) and
+`BC2024_plant_otheronly.csv`, used to test the plant-ID OVR models on the held-out
+2024 BC set. These files are not in this checkout and were not on the project hard
+drive, so this cross-dataset test cannot be run until they are recovered (re-download
+from iNaturalist, or locate another copy). Training and cross-validation for the
+plant-ID models are unaffected.
+
 ## Hard Drive README.md
 
 This hard drive contains all of the files for the butterlfyAI project
@@ -36,6 +45,7 @@ For any questions please contact me at <Julie.sieg5678@gmail.com>
 
 ## To Do
 
+- reconcile script paths to the new repo layout (`feeding_model/`, `monarch/`, `plant_id_model/` — each with `data/`, `models/`, `results/`)
 - find other examples of ecology and ml projects like this: check data included, how results gathered (notebook? .md?), repo organization
 - sort out training, testing, and validation sets in this repo: not always super clear
 - rewrite multiclass code mentioned above
