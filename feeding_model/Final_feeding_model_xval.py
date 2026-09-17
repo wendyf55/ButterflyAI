@@ -13,10 +13,11 @@ import random
 import pandas as pd
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-FEEDING_DATA_DIR = PROJECT_ROOT / "Final_Feeding_Images"
+MODULE_DIR = Path(__file__).resolve().parent
+FEEDING_DATA_DIR = MODULE_DIR / "data" / "Final_Feeding_Images"
+MODELS_DIR = MODULE_DIR / "models"
 TRAINING_CSV = FEEDING_DATA_DIR / "DataFilenamesRedo.csv"
-MODEL_CHECKPOINT = FEEDING_DATA_DIR / "FINAL_Real_Feeding_unfrozen_xval_augmented.keras"
+MODEL_CHECKPOINT = MODELS_DIR / "FINAL_Real_Feeding_unfrozen_xval_augmented.keras"
 SEED_VALUE = 321
 IMG_HEIGHT = 224
 IMG_WIDTH = 224

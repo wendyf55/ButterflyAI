@@ -16,8 +16,8 @@ import pandas as pd
 from tensorflow.keras.optimizers import Adam
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-FEEDING_DATA_DIR = PROJECT_ROOT / "Final_Feeding_Images"
+MODULE_DIR = Path(__file__).resolve().parent
+FEEDING_DATA_DIR = MODULE_DIR / "data" / "Final_Feeding_Images"
 TRAINING_CSV = FEEDING_DATA_DIR / "DataFilenamesRedo.csv"
 SEED_VALUE = 321
 IMG_HEIGHT = 224
