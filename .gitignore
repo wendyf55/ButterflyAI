@@ -26,3 +26,4 @@ test_flower_photos/
 # Large local dataset folders not referenced by current scripts
 Testing_datasets/
 Species_specific_tests_of_image_download/
+test_data/
