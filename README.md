@@ -9,10 +9,40 @@ Research Questions:
 
 Most modeling scripts use TensorFlow/Keras transfer learning with ImageNet-pretrained ResNet50.
 
+## Hard Drive README.md
+
+This hard drive contains all of the files for the butterlfyAI project
+
+- the GPU (datascience UBC) and the GitHub <https://github.com/JulieSieg/ButterflyAI/tree/main> contain subsets of this data
+- all monarch related files can be found on the GitHub except for the models (.keras files) and the images (.jpg) which are exclusively on this hard drive. GitHub caps the number of files to 1000 so the monarch images on the GitHub are a subset of the whole dataset
+
+Each folder on this hard drive should contain its own READme file. Please refer to those for details for each model.
+
+The Monarch_models folder contains the code and images required for training a feeding model to identify feeding and non-feeding behaviour in monarchs
+
+The Feeding_models contains the original feeding non-feeding models, training data, and code for testing the efficacy of copy paste data augmentation on BIMBY 2023 data (all butterfly species)
+
+The Plant_ID_Models contains the photos and code for training OVRs on 10 plant species, including with just flowers and with detectron images (for more info email <julie.sieg5678@gmail.com>). Multiclass code is not on this hard drive as it was deleted from the GPU in Aug2026 and has yet to be recovered. I plan to upload it to the GitHub when I either recover it or rewrite it.
+
+The Testing_datasets have the hold out test sets from BIMBY2024 (BC) and Ontario, including the gold standard test set that has both plant and feeding labels.
+
+Detectron folder contains the datasets for cropping butterflies but not the code. This code will be made available on the GitHub once/if its recovered, if not I’ll rewrite it (email me)
+
+butterflyAI contains miscellaneous code from the GPU as of Aug 2026
+
+Disregard Old_feeding_model_ipynbs as all code has been updated and turned into .py files rather than Jupyter notebook formats
+
+For any questions please contact me at <Julie.sieg5678@gmail.com>
+
 ## To Do
 
 - find other examples of ecology and ml projects like this: check data included, how results gathered (notebook? .md?), repo organization
 - sort out training, testing, and validation sets in this repo: not always super clear
+- rewrite multiclass code mentioned above
+- rerun all models
+- superimposed images for the monarch models
+- expanding the list of 10 species
+- model tuning with parameters
 
 ## Complete
 

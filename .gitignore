@@ -9,3 +9,20 @@ eodays.md
 .env
 
 test_flower_photos/
+
+# macOS / editor lock files
+.DS_Store
+.~lock.*#
+
+# R session files
+.RData
+.Rhistory
+
+# Image datasets — kept local, never committed (thousands of files)
+*.jpg
+*.jpeg
+*.png
+
+# Large local dataset folders not referenced by current scripts
+Testing_datasets/
+Species_specific_tests_of_image_download/
