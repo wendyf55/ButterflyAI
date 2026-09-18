@@ -56,13 +56,19 @@ full_df = pd.read_csv(TRAINING_CSV)
 #all_df = full_df[full_df['photo_type'] == 'real']
 all_df = full_df
 
+# uses leakage-safe csv
+from leakage_safe_split import add_group_column, stratify_key
+all_df = add_group_column(all_df)
+
 #K-fold cross validation
-from sklearn.model_selection import KFold
+from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
-kfold = KFold(n_splits=K_FOLDS, shuffle=True, random_state=KFOLD_RANDOM_STATE)
+kfold = StratifiedGroupKFold(n_splits=K_FOLDS, shuffle=True, random_state=KFOLD_RANDOM_STATE)
 
 y = all_df['label'].values
+groups = all_df['group'].values
+strat = stratify_key(all_df)  # balance label x photo_type across folds
 
 from sklearn.preprocessing import LabelEncoder
 labelencoder = LabelEncoder()
@@ -134,7 +140,7 @@ datagen = ImageDataGenerator(preprocessing_function = preprocess_input)
 checkpoint = ModelCheckpoint(str(MODEL_CHECKPOINT), monitor='val_loss', save_best_only=True)
 
 
-for train_idx, val_idx in kfold.split(X):
+for train_idx, val_idx in kfold.split(X, strat, groups=groups):
     X_train, X_val = X[train_idx], X[val_idx]
     y_train, y_val = y[train_idx], y[val_idx]
 

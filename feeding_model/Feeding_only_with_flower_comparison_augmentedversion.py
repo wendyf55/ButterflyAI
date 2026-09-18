@@ -5,7 +5,9 @@
 #train two versions of the 80 split, one with only real images, one with all images 
 
 #test both models on testing set, which is sorted by real feeding and fake non-feeding (don't care about class balancing?)
-
+# well ... The stratified grouped split guarantees train and test 
+# carry the same F/N and real/super ratios as the full dataset (~45% F / 55% N, ~14% super)
+# but there's no forcing of equal counts of each class within the test set (like forcing 50/50 feeding/non-feeding)
 
 import tensorflow as tf
 import os
@@ -41,17 +43,16 @@ import pandas as pd
 full_df = pd.read_csv('DataFilenamesRedo.csv')
 
 
-stratify_col = (
-    full_df["label"].astype(str) + "_" +
-    full_df["photo_type"].astype(str)
-)
+# keeps each butterfly's real + superimposed twins on the same side
+from leakage_safe_split import add_group_column, grouped_train_test_split, verify_no_leakage
 
-train_df, val_df = train_test_split(
+full_df = add_group_column(full_df)
+train_df, val_df = grouped_train_test_split(
     full_df,
     test_size=0.2,
-    random_state=seed_value,
-    stratify=stratify_col
+    seed=seed_value,
 )
+verify_no_leakage(train_df, val_df)
 
 print(f"Train images: {len(train_df)} | Val images: {len(val_df)}")
 

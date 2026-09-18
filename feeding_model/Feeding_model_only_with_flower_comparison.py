@@ -56,17 +56,17 @@ import pandas as pd
 #DataFilenamesRedo.csv is in the Final_Feeding_Images folder and has the feeding status and whether the image is real or not
 full_df = pd.read_csv(TRAINING_CSV)
 
-stratify_col = (
-    full_df["label"].astype(str) + "_" +
-    full_df["photo_type"].astype(str)
-)
+# keep each butterfly's real + superimposed twins on the same side
+# otherwise model can see the same butterfly in training as in testing
+from leakage_safe_split import add_group_column, grouped_train_test_split, verify_no_leakage
 
-train_df, val_df = train_test_split(
+full_df = add_group_column(full_df)
+train_df, val_df = grouped_train_test_split(
     full_df,
     test_size=VALIDATION_SIZE,
-    random_state=SEED_VALUE,
-    stratify=stratify_col
+    seed=SEED_VALUE,
 )
+verify_no_leakage(train_df, val_df)
 
 print(f"Train images: {len(train_df)} | Val images: {len(val_df)}")
 
