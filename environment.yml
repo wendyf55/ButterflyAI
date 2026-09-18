@@ -10,6 +10,7 @@ dependencies:
   - matplotlib
   - requests
   - python-dotenv
+  - tabulate # for the notebook
   - pip:
       - tensorflow
       - tensorflow-metal
