@@ -22,11 +22,11 @@ from csv import writer
 from pathlib import Path
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = PROJECT_ROOT / "data"
+MODULE_DIR = Path(__file__).resolve().parent
+DATA_DIR = MODULE_DIR / "data"
 MONARCH_DIR = DATA_DIR / "Monarch_images"
 MONARCH_MANIFEST = DATA_DIR / "Monarch_images.csv"
-METADATA_FILE = MONARCH_DIR / "Monarch_metadata.json"
+METADATA_FILE = MONARCH_DIR / "Monarch_metadata_testset.json"
 IMAGE_URL_SIZE_FROM = "square"
 IMAGE_URL_SIZE_TO = "medium"
 

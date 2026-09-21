@@ -22,9 +22,8 @@ import os
 import time
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = PROJECT_ROOT / "data" # using path like this resolves it to <repo root>/data/Monarch_images
-# and helps with reproducbility - now this can run on any machine
+MODULE_DIR = Path(__file__).resolve().parent   # monarch/
+DATA_DIR = MODULE_DIR / "data"
 MONARCH_DIR = DATA_DIR / "Monarch_images"
 
 API_URL = "https://api.inaturalist.org/v1/observations"

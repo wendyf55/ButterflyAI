@@ -8,8 +8,8 @@ import numpy as np
 from pathlib import Path
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-MONARCH_DIR = PROJECT_ROOT / "data" / "Monarch_images"
+MODULE_DIR = Path(__file__).resolve().parent
+MONARCH_DIR = MODULE_DIR / "data" / "Monarch_images"
 PREDICTIONS_CSV = MONARCH_DIR / "Monarch_image_predictions.csv"
 NON_FEEDING_CSV = MONARCH_DIR / "Monarch_non_feeding_ls.csv"
 LABELS_CSV = MONARCH_DIR / "Monarch_image_labels.csv"

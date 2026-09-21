@@ -17,9 +17,10 @@ from tensorflow.keras.applications.resnet50 import preprocess_input, ResNet50
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-FEEDING_DATA_DIR = PROJECT_ROOT / "Final_Feeding_Images"
-MONARCH_DIR = PROJECT_ROOT / "data" / "Monarch_images"
+MODULE_DIR = Path(__file__).resolve().parent      
+PROJECT_ROOT = MODULE_DIR.parent               
+FEEDING_MODELS_DIR = PROJECT_ROOT / "feeding_model" / "models"
+MONARCH_DIR = MODULE_DIR / "data" / "Monarch_images"
 SEED_VALUE = 321
 MODEL_FILENAME = "REAL_AND_SUPER_Final_feeding_model_unfrozen.keras"
 PREDICTIONS_CSV = MONARCH_DIR / "Monarch_image_predictions.csv"
@@ -30,7 +31,7 @@ IMG_WIDTH = 224
 BATCH_SIZE = 32
 PREDICTION_THRESHOLD = 0.1
 
-model_path = FEEDING_DATA_DIR / MODEL_FILENAME
+model_path = FEEDING_MODELS_DIR / MODEL_FILENAME
 
 print(os.path.exists(model_path))
 model = load_model(str(model_path))

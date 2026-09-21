@@ -20,10 +20,13 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 #The folder Monarch contains API downloaded monarch images labeled as feeding or non-feeding by Julie Aug 10-11, 2026
 
-os.chdir('Monarch_images')
+from pathlib import Path
+MODULE_DIR = Path(__file__).resolve().parent
+MONARCH_DIR = MODULE_DIR / "data" / "Monarch_images"
+MODELS_DIR = MODULE_DIR / "models"
+MODELS_DIR.mkdir(exist_ok=True)
 
-cwd = os.getcwd()
-cwd
+os.chdir(MONARCH_DIR)
 
 # The ResNet50 model expects images to be 224x224, so we set those values here
 img_height, img_width = (224,224)
@@ -33,7 +36,7 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 
 #Monarch_image_labels.csv is in the Monarch_images folder and has the feeding status and whether the image is real or not
-all_df = pd.read_csv('Monarch_image_labels.csv')
+all_df = pd.read_csv(MONARCH_DIR / 'Monarch_image_labels.csv')
 
 #K-fold cross validation
 from sklearn.model_selection import KFold
@@ -110,7 +113,7 @@ f1_per_fold = []
 # Example of a simple data generator setup
 datagen = ImageDataGenerator(preprocessing_function = preprocess_input)
 
-checkpoint = ModelCheckpoint('Monarch_feeding_train_xval.keras', monitor='val_loss', save_best_only=True)
+checkpoint = ModelCheckpoint(str(MODELS_DIR / 'Monarch_feeding_train_xval.keras'), monitor='val_loss', save_best_only=True)
 
 
 for train_idx, val_idx in kfold.split(X):
