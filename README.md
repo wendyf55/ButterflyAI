@@ -45,7 +45,6 @@ For any questions please contact me at <Julie.sieg5678@gmail.com>
 
 ## To Do
 
-- reconcile script paths to the new repo layout (`feeding_model/`, `monarch/`, `plant_id_model/` — each with `data/`, `models/`, `results/`)
 - find other examples of ecology and ml projects like this: check data included, how results gathered (notebook? .md?), repo organization
 - sort out training, testing, and validation sets in this repo: not always super clear
 - rewrite multiclass code mentioned above
@@ -54,9 +53,20 @@ For any questions please contact me at <Julie.sieg5678@gmail.com>
 - expanding the list of 10 species
 - model tuning with parameters
 
+### Plant ID Model TODOs
+
+- generally, the data in here needs to be sorted out. flower_only.csv is unused in this completely, some Cirsium and Sisymbrium (currently located in archive/) images and data are used, some not.
+- some possible leakages between training and test data in the OVR cross validation script: the training csv listed some filenames 2 times, so an image could end up on either side of the split
+- the OVR script fine tunes layers; the scaling script does not
+- the scaling script COULD be used to create a multiclass model if 100% of the training data was used; right now, I don't have that model
+- decide: there's several types of data here - flower_only dataset (labelled), the detecron images (butterfly superimposed over the plant image), and real butterflies on flower photos. I think it would be best if these were all included in training data
+- We have some data that is unused gold standard - test_data/Joint_gold_standard/Joint_gold_st_with_NF.csv
+- there's some weird name mistmatches - e.g. the models and detectron data use the misspelling Sisybirum_loeselii. The gold set uses Sisymbrium loeselii, so the names have to be normalized before any evaluation
+
 ## Complete
 
 - separate models and outputs by feeding/non feeding classifiers and plant species identification in feeding pics
+- reconcile script paths to the new repo layout (`feeding_model/`, `monarch/`, `plant_id_model/` — each with `data/`, `models/`, `results/`)
 - fix hardcoded paths
 - create an environment
 - find and extract hardcoded config values, like TAXON_ID, start_page
