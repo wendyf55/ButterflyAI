@@ -2,8 +2,6 @@
 
 This folder holds every dataset used by the three ButterflyAI models, and this README is the **single source of truth** for which images each model uses for training, validation and testing.
 
-> **Status (2026-09-24):** this README describes the planned `data/` layout. The images have **not been moved yet**; the "Currently at" column says where each dataset lives today.
-
 ## Layout
 
 ```
@@ -20,7 +18,7 @@ data/
 ### Split files (built by `python data/scripts/make_splits.py`)
 
 | File | Rows | Columns |
-|---|---|---|
+| --- | --- | --- |
 | `splits/feeding/dev_pool.csv` | 4,750 | `image_path, label, photo_type, group, fold` |
 | `splits/feeding/test1.csv` | 6,353 | `image_path, label, source, image_url, plant_scientific_name` |
 | `splits/feeding/test2_ontario.csv` | 2,785 | `image_path, label` |
@@ -43,7 +41,7 @@ data/
 ## Image types
 
 | Type | What it is | Used by |
-|---|---|---|
+| --- | --- | --- |
 | Real butterfly photos | Photos of butterflies, labelled feeding (F) / non-feeding (N) | feeding, monarch |
 | Superimposed (feeding) | A butterfly cut from a **real non-feeding photo**, pasted onto a flower. Label: **N** | feeding |
 | Detectron composites (plant) | A butterfly pasted onto a **plain photo of a target plant**. Label: **plant species** | plant ID |
@@ -54,7 +52,7 @@ data/
 ### Feeding model (feeding vs non-feeding)
 
 | Role | Dataset | Planned location | Currently at | Images | Labels |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Development pool | BIMBY collection, real | `images/bimby_real/` | `feeding_model/data/Final_Feeding_Images/` (`photo_type = real`) | 4,091 | 2,137 F / 1,954 N |
 | Development pool | BIMBY collection, superimposed | `images/bimby_superimposed/` | same folder, `superimposed_*` (`photo_type = super`) | 659 | all N |
 | Test 1 | BIMBY-2024 clean + gold | `images/bimby2024/` + `images/joint_gold/` | `test_data/2024_BIMBY_appended/` + `test_data/Joint_gold_standard/`, via `test_data/feeding_test1_clean.csv` | 6,353 | 4,127 F / 2,226 NF |
@@ -65,7 +63,7 @@ data/
 - **Test 1** comes from three sources, marked in the `source` column. **Always report results overall *and* per source.** The sources differ in photo type and in their feeding/non-feeding mix.
 
   | `source` | What it is | F | NF |
-  |---|---|---|---|
+  | --- | --- | --- | --- |
   | `inat_2024` | BIMBY-2024 Block A: 2024 BC iNaturalist downloads (≤600 px, with URL) | 831 | 2,053 |
   | `inat_2024_gold` | Joint gold standard's feeding labels: 2024 iNaturalist photos (≤600 px, with URL), mostly BC | 2,141 | 21 |
   | `bimby_collection` | BIMBY-2024 Block B: unseen photos from the same full-size collection as the pool (origin to confirm) | 1,155 | 152 |
@@ -80,7 +78,7 @@ data/
 ### Plant ID model (10 plant species)
 
 | Role | Dataset | Planned location | Currently at | Images |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Development pool | Detectron composites | `images/plantID_detectron_composites/` | `plant_id_model/data/specified_flower_photos_detectron_ALL/` (`specified_flower_photos_detectron.csv`) | 13,378 (663–1,779 per species) |
 | Development pool | Plain flower photos | `images/plant_plain_flowers/` | `plant_id_model/data/plant_data_specified/` (`flower_only.csv`) | 5,000 (500 per species) |
 | Development pool | Extra *Cirsium* / *Sisymbrium* batches | `images/plant_plain_flowers/` + `images/plantID_detectron_composites/` | `archive/Species_specific_tests_of_image_download/` | 668 plain + 668 composites |
@@ -98,10 +96,6 @@ The 10 species are *Achillea millefolium*, *Anaphalis margaritacea*, *Apocynum a
 
 ### Monarch model (feeding vs non-feeding, monarchs only)
 
-| Role | Dataset | Planned location | Currently at | Images | Labels |
-|---|---|---|---|---|---|
-| Development pool | iNaturalist monarch photos | `images/monarch/` | `monarch/data/Monarch_images/` (`Monarch_image_labels.csv`) | 8,018 | 2,843 Feeding / 5,175 Non_feeding |
-
 - There is no test set yet.
 - The labels were made by hand-reviewing how the production feeding model sorted these images, so scoring that model against them is circular. A test set labelled independently is needed.
 - The folder has 13 duplicate pairs, so cross-validation should be grouped.
@@ -118,7 +112,7 @@ Open question: we don't know which photos the butterflies in the plant composite
 Everything below was moved to `data/superseded/<old path>` (batch 5), except `plantnet_api/data_tests/`, which stays where it is.
 
 | Folder | Why |
-|---|---|
+| --- | --- |
 | `feeding_model/data/F/` | Exact copy of Ontario's feeding images |
 | `test_data/2024_BIMBY/` | Older copy: 4,811 of its 4,822 images are in `2024_BIMBY_appended/` (its `BIMBY_redo.csv` went to `data/metadata/bimby2024/`) |
 | `test_data/Gold_standard_research_grade/` | Older version of the Joint gold standard (2,162 images identical) |

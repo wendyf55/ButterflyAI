@@ -18,6 +18,8 @@ drive, so this cross-dataset test cannot be run until they are recovered (re-dow
 from iNaturalist, or locate another copy). Training and cross-validation for the
 plant-ID models are unaffected.
 
+A replacement can be built from data we already have — see "build the plant 'other species' test set" in the To Do list.
+
 ## Hard Drive README.md
 
 This hard drive contains all of the files for the butterlfyAI project
@@ -45,23 +47,57 @@ For any questions please contact me at <Julie.sieg5678@gmail.com>
 
 ## To Do
 
+Data is now organized in `data/` — see `data/README.md` for which images are used for training, validation and testing, and which script reads which split. The full audit behind it is in the Claude project doc `data-splits-audit.md`.
+
+### Next
+
+- fix `feeding_model/Final_feeding_model_xval.py`: the model is built once before the fold loop, so each fold starts from the previous fold's trained weights (and early stopping / checkpoint are shared across folds). Build a fresh model inside the loop, like `monarch/Monarch_feeding_train_xval.py` already does
+- build the plant "other species" test set: add `data/splits/plant/test_other.csv` to `data/scripts/make_splits.py` from the BIMBY-2024 Block A photos that have a plant ID (24 target species, 60 other species, 54 other genus/family; leave out the 8 ambiguous ones: Apocynum, Achillea, Astereae, Tracheophyta), then point `plant_id_model/OVR_test_on_other.py` at it
+
+### Rerun (results affected by data leakage or bugs)
+
+Feeding
+
+- `Final_feeding_model_xval.py` cross-validation results — model reused across folds (fix above first)
+- `REAL_AND_SUPER_Final_feeding_model_unfrozen.keras` (production, also used by the monarch pipeline) and `REAL_ONLY_Final_feeding_model_unfrozen.keras` — trained on the old ungrouped 80/20 split. `Final_feeding_model_train_on_ALL.py` now trains on the whole dev pool (4,750 images)
+- `results/Output_feeding_flower_only_real_test.txt` / `_ALL_test.txt` (the 107/132 numbers below) — from a split where a superimposed image and its source photo could land on opposite sides. Rerun the two comparison scripts
+- `results/Output_feeding_test_on_BIMBY2024.txt` (85.4%) and `results/model_catalogue_evaluation.csv/.md` — the old BIMBY-2024 test set contained ~1,950 training images and the old gold set overlapped it. Rerun `Model_Catalogue_Evaluation.ipynb` (now reports Test 1 overall + per source, and Ontario)
+
+Plant
+
+- OVR models in `models/OVR_models/` and the `aug4_*` cross-validation JSONs — the same flower (archive re-pastes) could be in both training and validation. Rerun `Final_plant_OVR_xval.py` (writes to `models/OVR_models_xval/` and `results/`)
+- `Scaling_test_results.csv` — random split; rerun on the new pool (grouped fold 0 held out)
+
+Monarch
+
+- `results/Monarch_xval_output_fixed.txt` — plain KFold, 13 duplicate image pairs could straddle folds (minor). Rerun with the grouped folds in `data/splits/monarch/dev_pool.csv`
+- `results/model2_transfer_eval.md` — the monarch labels were made by reviewing this same model's predictions, so the result is circular. Needs an independently labelled monarch test set
+
+### Housekeeping
+
+- old `.keras` models still sit in `feeding_model/data/Final_Feeding_Images/` and `plant_id_model/data/*/` — move them into `models/` (and update `DATA_MODELS_DIR` in the catalogue notebook)
+- the Script section below still describes old paths — `data/README.md` has the current ones
+
+### Qs for J
+
+- where the `bimby_collection` photos (BIMBY-2024 Block B, `data/metadata/bimby2024/BIMBY_redo.csv`) came from
+- the 102 superimposed images with no traceable source photo (e.g. `superimposed_1008.jpeg`)
+- which photos the butterflies in the plant composites were cut from
+- label conflicts: 7 duplicate image pairs in the feeding dev pool have different labels, and 66 images were labelled differently in BIMBY-2024 than in training
+
+### Longer term
+
 - find other examples of ecology and ml projects like this: check data included, how results gathered (notebook? .md?), repo organization
-- sort out training, testing, and validation sets in this repo: not always super clear
 - rewrite multiclass code mentioned above
-- rerun all models
 - superimposed images for the monarch models
+- independently labelled monarch test set
 - expanding the list of 10 species
 - model tuning with parameters
 
 ### Plant ID Model TODOs
 
-- generally, the data in here needs to be sorted out. flower_only.csv is unused in this completely, some Cirsium and Sisymbrium (currently located in archive/) images and data are used, some not.
-- some possible leakages between training and test data in the OVR cross validation script: the training csv listed some filenames 2 times, so an image could end up on either side of the split
 - the OVR script fine tunes layers; the scaling script does not
 - the scaling script COULD be used to create a multiclass model if 100% of the training data was used; right now, I don't have that model
-- decide: there's several types of data here - flower_only dataset (labelled), the detecron images (butterfly superimposed over the plant image), and real butterflies on flower photos. I think it would be best if these were all included in training data
-- We have some data that is unused gold standard - test_data/Joint_gold_standard/Joint_gold_st_with_NF.csv
-- there's some weird name mistmatches - e.g. the models and detectron data use the misspelling Sisybirum_loeselii. The gold set uses Sisymbrium loeselii, so the names have to be normalized before any evaluation
 
 ## Complete
 
@@ -70,6 +106,10 @@ For any questions please contact me at <Julie.sieg5678@gmail.com>
 - fix hardcoded paths
 - create an environment
 - find and extract hardcoded config values, like TAXON_ID, start_page
+- sort out training, testing, and validation sets (2026-09-24): all data moved into `data/` (`images/`, `metadata/`, `splits/`, `superseded/`) with `data/README.md`; `data/scripts/make_splits.py` builds grouped 5-fold dev pools + test sets for every model
+- removed the ~1,950 training images from the BIMBY-2024 test set; feeding Test 1 = BIMBY-2024 + gold feeding labels (reported per source), Test 2 = Ontario
+- plant: flower_only photos and the archive Cirsium/Sisymbrium batches added to the training pool, species names normalized, duplicate flowers grouped, Joint gold standard is now the plant test set
+- all scripts and `Model_Catalogue_Evaluation.ipynb` point at `data/splits/`; `Monarch_feeding_test.py` writes a prediction CSV instead of moving images
 
 ## Repository Contents
 
