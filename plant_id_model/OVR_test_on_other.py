@@ -27,11 +27,14 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from collections import defaultdict
 
 
+MODULE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+# TODO: BC2024_plant/ and BC2024_plant_otheronly.csv are missing (see README) -- once recovered,
+# put them in data/images/ and data/metadata/ and update these two lines
 TEST_CSV = PROJECT_ROOT / "BC2024_plant_otheronly.csv"
 TEST_IMAGE_DIR = PROJECT_ROOT / "BC2024_plant"
-MODEL_DIR = PROJECT_ROOT / "OVR_models"
-PREDICTIONS_DIR = PROJECT_ROOT / "Other_conundrum"
+MODEL_DIR = MODULE_DIR / "models" / "OVR_models"
+PREDICTIONS_DIR = MODULE_DIR / "results" / "Other_conundrum"
 METRICS_JSON = PREDICTIONS_DIR / "ovr_model_metrics.json"
 METRICS_CSV = PREDICTIONS_DIR / "ovr_model_metrics.csv"
 SEED_VALUE = 871

@@ -18,18 +18,20 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from collections import defaultdict
 
 
+MODULE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-PLANT_DATA_DIR = PROJECT_ROOT / "plant_data_specified"
-TRAINING_CSV = PLANT_DATA_DIR / "Flower_only_specified.csv"
-CV_RESULTS_JSON = PLANT_DATA_DIR / "aug4_cv_results_ovr_xval.json"
-CONFUSION_MATRICES_JSON = PLANT_DATA_DIR / "aug4_confusion_matrices_ovr_xval.json"
-ACCURACY_LOSS_JSON = PLANT_DATA_DIR / "aug4_accuracy_loss_data_ovr_xval.json"
+TRAINING_CSV = PROJECT_ROOT / "data" / "splits" / "plant" / "dev_pool.csv"   # image paths are relative to PROJECT_ROOT
+USE_KINDS = ["composite", "plain"]   # dev_pool images to use: detectron composites and/or plain flower photos
+RESULTS_DIR = MODULE_DIR / "results"
+OVR_MODELS_DIR = MODULE_DIR / "models" / "OVR_models_xval"   # separate from models/OVR_models so those aren't overwritten
+CV_RESULTS_JSON = RESULTS_DIR / "aug4_cv_results_ovr_xval.json"
+CONFUSION_MATRICES_JSON = RESULTS_DIR / "aug4_confusion_matrices_ovr_xval.json"
+ACCURACY_LOSS_JSON = RESULTS_DIR / "aug4_accuracy_loss_data_ovr_xval.json"
 SEED_VALUE = 321
 IMG_HEIGHT = 224
 IMG_WIDTH = 224
 BATCH_SIZE = 64 #32 - powers of 2
-K_FOLDS = 5
-KFOLD_RANDOM_STATE = 42
+K_FOLDS = 5   # folds are fixed in dev_pool.csv (column `fold`, 0-4)
 RESAMPLE_RANDOM_STATE = 42
 EPOCHS = 20
 EARLY_STOPPING_PATIENCE = 5
@@ -45,7 +47,9 @@ print("Devices: ", tf.config.list_physical_devices())
 cwd = os.getcwd()
 cwd
 
-os.chdir(PLANT_DATA_DIR)
+os.chdir(PROJECT_ROOT)
+RESULTS_DIR.mkdir(exist_ok=True)
+OVR_MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 entries = os.listdir()
@@ -111,6 +115,12 @@ k_folds = K_FOLDS  # Number of folds for cross-validation
 
 # Load dataset
 all_df = pd.read_csv(TRAINING_CSV)
+all_df = all_df[all_df['kind'].isin(USE_KINDS)].reset_index(drop=True)
+all_df = all_df.rename(columns={'image_path': 'Filename', 'label': 'Label'})  # image_path is relative to PROJECT_ROOT
+
+#folds come from dev_pool.csv: grouped (a plain flower shares a fold with its composites) and
+#balanced on species (made by data/scripts/make_splits.py)
+fold_splits = [(np.where(all_df['fold'] != k)[0], np.where(all_df['fold'] == k)[0]) for k in range(k_folds)]
 
 # Data generators
 train_datagen = ImageDataGenerator(
@@ -134,16 +144,13 @@ for class_index, class_name in enumerate(all_df['Label'].unique()):
     all_df_copy = all_df.copy()
     all_df_copy['BinaryLabel'] = (all_df_copy['Label'] == class_name).astype(int)
     
-    # Stratified K-Fold
-    skf = StratifiedKFold(n_splits=k_folds, shuffle=True, random_state=KFOLD_RANDOM_STATE)
-    
     fold_metrics = []
     #conf_matrix = {}
     conf_metrics = {}
     class_reports = {}
     class_accuracy_loss = {}
     
-    for fold, (train_idx, val_idx) in enumerate(skf.split(all_df_copy, all_df_copy['BinaryLabel'])):
+    for fold, (train_idx, val_idx) in enumerate(fold_splits):
         print(f"Training Fold {fold+1}/{k_folds} for class: {class_name}")
 
         # Split data
@@ -236,7 +243,7 @@ for class_index, class_name in enumerate(all_df['Label'].unique()):
         safe_name = class_name.replace(" ", "_").replace("/", "_")
 
         # Save model for this class (OVR classifier)
-        model.save(str(PLANT_DATA_DIR / f"ovr_model_{safe_name}.keras"))
+        model.save(str(OVR_MODELS_DIR / f"ovr_model_{safe_name}.keras"))
         print(f"Saved OVR model for class: {class_name} ➜ ovr_model_{safe_name}.keras")
 
         # Store accuracy and loss data

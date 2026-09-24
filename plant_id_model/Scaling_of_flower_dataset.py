@@ -22,15 +22,16 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.model_selection import train_test_split
 
 
+MODULE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-FLOWER_DATA_DIR = PROJECT_ROOT / "specified_flower_photos_detectron_ALL"
-TRAINING_CSV = FLOWER_DATA_DIR / "specified_flower_photos_detectron.csv"
-SCALING_RESULTS_CSV = FLOWER_DATA_DIR / "Scaling_test_results.csv"
+TRAINING_CSV = PROJECT_ROOT / "data" / "splits" / "plant" / "dev_pool.csv"   # image paths are relative to PROJECT_ROOT
+USE_KINDS = ["composite", "plain"]   # dev_pool images to use: detectron composites and/or plain flower photos
+SCALING_RESULTS_CSV = MODULE_DIR / "results" / "Scaling_test_results.csv"
 SEED_VALUE = 321
 IMG_HEIGHT = 224
 IMG_WIDTH = 224
 BATCH_SIZE = 64 #32 - powers of 2
-TEST_SIZE = 0.2
+TEST_FOLD = 0   # which dev_pool.csv fold (0-4) is held out for testing (~20%)
 TRAINING_PERCENTAGES = [0.05, 0.10, 0.20, 0.50, 0.75, 1.00]
 EPOCHS = 20
 LEARNING_RATE = 1e-5
@@ -52,7 +53,7 @@ np.random.seed(SEED_VALUE)
 
 tf.random.set_seed(SEED_VALUE)
 
-os.chdir(FLOWER_DATA_DIR)
+os.chdir(PROJECT_ROOT)
 
 entries = os.listdir()
 
@@ -62,8 +63,12 @@ batch_size = BATCH_SIZE
 
 #all_df = pd.read_csv('PlantIDs_API.csv')
 all_df = pd.read_csv(TRAINING_CSV)
+all_df = all_df[all_df['kind'].isin(USE_KINDS)].reset_index(drop=True)
+all_df = all_df.rename(columns={'image_path': 'Filename', 'label': 'Label'})  # image_path is relative to PROJECT_ROOT
 
-train_df, test_df = train_test_split(all_df, test_size=TEST_SIZE, random_state=SEED_VALUE)
+# hold out one fold; folds keep a plain flower and its composites on the same side
+train_df = all_df[all_df['fold'] != TEST_FOLD]
+test_df = all_df[all_df['fold'] == TEST_FOLD]
 
 percentages = TRAINING_PERCENTAGES
 
@@ -226,4 +231,5 @@ for p in percentages:
 
 
 results_df = pd.DataFrame(results)
+SCALING_RESULTS_CSV.parent.mkdir(exist_ok=True)
 results_df.to_csv(SCALING_RESULTS_CSV, index=False)
