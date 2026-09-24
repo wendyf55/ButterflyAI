@@ -51,12 +51,21 @@ Data is now organized in `data/` — see `data/README.md` for which images are u
 
 ### Next
 
+### Blocking model reruns (settle these first, so every model is rerun only once)
+
+Reruns wait until the training data is final. Plan and known script bugs: Claude project doc `rerun-plan.md`.
+
+- Feeding (all feeding reruns): Julie's answers on the 102 superimposed images with no traceable source photo and on the label conflicts (see Qs for J). The 7 byte-identical pairs labelled both F and N (17 images incl. superimposed copies) will be left out via `data/splits/feeding/excluded.csv` (drafted, not yet added)
+- Monarch: decide whether superimposed monarch images will be added to training — if yes, rerun only after they exist
+- Plant: find a machine for the OVR cross-validation (~50 models, roughly 30–45 h) — likely the UBC datascience GPU; too big for the laptop
+- Before the first real run on the Mac: add the run-record code (saves settings, git commit, log, per-image predictions and metrics for every run), fix the script bugs listed in `rerun-plan.md`, and do the GPU-vs-CPU smoke test (tensorflow-metal has reported silent training bugs)
+- Pin the GPU environment: `conda env export > environment-gpu.yml` (the unpinned `environment.yml` would install a TensorFlow version that breaks tensorflow-metal)
 
 ### Rerun (results affected by data leakage or bugs)
 
 Feeding
 
-- `Final_feeding_model_xval.py` cross-validation results — the model was reused across folds and was a different architecture from the final model (both fixed; just rerun). Note it trains 10 epochs per fold vs 20 in `Final_feeding_model_train_on_ALL.py` — decide whether to match
+- `Final_feeding_model_xval.py` cross-validation results — the model was reused across folds and was a different architecture from the final model (both fixed; just rerun). Decided: both scripts train a fixed 10 epochs, no early stopping
 - `REAL_AND_SUPER_Final_feeding_model_unfrozen.keras` (production, also used by the monarch pipeline) and `REAL_ONLY_Final_feeding_model_unfrozen.keras` — trained on the old ungrouped 80/20 split. `Final_feeding_model_train_on_ALL.py` now trains on the whole dev pool (4,750 images)
 - `results/Output_feeding_flower_only_real_test.txt` / `_ALL_test.txt` (the 107/132 numbers below) — from a split where a superimposed image and its source photo could land on opposite sides. Rerun the two comparison scripts
 - `results/Output_feeding_test_on_BIMBY2024.txt` (85.4%) and `results/model_catalogue_evaluation.csv/.md` — the old BIMBY-2024 test set contained ~1,950 training images and the old gold set overlapped it. Rerun `Model_Catalogue_Evaluation.ipynb` (now reports Test 1 overall + per source, and Ontario)
