@@ -7,7 +7,7 @@ from pathlib import Path
 from sklearn.metrics import (roc_auc_score, average_precision_score,
                              confusion_matrix, classification_report, f1_score)
 
-MONARCH_DIR = Path("data/Monarch_images")  # run from monarch/
+MONARCH_DIR = Path("../data/metadata/monarch")  # run from monarch/
 RESULTS_DIR = Path("results"); RESULTS_DIR.mkdir(exist_ok=True)
 
 df = pd.read_csv(MONARCH_DIR / "Monarch_image_labels.csv")

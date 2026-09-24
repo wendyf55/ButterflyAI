@@ -23,10 +23,10 @@ from pathlib import Path
 
 
 MODULE_DIR = Path(__file__).resolve().parent
-DATA_DIR = MODULE_DIR / "data"
-MONARCH_DIR = DATA_DIR / "Monarch_images"
-MONARCH_MANIFEST = DATA_DIR / "Monarch_images.csv"
-METADATA_FILE = MONARCH_DIR / "Monarch_metadata_testset.json"
+DATA_DIR = MODULE_DIR.parent / "data"
+MONARCH_DIR = DATA_DIR / "images" / "monarch"                        # downloaded images go here
+MONARCH_MANIFEST = DATA_DIR / "metadata" / "monarch" / "Monarch_images.csv"
+METADATA_FILE = DATA_DIR / "metadata" / "monarch" / "Monarch_metadata_testset.json"
 IMAGE_URL_SIZE_FROM = "square"
 IMAGE_URL_SIZE_TO = "medium"
 

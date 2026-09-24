@@ -20,12 +20,11 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 MODULE_DIR = Path(__file__).resolve().parent      
 PROJECT_ROOT = MODULE_DIR.parent               
 FEEDING_MODELS_DIR = PROJECT_ROOT / "feeding_model" / "models"
-MONARCH_DIR = MODULE_DIR / "data" / "Monarch_images"
+MONARCH_DIR = PROJECT_ROOT / "data" / "images" / "monarch"          # images only, never moved or edited
+MONARCH_META_DIR = PROJECT_ROOT / "data" / "metadata" / "monarch"   # monarch CSVs
 SEED_VALUE = 321
 MODEL_FILENAME = "REAL_AND_SUPER_Final_feeding_model_unfrozen.keras"
-PREDICTIONS_CSV = MONARCH_DIR / "Monarch_image_predictions.csv"
-CLASS0_DIR = MONARCH_DIR / "Class_0"
-CLASS1_DIR = MONARCH_DIR / "Class_1"
+PREDICTIONS_CSV = MONARCH_META_DIR / "Monarch_image_predictions.csv"
 IMG_HEIGHT = 224
 IMG_WIDTH = 224
 BATCH_SIZE = 32
@@ -41,31 +40,33 @@ model = load_model(str(model_path))
 #test_df = pd.read_csv('Monarch_images.csv')
 test_df = pd.read_csv(PREDICTIONS_CSV)
 
-# Source folder containing your unlabeled images
-source_folder = MONARCH_DIR
+# Deprecated: images used to be moved back out of Class_0/ and Class_1/ here.
+# Images now stay in data/images/monarch; predictions are only written to PREDICTIONS_CSV.
+# # Source folder containing your unlabeled images
+# source_folder = MONARCH_DIR
 
-# Destination folders
-class0_folder = CLASS0_DIR
-class1_folder = CLASS1_DIR
+# # Destination folders
+# class0_folder = MONARCH_DIR / 'Class_0'
+# class1_folder = MONARCH_DIR / 'Class_1'
 
-os.makedirs(class0_folder, exist_ok=True)
-os.makedirs(class1_folder, exist_ok=True)
+# os.makedirs(class0_folder, exist_ok=True)
+# os.makedirs(class1_folder, exist_ok=True)
 
-# Move images based on prediction
-for _, row in test_df.iterrows():
-    filename = row['FileName']
-    prediction = row['prediction']
+# # Move images based on prediction
+# for _, row in test_df.iterrows():
+#     filename = row['FileName']
+#     prediction = row['prediction']
 
-    destination_path = source_folder / filename
+#     destination_path = source_folder / filename
 
-    if prediction == 1:
-        source_path = class1_folder / filename
-    else:
-        source_path = class0_folder / filename
+#     if prediction == 1:
+#         source_path = class1_folder / filename
+#     else:
+#         source_path = class0_folder / filename
 
-    shutil.move(source_path, destination_path)
+#     shutil.move(source_path, destination_path)
 
-print("Images moved successfully")
+# print("Images moved successfully")
 
 # Preprocessing
 datagen = ImageDataGenerator(preprocessing_function=preprocess_input)
@@ -104,28 +105,30 @@ test_df.to_csv(PREDICTIONS_CSV, encoding='utf-8', index=False)
 print("Csv saved")
 
 
-# Source folder containing your unlabeled images
-source_folder = MONARCH_DIR
+# Deprecated: images used to be sorted into Class_0/ and Class_1/ folders here.
+# The prediction and score for every image are in PREDICTIONS_CSV instead.
+# # Source folder containing your unlabeled images
+# source_folder = MONARCH_DIR
 
-# Destination folders
-class0_folder = CLASS0_DIR
-class1_folder = CLASS1_DIR
+# # Destination folders
+# class0_folder = MONARCH_DIR / 'Class_0'
+# class1_folder = MONARCH_DIR / 'Class_1'
 
-os.makedirs(class0_folder, exist_ok=True)
-os.makedirs(class1_folder, exist_ok=True)
+# os.makedirs(class0_folder, exist_ok=True)
+# os.makedirs(class1_folder, exist_ok=True)
 
-# Move images based on prediction
-for _, row in test_df.iterrows():
-    filename = row['FileName']
-    prediction = row['prediction']
+# # Move images based on prediction
+# for _, row in test_df.iterrows():
+#     filename = row['FileName']
+#     prediction = row['prediction']
 
-    source_path = source_folder / filename
+#     source_path = source_folder / filename
 
-    if prediction == 1:
-        destination_path = class1_folder / filename
-    else:
-        destination_path = class0_folder / filename
+#     if prediction == 1:
+#         destination_path = class1_folder / filename
+#     else:
+#         destination_path = class0_folder / filename
 
-    shutil.move(source_path, destination_path)
+#     shutil.move(source_path, destination_path)
 
-print("Images moved successfully")
+# print("Images moved successfully")

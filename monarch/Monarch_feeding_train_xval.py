@@ -71,7 +71,8 @@ seed_value= 321
 #The folder Monarch contains API downloaded monarch images labeled as feeding or non-feeding by Julie Aug 10-11, 2026
 
 MODULE_DIR = Path(__file__).resolve().parent
-MONARCH_DIR = MODULE_DIR / "data" / "Monarch_images"
+PROJECT_ROOT = MODULE_DIR.parent
+TRAINING_CSV = PROJECT_ROOT / "data" / "splits" / "monarch" / "dev_pool.csv"   # image paths are relative to PROJECT_ROOT
 MODELS_DIR = MODULE_DIR / "models"
 MODELS_DIR.mkdir(exist_ok=True)
 
@@ -100,11 +101,13 @@ sys.stderr = Tee(sys.__stderr__, _logfile)
 img_height, img_width = (224,224)
 batch_size = 32
 
-#Monarch_image_labels.csv is in the Monarch_images folder and has the feeding status and whether the image is real or not
-all_df = pd.read_csv(MONARCH_DIR / 'Monarch_image_labels.csv')
+#dev_pool.csv is in data/splits/monarch and has the feeding status and a fold column (0-4)
+all_df = pd.read_csv(TRAINING_CSV)
+all_df = all_df.rename(columns={'image_path': 'FileName', 'label': 'Label'})
 all_df = all_df[all_df['Label'].isin(['Feeding', 'Non_feeding'])].reset_index(drop=True)
 
-kfold = KFold(n_splits=5, shuffle=True, random_state=42)
+#folds come from dev_pool.csv (grouped, so duplicate images share a fold; made by data/scripts/make_splits.py)
+fold_splits = [(np.where(all_df['fold'] != k)[0], np.where(all_df['fold'] == k)[0]) for k in range(5)]
 
 # CHANGED: numeric labels, Feeding=1 / Non_feeding=0
 y = (all_df['Label'].values == 'Feeding').astype('int32')
@@ -139,7 +142,7 @@ def _load_and_preprocess(path, label):
     return img, label
 
 def make_dataset(filenames, labels, training):
-    paths = [str(MONARCH_DIR / f) for f in filenames]
+    paths = [str(PROJECT_ROOT / f) for f in filenames]
     ds = tf.data.Dataset.from_tensor_slices((paths, labels.astype('float32')))
     if training:
         ds = ds.shuffle(buffer_size=len(paths), seed=123, reshuffle_each_iteration=True)
@@ -153,7 +156,7 @@ precision_per_fold = []
 recall_per_fold = []
 f1_per_fold = []
 
-for fold, (train_idx, val_idx) in enumerate(kfold.split(X), start=1):   # CHANGED: fold counter added
+for fold, (train_idx, val_idx) in enumerate(fold_splits, start=1):   # CHANGED: fold counter added
     print(f"\n Fold {fold}/5 ")
 
     # CHANGED: reset before each fold so folds are independent

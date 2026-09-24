@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 MODULE_DIR = Path(__file__).resolve().parent
-MONARCH_DIR = MODULE_DIR / "data" / "Monarch_images"
+MONARCH_DIR = MODULE_DIR.parent / "data" / "metadata" / "monarch"   # monarch CSVs
 PREDICTIONS_CSV = MONARCH_DIR / "Monarch_image_predictions.csv"
 NON_FEEDING_CSV = MONARCH_DIR / "Monarch_non_feeding_ls.csv"
 LABELS_CSV = MONARCH_DIR / "Monarch_image_labels.csv"
