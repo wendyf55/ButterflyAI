@@ -27,3 +27,7 @@ test_flower_photos/
 Testing_datasets/
 Species_specific_tests_of_image_download/
 test_data/
+data/metadata/
+data/superseded/
+
+Claude outputs/
