@@ -18,7 +18,7 @@ drive, so this cross-dataset test cannot be run until they are recovered (re-dow
 from iNaturalist, or locate another copy). Training and cross-validation for the
 plant-ID models are unaffected.
 
-A replacement can be built from data we already have — see "build the plant 'other species' test set" in the To Do list.
+**Replaced (2026-09-24):** `data/splits/plant/test_mixed_plants.csv` (138 BIMBY-2024 photos with a plant ID, built by `data/scripts/make_splits.py`) is used instead; `OVR_test_on_other.py` now points at it.
 
 ## Hard Drive README.md
 
@@ -52,7 +52,7 @@ Data is now organized in `data/` — see `data/README.md` for which images are u
 ### Next
 
 - fix `feeding_model/Final_feeding_model_xval.py`: the model is built once before the fold loop, so each fold starts from the previous fold's trained weights (and early stopping / checkpoint are shared across folds). Build a fresh model inside the loop, like `monarch/Monarch_feeding_train_xval.py` already does
-- build the plant "other species" test set: add `data/splits/plant/test_other.csv` to `data/scripts/make_splits.py` from the BIMBY-2024 Block A photos that have a plant ID (24 target species, 60 other species, 54 other genus/family; leave out the 8 ambiguous ones: Apocynum, Achillea, Astereae, Tracheophyta), then point `plant_id_model/OVR_test_on_other.py` at it
+- run `python data/scripts/make_splits.py` once on your own machine (fold assignments depend on the scikit-learn version) and commit `data/splits/` — treat those CSVs as the record from then on
 
 ### Rerun (results affected by data leakage or bugs)
 
@@ -67,6 +67,7 @@ Plant
 
 - OVR models in `models/OVR_models/` and the `aug4_*` cross-validation JSONs — the same flower (archive re-pastes) could be in both training and validation. Rerun `Final_plant_OVR_xval.py` (writes to `models/OVR_models_xval/` and `results/`)
 - `Scaling_test_results.csv` — random split; rerun on the new pool (grouped fold 0 held out)
+- run `OVR_test_on_other.py` on the new mixed-plants test set (it reads `models/OVR_models/`; point `MODEL_DIR` at `models/OVR_models_xval/` once the OVR models are retrained)
 
 Monarch
 
@@ -110,6 +111,7 @@ Monarch
 - removed the ~1,950 training images from the BIMBY-2024 test set; feeding Test 1 = BIMBY-2024 + gold feeding labels (reported per source), Test 2 = Ontario
 - plant: flower_only photos and the archive Cirsium/Sisymbrium batches added to the training pool, species names normalized, duplicate flowers grouped, Joint gold standard is now the plant test set
 - all scripts and `Model_Catalogue_Evaluation.ipynb` point at `data/splits/`; `Monarch_feeding_test.py` writes a prediction CSV instead of moving images
+- built the plant "mixed plants" test set (`data/splits/plant/test_mixed_plants.csv`, 138 BIMBY-2024 photos: 24 target species, 114 other plants) to replace the missing `BC2024_plant_otheronly.csv`; `OVR_test_on_other.py` points at it
 
 ## Repository Contents
 

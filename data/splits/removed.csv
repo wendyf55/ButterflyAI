@@ -2006,3 +2006,11 @@ plant/dev_pool,in_test_set,data/images/plant_plain_flowers/409534035.jpg,Leucant
 plant/dev_pool,duplicate,data/images/plant_plain_flowers/473978383.jpg,Leucanthemum_vulgare,,473978383.jpg,
 plant/dev_pool,duplicate,data/images/plant_plain_flowers/385935449.jpg,Sisymbrium_loeselii,,385935449.jpg,
 plant/dev_pool,duplicate,data/images/plant_plain_flowers/285690002.jpg,Sisymbrium_loeselii,,285690002.jpg,
+plant/test_mixed_plants,ambiguous_taxon,data/images/bimby2024/di3unQUZAR.jpg.jpeg,Astereae,,,di3unQUZAR.jpg.jpeg
+plant/test_mixed_plants,ambiguous_taxon,data/images/bimby2024/WpAw8NNEyE.jpg.jpeg,Apocynum,,,WpAw8NNEyE.jpg.jpeg
+plant/test_mixed_plants,ambiguous_taxon,data/images/bimby2024/SLAlefAas0.jpg.jpeg,Apocynum,,,SLAlefAas0.jpg.jpeg
+plant/test_mixed_plants,ambiguous_taxon,data/images/bimby2024/8YxSvypNYT.jpg.jpeg,Apocynum,,,8YxSvypNYT.jpg.jpeg
+plant/test_mixed_plants,ambiguous_taxon,data/images/bimby2024/l9BGKfDAp5.jpg.jpeg,Achillea,,,l9BGKfDAp5.jpg.jpeg
+plant/test_mixed_plants,ambiguous_taxon,data/images/bimby2024/BjGfrt1A98.jpg.jpeg,Astereae,,,BjGfrt1A98.jpg.jpeg
+plant/test_mixed_plants,ambiguous_taxon,data/images/bimby2024/QJqf7jfFgZ.jpg.jpeg,Apocynum,,,QJqf7jfFgZ.jpg.jpeg
+plant/test_mixed_plants,ambiguous_taxon,data/images/bimby2024/GxCoLvoayg.jpg.jpeg,Tracheophyta,,,GxCoLvoayg.jpg.jpeg

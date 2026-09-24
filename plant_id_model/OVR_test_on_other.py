@@ -29,10 +29,10 @@ from collections import defaultdict
 
 MODULE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-# TODO: BC2024_plant/ and BC2024_plant_otheronly.csv are missing (see README) -- once recovered,
-# put them in data/images/ and data/metadata/ and update these two lines
-TEST_CSV = PROJECT_ROOT / "BC2024_plant_otheronly.csv"
-TEST_IMAGE_DIR = PROJECT_ROOT / "BC2024_plant"
+# BIMBY-2024 photos with a plant ID, mostly NOT one of the 10 target species (replaces the missing
+# BC2024_plant_otheronly.csv; built by data/scripts/make_splits.py). Image paths are relative to PROJECT_ROOT
+TEST_CSV = PROJECT_ROOT / "data" / "splits" / "plant" / "test_mixed_plants.csv"
+TEST_IMAGE_DIR = PROJECT_ROOT
 MODEL_DIR = MODULE_DIR / "models" / "OVR_models"
 PREDICTIONS_DIR = MODULE_DIR / "results" / "Other_conundrum"
 METRICS_JSON = PREDICTIONS_DIR / "ovr_model_metrics.json"
@@ -50,6 +50,7 @@ BATCH_SIZE = 32
 
 def normalize_species_name(species_name):
     species_name = str(species_name).replace("_", " ").strip()
+    species_name = species_name.replace("Sisybirum", "Sisymbrium")   # old OVR model files use this misspelling
     return " ".join(species_name.split())
 
 #set seed so its always the same
@@ -65,9 +66,11 @@ tf.random.set_seed(SEED_VALUE)
 
 
 test_df = pd.read_csv(TEST_CSV)
-test_df = test_df.copy()
+test_df = test_df.rename(columns={"image_path": "FileName"})
 test_df["normalized_plant_scientific_name"] = test_df["plant_scientific_name"].apply(normalize_species_name)
-test_df = test_df[test_df["normalized_plant_scientific_name"].str.contains(" ", na=False)]
+# genus/family-level IDs are kept: the ambiguous ones (could be a target species) were already left out
+# of test_mixed_plants.csv. To use species-level IDs only, uncomment:
+#test_df = test_df[test_df["taxon_rank"] == "species"]
 
 print(test_df.head())
 

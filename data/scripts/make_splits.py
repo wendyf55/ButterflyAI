@@ -8,7 +8,8 @@ Writes (image_path is relative to the repo root):
   data/splits/feeding/test1.csv           BIMBY-2024 + gold feeding labels, with a `source` column
   data/splits/feeding/test2_ontario.csv   Ontario
   data/splits/plant/dev_pool.csv          composites + plain flowers, with a `fold` column
-  data/splits/plant/test_gold.csv         gold plant labels
+  data/splits/plant/test_gold.csv         gold plant labels (only the 10 target species)
+  data/splits/plant/test_mixed_plants.csv BIMBY-2024 photos with a plant ID, mostly NOT a target species
   data/splits/monarch/dev_pool.csv        monarch photos, with a `fold` column
   data/splits/removed.csv                 every row left out of a split, and why
 
@@ -34,6 +35,8 @@ SAME_SESSION = {"68Dxllirdq.jpg", "esR4jtAvxb.jpg", "hm7H0EPpUq.jpg", "NALL3X6ZZ
 PLANT_NAMES = {"Circium_arvense": "Cirsium_arvense",
                "Sisybirum_loeselii": "Sisymbrium_loeselii",
                "Sisymbrium loeselii": "Sisymbrium_loeselii"}
+# plant IDs that could be one of the 10 target species (genus/tribe-level) -> left out of test_mixed_plants
+PLANT_AMBIGUOUS = {"Apocynum", "Achillea", "Astereae", "Tracheophyta"}
 
 _hash_cache = {}
 removed = []   # rows dropped from any split
@@ -173,6 +176,19 @@ pp = merge_groups(pp)
 pp = add_folds(pp, "label")
 save(pp, "plant/dev_pool.csv", ["image_path", "label", "kind", "group", "fold"])
 save(gold_plant, "plant/test_gold.csv", ["image_path", "label"])
+
+# BIMBY-2024 photos whose plant was identified: a few are target species, most are other plants,
+# so this checks how often each one-vs-rest model says "yes" to the wrong plant
+mixed = pd.read_csv(META / "bimby2024" / "BC2024_goldstandard_appendfilenames2.csv")
+mixed = mixed[mixed["plant_scientific_name"].fillna("").str.strip() != ""].copy()
+mixed["plant_scientific_name"] = mixed["plant_scientific_name"].str.split().str.join(" ")
+mixed["image_path"] = mixed["FileName"].map(lambda f: rel("bimby2024", f))
+mixed["label"] = mixed["plant_scientific_name"].map(plant_name)
+mixed["is_target"] = mixed["label"].isin(set(pp["label"]))
+mixed["taxon_rank"] = mixed["plant_scientific_name"].str.contains(" ").map({True: "species", False: "higher"})
+mixed = drop(mixed, mixed["plant_scientific_name"].isin(PLANT_AMBIGUOUS), "plant/test_mixed_plants", "ambiguous_taxon")
+mixed = clean(mixed, "plant/test_mixed_plants", set(pp["hash"]), "in_dev_pool")
+save(mixed, "plant/test_mixed_plants.csv", ["image_path", "plant_scientific_name", "label", "is_target", "taxon_rank"])
 
 # ---------------------------------------------------------------- monarch
 print("monarch")

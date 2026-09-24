@@ -2,6 +2,8 @@
 
 This folder holds every dataset used by the three ButterflyAI models, and this README is the **single source of truth** for which images each model uses for training, validation and testing.
 
+> **Status (2026-09-24):** all datasets have been moved into `data/` (see `move_log.csv`). The "Previously at" columns below give each dataset's *old* location, for reference.
+
 ## Layout
 
 ```
@@ -24,10 +26,33 @@ data/
 | `splits/feeding/test2_ontario.csv` | 2,785 | `image_path, label` |
 | `splits/plant/dev_pool.csv` | 19,684 | `image_path, label, kind (plain/composite), group, fold` |
 | `splits/plant/test_gold.csv` | 2,162 | `image_path, label` |
+| `splits/plant/test_mixed_plants.csv` | 138 | `image_path, plant_scientific_name, label, is_target, taxon_rank` |
 | `splits/monarch/dev_pool.csv` | 8,018 | `image_path, label, group, fold` |
-| `splits/removed.csv` | 2,007 | every row left out of a split, with `split` and `reason` |
+| `splits/removed.csv` | 2,015 | every row left out of a split, with `split` and `reason` |
 
 `image_path` is relative to the repo root. `fold` (0–4) comes from grouped, stratified 5-fold cross-validation (seed 42). Rows in the same `group` always share a fold. Plant species names are normalized (`Cirsium_arvense`, `Sisymbrium_loeselii`).
+
+**The fold assignments depend on the Python / scikit-learn version**, so `make_splits.py` can give different (equally valid) folds on another machine. Generate the splits once, commit `data/splits/`, and treat those files as the record; only re-run `make_splits.py` when the data changes, and before training on the new folds.
+
+### Which script reads which split
+
+| Script | Reads | Writes |
+| --- | --- | --- |
+| `feeding_model/Final_feeding_model_xval.py` | `splits/feeding/dev_pool.csv` (the 5 folds) | cross-validation metrics (console) |
+| `feeding_model/Final_feeding_model_train_on_ALL.py` | `splits/feeding/dev_pool.csv` (all folds) | `feeding_model/models/REAL_AND_SUPER_Final_feeding_model_unfrozen.keras` ⚠ overwrites the current production model |
+| `feeding_model/Feeding_model_only_with_flower_comparison.py` (+ `_augmentedversion`) | `splits/feeding/dev_pool.csv`, fold 0 held out | console |
+| `feeding_model/Model_Catalogue_Evaluation.ipynb` | `splits/feeding/test1.csv`, `splits/feeding/test2_ontario.csv` | `feeding_model/results/model_catalogue_evaluation.{csv,md}` |
+| `plant_id_model/Final_plant_OVR_xval.py` | `splits/plant/dev_pool.csv` (the 5 folds; `USE_KINDS`) | `plant_id_model/results/`, `plant_id_model/models/OVR_models_xval/` |
+| `plant_id_model/Scaling_of_flower_dataset.py` | `splits/plant/dev_pool.csv`, fold 0 held out (`USE_KINDS`) | `plant_id_model/results/Scaling_test_results.csv` |
+| `plant_id_model/OVR_test_on_other.py` | `splits/plant/test_mixed_plants.csv` | `plant_id_model/results/Other_conundrum/` |
+| `monarch/Monarch_feeding_train_xval.py` | `splits/monarch/dev_pool.csv` (the 5 folds) | `monarch/models/`, `monarch/results/` |
+| `monarch/Monarch_API_call.py`, `Monarch_download_from_API.py` | iNaturalist | `metadata/monarch/` (JSON, manifest), `images/monarch/` |
+| `monarch/Monarch_feeding_test.py` | `metadata/monarch/Monarch_image_predictions.csv` | same CSV (`prediction`, `score`); images are no longer moved |
+| `monarch/label_monarchs.py` | `metadata/monarch/` predictions + `Monarch_non_feeding_ls.csv` | `metadata/monarch/Monarch_image_labels.csv` |
+| `monarch/general_feeding_model_eval.py` | `metadata/monarch/Monarch_image_labels.csv` | `monarch/results/` |
+
+`data/metadata/monarch/` is the one exception to "untouched": the monarch pipeline scripts above write their CSVs there.
+**After adding images or changing labels, re-run `python data/scripts/make_splits.py`.**
 
 ## Rules
 
@@ -51,7 +76,7 @@ data/
 
 ### Feeding model (feeding vs non-feeding)
 
-| Role | Dataset | Planned location | Currently at | Images | Labels |
+| Role | Dataset | Location | Previously at | Images | Labels |
 | --- | --- | --- | --- | --- | --- |
 | Development pool | BIMBY collection, real | `images/bimby_real/` | `feeding_model/data/Final_Feeding_Images/` (`photo_type = real`) | 4,091 | 2,137 F / 1,954 N |
 | Development pool | BIMBY collection, superimposed | `images/bimby_superimposed/` | same folder, `superimposed_*` (`photo_type = super`) | 659 | all N |
@@ -77,12 +102,13 @@ data/
 
 ### Plant ID model (10 plant species)
 
-| Role | Dataset | Planned location | Currently at | Images |
+| Role | Dataset | Location | Previously at | Images |
 | --- | --- | --- | --- | --- |
 | Development pool | Detectron composites | `images/plantID_detectron_composites/` | `plant_id_model/data/specified_flower_photos_detectron_ALL/` (`specified_flower_photos_detectron.csv`) | 13,378 (663–1,779 per species) |
 | Development pool | Plain flower photos | `images/plant_plain_flowers/` | `plant_id_model/data/plant_data_specified/` (`flower_only.csv`) | 5,000 (500 per species) |
 | Development pool | Extra *Cirsium* / *Sisymbrium* batches | `images/plant_plain_flowers/` + `images/plantID_detectron_composites/` | `archive/Species_specific_tests_of_image_download/` | 668 plain + 668 composites |
 | Test | Joint gold standard (plant labels) | `images/joint_gold/` | `test_data/Joint_gold_standard/` (`Joint_gold_standard.csv`) | 2,166 real butterfly-on-flower photos |
+| Test 2 | BIMBY-2024 photos with a plant ID (mostly other plants) | `images/bimby2024/` | `test_data/2024_BIMBY_appended/` | 138 |
 
 The 10 species are *Achillea millefolium*, *Anaphalis margaritacea*, *Apocynum androsaemifolium*, *Asclepias speciosa*, *Cirsium arvense*, *Ericameria nauseosa*, *Leucanthemum vulgare*, *Medicago sativa*, *Sisymbrium loeselii* and *Tripleurospermum inodorum*.
 
@@ -93,6 +119,7 @@ The 10 species are *Achillea millefolium*, *Anaphalis margaritacea*, *Apocynum a
 - **Remove from the pool:** `409534035.jpg`, which is the same image as gold test image `lLOduRsi43.jpg`, plus one image from each duplicate pair (`470613410` = `473978383`, `385927014` = `385935449`).
 - **`flower_only.csv`'s `SuperimposedFile` column** points to files that don't exist. Ignore it.
 - **Test:** the gold set is the plant test set. Its feeding labels are also used, as part of Feeding Test 1 (source `inat_2024_gold`).
+- **Test 2 (`test_mixed_plants.csv`)** checks how often each one-vs-rest model says "yes" to a plant that isn't its species, which the gold set can't do (every gold photo is a target species). It has 24 target-species photos (13 *Leucanthemum*; none for *Ericameria*, *Sisymbrium* or *Tripleurospermum*), 60 photos of other species and 54 identified only to genus/family (`taxon_rank`). 8 IDs that could be a target species (Apocynum, Achillea, Astereae, Tracheophyta) are left out. It replaces the missing `BC2024_plant_otheronly.csv`. It's small, so results are noisy. These photos are also in feeding Test 1, which is fine: different model.
 
 ### Monarch model (feeding vs non-feeding, monarchs only)
 
