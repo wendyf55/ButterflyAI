@@ -14,9 +14,10 @@ import pandas as pd
 from pathlib import Path
 
 MODULE_DIR = Path(__file__).resolve().parent
-FEEDING_DATA_DIR = MODULE_DIR / "data" / "Final_Feeding_Images"
+PROJECT_ROOT = MODULE_DIR.parent
+SPLITS_DIR = PROJECT_ROOT / "data" / "splits" / "feeding"
 MODELS_DIR = MODULE_DIR / "models"
-TRAINING_CSV = FEEDING_DATA_DIR / "DataFilenamesRedo.csv"
+TRAINING_CSV = SPLITS_DIR / "dev_pool.csv"
 MODEL_CHECKPOINT = MODELS_DIR / "FINAL_Real_Feeding_unfrozen_xval_augmented.keras"
 SEED_VALUE = 321
 IMG_HEIGHT = 224
@@ -24,8 +25,7 @@ IMG_WIDTH = 224
 BATCH_SIZE = 32
 VAL_BATCH_SIZE = 1
 GENERATOR_SEED = 123
-K_FOLDS = 5
-KFOLD_RANDOM_STATE = 42
+K_FOLDS = 5   # folds are fixed in dev_pool.csv (column `fold`, 0-4)
 EPOCHS = 10
 EARLY_STOPPING_PATIENCE = 10
 PREDICTION_THRESHOLD = 0.5
@@ -36,8 +36,9 @@ from tensorflow.keras.applications.resnet50 import preprocess_input, ResNet50
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 
-#The folder Final_Feeding_Images contains the 2023 BC BIMBY feeding and non-feeding photos as well as the superimposed photos 
-os.chdir(FEEDING_DATA_DIR)
+#data/images/bimby_real and data/images/bimby_superimposed contain the 2023 BC BIMBY feeding and non-feeding photos and the superimposed photos
+#image paths in the split CSVs are relative to the repo root (see data/README.md)
+os.chdir(PROJECT_ROOT)
 
 cwd = os.getcwd()
 cwd
@@ -49,26 +50,22 @@ batch_size = BATCH_SIZE
 from sklearn.model_selection import train_test_split
 import pandas as pd
 
-#DataFilenamesRedo.csv is in the Final_Feeding_Images folder and has the feeding status and whether the image is real or not
+#dev_pool.csv is in data/splits/feeding and has the feeding status, whether the image is real or superimposed, and its fold
 full_df = pd.read_csv(TRAINING_CSV)
+full_df = full_df.rename(columns={'image_path': 'filename'})  # image_path is relative to the repo root
 
 #run code with just real images (all_df, name is misleading, watch out!)
 #all_df = full_df[full_df['photo_type'] == 'real']
 all_df = full_df
 
-# uses leakage-safe csv
-from leakage_safe_split import add_group_column, stratify_key
-all_df = add_group_column(all_df)
-
 #K-fold cross validation
-from sklearn.model_selection import StratifiedGroupKFold
+#folds come from dev_pool.csv: grouped (a superimposed image shares a fold with its source photo)
+#and balanced on label x photo_type (made by data/scripts/make_splits.py)
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
-kfold = StratifiedGroupKFold(n_splits=K_FOLDS, shuffle=True, random_state=KFOLD_RANDOM_STATE)
-
 y = all_df['label'].values
-groups = all_df['group'].values
-strat = stratify_key(all_df)  # balance label x photo_type across folds
+folds = all_df['fold'].values
+fold_splits = [(np.where(folds != k)[0], np.where(folds == k)[0]) for k in range(K_FOLDS)]
 
 from sklearn.preprocessing import LabelEncoder
 labelencoder = LabelEncoder()
@@ -140,7 +137,7 @@ datagen = ImageDataGenerator(preprocessing_function = preprocess_input)
 checkpoint = ModelCheckpoint(str(MODEL_CHECKPOINT), monitor='val_loss', save_best_only=True)
 
 
-for train_idx, val_idx in kfold.split(X, strat, groups=groups):
+for train_idx, val_idx in fold_splits:
     X_train, X_val = X[train_idx], X[val_idx]
     y_train, y_val = y[train_idx], y[val_idx]
 

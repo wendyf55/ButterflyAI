@@ -17,8 +17,9 @@ from tensorflow.keras.optimizers import Adam
 from pathlib import Path
 
 MODULE_DIR = Path(__file__).resolve().parent
-FEEDING_DATA_DIR = MODULE_DIR / "data" / "Final_Feeding_Images"
-TRAINING_CSV = FEEDING_DATA_DIR / "DataFilenamesRedo.csv"
+PROJECT_ROOT = MODULE_DIR.parent
+SPLITS_DIR = PROJECT_ROOT / "data" / "splits" / "feeding"
+TRAINING_CSV = SPLITS_DIR / "dev_pool.csv"
 SEED_VALUE = 321
 IMG_HEIGHT = 224
 IMG_WIDTH = 224
@@ -26,7 +27,7 @@ BATCH_SIZE = 32
 VAL_BATCH_SIZE = 1
 GENERATOR_SEED = 123
 EPOCHS = 20
-VALIDATION_SIZE = 0.2
+VAL_FOLD = 0   # which dev_pool.csv fold (0-4) is held out for testing (~20%)
 TRAIN_ON_REAL_ONLY = True
 EARLY_STOPPING_PATIENCE = 10
 DROPOUT_RATE = 0.5
@@ -40,8 +41,9 @@ from sklearn.metrics import precision_recall_curve, average_precision_score
 
 
 
-#The folder Final_Feeding_Images contains the 2023 BC BIMBY feeding and non-feeding photos as well as the superimposed photos 
-os.chdir(FEEDING_DATA_DIR)
+#data/images/bimby_real and data/images/bimby_superimposed contain the 2023 BC BIMBY feeding and non-feeding photos and the superimposed photos
+#image paths in the split CSVs are relative to the repo root (see data/README.md)
+os.chdir(PROJECT_ROOT)
 
 cwd = os.getcwd()
 cwd
@@ -53,20 +55,14 @@ batch_size = BATCH_SIZE
 from sklearn.model_selection import train_test_split
 import pandas as pd
 
-#DataFilenamesRedo.csv is in the Final_Feeding_Images folder and has the feeding status and whether the image is real or not
+#dev_pool.csv is in data/splits/feeding and has the feeding status, whether the image is real or superimposed, and its fold
 full_df = pd.read_csv(TRAINING_CSV)
+full_df = full_df.rename(columns={'image_path': 'filename'})  # image_path is relative to the repo root
 
-# keep each butterfly's real + superimposed twins on the same side
+# hold out one fold; folds keep each butterfly's real + superimposed twins on the same side
 # otherwise model can see the same butterfly in training as in testing
-from leakage_safe_split import add_group_column, grouped_train_test_split, verify_no_leakage
-
-full_df = add_group_column(full_df)
-train_df, val_df = grouped_train_test_split(
-    full_df,
-    test_size=VALIDATION_SIZE,
-    seed=SEED_VALUE,
-)
-verify_no_leakage(train_df, val_df)
+train_df = full_df[full_df['fold'] != VAL_FOLD]
+val_df = full_df[full_df['fold'] == VAL_FOLD]
 
 print(f"Train images: {len(train_df)} | Val images: {len(val_df)}")
 

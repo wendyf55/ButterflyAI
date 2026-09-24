@@ -27,7 +27,8 @@ from sklearn.metrics import precision_recall_curve, average_precision_score
 
 
 #The folder Final_Feeding_Images contains the 2023 BC BIMBY feeding and non-feeding photos as well as the superimposed photos 
-os.chdir('Final_Feeding_Images')
+#run from feeding_model/ ; image paths in the split CSVs are relative to the repo root (see data/README.md)
+os.chdir('..')
 
 cwd = os.getcwd()
 cwd
@@ -39,20 +40,15 @@ batch_size = 32
 from sklearn.model_selection import train_test_split
 import pandas as pd
 
-#DataFilenamesRedo.csv is in the Final_Feeding_Images folder and has the feeding status and whether the image is real or not
-full_df = pd.read_csv('DataFilenamesRedo.csv')
+#dev_pool.csv is in data/splits/feeding and has the feeding status, whether the image is real or superimposed, and its fold
+full_df = pd.read_csv('data/splits/feeding/dev_pool.csv')
+full_df = full_df.rename(columns={'image_path': 'filename'})
 
 
 # keeps each butterfly's real + superimposed twins on the same side
-from leakage_safe_split import add_group_column, grouped_train_test_split, verify_no_leakage
-
-full_df = add_group_column(full_df)
-train_df, val_df = grouped_train_test_split(
-    full_df,
-    test_size=0.2,
-    seed=seed_value,
-)
-verify_no_leakage(train_df, val_df)
+# (hold out fold 0 of dev_pool.csv, ~20%)
+train_df = full_df[full_df['fold'] != 0]
+val_df = full_df[full_df['fold'] == 0]
 
 print(f"Train images: {len(train_df)} | Val images: {len(val_df)}")
 

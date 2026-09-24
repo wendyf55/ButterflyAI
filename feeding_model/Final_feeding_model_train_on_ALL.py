@@ -12,9 +12,10 @@ import pandas as pd
 from pathlib import Path
 
 MODULE_DIR = Path(__file__).resolve().parent
-FEEDING_DATA_DIR = MODULE_DIR / "data" / "Final_Feeding_Images"
+PROJECT_ROOT = MODULE_DIR.parent
+SPLITS_DIR = PROJECT_ROOT / "data" / "splits" / "feeding"
 MODELS_DIR = MODULE_DIR / "models"
-TRAINING_CSV = FEEDING_DATA_DIR / "DataFilenamesRedo_train.csv"
+TRAINING_CSV = SPLITS_DIR / "dev_pool.csv"   # the whole development pool (all 5 folds)
 MODEL_OUTPUT = MODELS_DIR / "REAL_AND_SUPER_Final_feeding_model_unfrozen.keras"
 SEED_VALUE = 321
 IMG_HEIGHT = 224
@@ -30,8 +31,9 @@ from tensorflow.keras.applications.resnet50 import preprocess_input, ResNet50
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 
-#The folder Final_Feeding_Images contains the 2023 BC BIMBY feeding and non-feeding photos as well as the superimposed photos 
-os.chdir(FEEDING_DATA_DIR)
+#data/images/bimby_real and data/images/bimby_superimposed contain the 2023 BC BIMBY feeding and non-feeding photos and the superimposed photos
+#image paths in the split CSVs are relative to the repo root (see data/README.md)
+os.chdir(PROJECT_ROOT)
 
 cwd = os.getcwd()
 cwd
@@ -43,8 +45,9 @@ batch_size = BATCH_SIZE
 from sklearn.model_selection import train_test_split
 import pandas as pd
 
-#DataFilenamesRedo.csv is in the Final_Feeding_Images folder and has the feeding status and whether the image is real or not
+#dev_pool.csv is in data/splits/feeding and has the feeding status and whether the image is real or superimposed
 full_df = pd.read_csv(TRAINING_CSV)
+full_df = full_df.rename(columns={'image_path': 'filename'})  # image_path is relative to the repo root
 
 #run code with just real images (all_df, name is misleading, watch out!)
 # train_df = full_df[full_df['photo_type'] == 'real']
