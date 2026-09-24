@@ -51,14 +51,12 @@ Data is now organized in `data/` — see `data/README.md` for which images are u
 
 ### Next
 
-- fix `feeding_model/Final_feeding_model_xval.py`: the model is built once before the fold loop, so each fold starts from the previous fold's trained weights (and early stopping / checkpoint are shared across folds). Build a fresh model inside the loop, like `monarch/Monarch_feeding_train_xval.py` already does
-- run `python data/scripts/make_splits.py` once on your own machine (fold assignments depend on the scikit-learn version) and commit `data/splits/` — treat those CSVs as the record from then on
 
 ### Rerun (results affected by data leakage or bugs)
 
 Feeding
 
-- `Final_feeding_model_xval.py` cross-validation results — model reused across folds (fix above first)
+- `Final_feeding_model_xval.py` cross-validation results — the model was reused across folds and was a different architecture from the final model (both fixed; just rerun). Note it trains 10 epochs per fold vs 20 in `Final_feeding_model_train_on_ALL.py` — decide whether to match
 - `REAL_AND_SUPER_Final_feeding_model_unfrozen.keras` (production, also used by the monarch pipeline) and `REAL_ONLY_Final_feeding_model_unfrozen.keras` — trained on the old ungrouped 80/20 split. `Final_feeding_model_train_on_ALL.py` now trains on the whole dev pool (4,750 images)
 - `results/Output_feeding_flower_only_real_test.txt` / `_ALL_test.txt` (the 107/132 numbers below) — from a split where a superimposed image and its source photo could land on opposite sides. Rerun the two comparison scripts
 - `results/Output_feeding_test_on_BIMBY2024.txt` (85.4%) and `results/model_catalogue_evaluation.csv/.md` — the old BIMBY-2024 test set contained ~1,950 training images and the old gold set overlapped it. Rerun `Model_Catalogue_Evaluation.ipynb` (now reports Test 1 overall + per source, and Ontario)
@@ -110,6 +108,7 @@ Monarch
 - sort out training, testing, and validation sets (2026-09-24): all data moved into `data/` (`images/`, `metadata/`, `splits/`, `superseded/`) with `data/README.md`; `data/scripts/make_splits.py` builds grouped 5-fold dev pools + test sets for every model
 - removed the ~1,950 training images from the BIMBY-2024 test set; feeding Test 1 = BIMBY-2024 + gold feeding labels (reported per source), Test 2 = Ontario
 - plant: flower_only photos and the archive Cirsium/Sisymbrium batches added to the training pool, species names normalized, duplicate flowers grouped, Joint gold standard is now the plant test set
+- `Final_feeding_model_xval.py`: builds a fresh model every fold (it used to keep training the previous fold's model), with the same architecture and training augmentation as `Final_feeding_model_train_on_ALL.py` (BatchNorm head, only `conv5_block` trainable); one checkpoint file per fold
 - all scripts and `Model_Catalogue_Evaluation.ipynb` point at `data/splits/`; `Monarch_feeding_test.py` writes a prediction CSV instead of moving images
 - built the plant "mixed plants" test set (`data/splits/plant/test_mixed_plants.csv`, 138 BIMBY-2024 photos: 24 target species, 114 other plants) to replace the missing `BC2024_plant_otheronly.csv`; `OVR_test_on_other.py` points at it
 
@@ -185,7 +184,7 @@ Trains the final binary feeding/non-feeding classifier on all available labeled 
 - What it does: performs 5-fold KFold cross-validation, trains the binary feeding classifier, predicts each validation fold, and prints accuracy, precision, recall, F1, and loss.
 - Results go to: console output; best model checkpoint path is `Final_Feeding_Images/FINAL_Real_Feeding_unfrozen_xval_augmented.keras`.
 - Existing captured output: `Monarch_xval_output.txt` reports 5-fold averages of accuracy `0.9055 +/- 0.0448`, precision `0.8963 +/- 0.0557`, recall `0.9681 +/- 0.0250`, F1 `0.9299 +/- 0.0331`, and loss `0.3530 +/- 0.1574`.
-- the model is created once before the fold loop and `clear_session()` is called after each fold, but the model is not rebuilt or reloaded for each fold. That means folds may not be fully independent as written.
+- ~~the model is created once before the fold loop…~~ fixed 2026-09-24: a fresh model is built every fold, using the same architecture as `Final_feeding_model_train_on_ALL.py` (BatchNorm head, only `conv5_block` trainable, same training augmentation). Checkpoints are saved per fold (`…_fold1.keras` … `_fold5.keras`).
 
 ### `Feeding_model_only_with_flower_comparison.py`
 

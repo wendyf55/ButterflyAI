@@ -31,6 +31,7 @@ EARLY_STOPPING_PATIENCE = 10
 PREDICTION_THRESHOLD = 0.5
 DROPOUT_RATE = 0.5
 DENSE_UNITS = 512
+TRAINABLE_BLOCK = "conv5_block"   # same as Final_feeding_model_train_on_ALL.py
 
 from tensorflow.keras.applications.resnet50 import preprocess_input, ResNet50
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -75,7 +76,7 @@ X = all_df['filename'].values
 
 
 #CREATE MODEL
-from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout, BatchNormalization, Activation
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.models import Model
 from tensorflow.keras.regularizers import l2
@@ -92,39 +93,6 @@ np.random.seed(SEED_VALUE)
 tf.random.set_seed(SEED_VALUE)
 
 
-# The code in my tutorial had a few additional layers, but I would try this out too. Sometimes simpler is better
-base_model = ResNet50(include_top = False, weights = 'imagenet')
-x = base_model.output
-
-#add layers, but could overfit
-
-#x = Dense(256, activation='relu', kernel_regularizer=l2(0.1))(x)
-
-#change from 0.1 to 0.2 to 0.5 to reduce overfitting
-#x = Dropout(0.1)(x)
-x = GlobalAveragePooling2D()(x)
-x = Dropout(DROPOUT_RATE)(x)
-x = Dense(DENSE_UNITS, activation='relu')(x)
-x = Dropout(DROPOUT_RATE)(x)
-predictions = Dense(1, activation = 'sigmoid')(x)
-
-#base_model = ResNet50(include_top=False, weights='imagenet')
-#x = base_model.output
-#x = GlobalAveragePooling2D()(x)
-#x = Dropout(0.5)(x)
-
-#x = Dense(512)(x)
-#x = BatchNormalization()(x)
-#x = Activation('relu')(x)
-#x = Dropout(0.5)(x)
-
-#predictions = Dense(1, activation='sigmoid')(x)
-
-model = Model(inputs = base_model.input, outputs = predictions)
-model.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
-
-early_stopping = EarlyStopping(monitor='val_loss', patience=EARLY_STOPPING_PATIENCE)
-
 accuracy_per_fold = []
 loss_per_fold = []
 precision_per_fold = []
@@ -134,10 +102,60 @@ f1_per_fold = []
 # Example of a simple data generator setup
 datagen = ImageDataGenerator(preprocessing_function = preprocess_input)
 
-checkpoint = ModelCheckpoint(str(MODEL_CHECKPOINT), monitor='val_loss', save_best_only=True)
+# CHANGED: same augmentation as Final_feeding_model_train_on_ALL.py for the training folds (validation stays un-augmented)
+train_datagen = ImageDataGenerator(preprocessing_function = preprocess_input,
+                                   horizontal_flip = True,
+                                   shear_range = 0.2
+                                  )
 
 
-for train_idx, val_idx in fold_splits:
+for fold, (train_idx, val_idx) in enumerate(fold_splits, start=1):   # CHANGED: fold counter added
+    print(f"\n Fold {fold}/{K_FOLDS} ")
+
+    # CHANGED: reset before each fold so folds are independent
+    tf.keras.backend.clear_session()
+    os.environ['PYTHONHASHSEED']=str(SEED_VALUE)
+    random.seed(SEED_VALUE)
+    np.random.seed(SEED_VALUE)
+    tf.random.set_seed(SEED_VALUE)
+
+    # CHANGED: build a FRESH model each fold (this block was originally outside the loop, so every fold
+    # kept training the previous fold's model). Same architecture as Final_feeding_model_train_on_ALL.py
+    # (the "final" model): BatchNorm head, only the conv5 block trainable.
+    base_model = ResNet50(include_top=False, weights='imagenet')
+    x = base_model.output
+    x = GlobalAveragePooling2D()(x)
+    x = Dropout(DROPOUT_RATE)(x)
+
+    x = Dense(DENSE_UNITS)(x)
+    x = BatchNormalization()(x)
+    x = Activation('relu')(x)
+    x = Dropout(DROPOUT_RATE)(x)
+
+    predictions = Dense(1, activation='sigmoid')(x)
+
+    # previous head (whole ResNet50 trainable, no BatchNorm), kept for reference:
+    #x = GlobalAveragePooling2D()(x)
+    #x = Dropout(DROPOUT_RATE)(x)
+    #x = Dense(DENSE_UNITS, activation='relu')(x)
+    #x = Dropout(DROPOUT_RATE)(x)
+    #predictions = Dense(1, activation = 'sigmoid')(x)
+
+    model = Model(inputs = base_model.input, outputs = predictions)
+
+    for layer in base_model.layers:
+        if TRAINABLE_BLOCK in layer.name: #tune just the final block ~15-20 layers
+            layer.trainable = True
+        else:
+            layer.trainable = False
+
+    model.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+
+    # CHANGED: new callbacks each fold, and one checkpoint file per fold
+    early_stopping = EarlyStopping(monitor='val_loss', patience=EARLY_STOPPING_PATIENCE)
+    checkpoint = ModelCheckpoint(str(MODELS_DIR / f'{MODEL_CHECKPOINT.stem}_fold{fold}.keras'),
+                                 monitor='val_loss', save_best_only=True)
+
     X_train, X_val = X[train_idx], X[val_idx]
     y_train, y_val = y[train_idx], y[val_idx]
 
@@ -146,7 +164,7 @@ for train_idx, val_idx in fold_splits:
     val_df = pd.DataFrame({'filename': X_val, 'label': y_val})
 
     # Create generators
-    train_generator = datagen.flow_from_dataframe(
+    train_generator = train_datagen.flow_from_dataframe(
         train_df,
         x_col='filename',
         y_col='label',
@@ -196,12 +214,7 @@ for train_idx, val_idx in fold_splits:
 
     print(f'Fold completed. Accuracy: {accuracy:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f}, F1 Score: {f1:.4f}, Loss: {loss:.4f}')
 
-    tf.keras.backend.clear_session()
-
-
-    # Reload model weights for the next fold
-    # ask why this line is included
-    #model.load_weights('best_weights_ResNet50_binary_superimposed2.keras')
+    # (the old "reload model weights for the next fold" line is no longer needed: each fold builds a fresh model)
 
 
 # Convert lists to numpy arrays for easier computation
