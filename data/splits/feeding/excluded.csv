@@ -1,0 +1,18 @@
+image_path,reason
+data/images/bimby_real/ln6exs4q1u.jpg,label_conflict: identical to YRkytjfcOj.jpg but labelled F vs N
+data/images/bimby_real/YRkytjfcOj.jpg,label_conflict: identical to ln6exs4q1u.jpg but labelled N vs F
+data/images/bimby_superimposed/superimposed_YRkytjfcOj.jpg,label_conflict: made from YRkytjfcOj.jpg
+data/images/bimby_real/cKYSdEfLtp.jpg,label_conflict: identical to stt0xTtOMs.jpg but labelled N vs F
+data/images/bimby_real/stt0xTtOMs.jpg,label_conflict: identical to cKYSdEfLtp.jpg but labelled F vs N
+data/images/bimby_superimposed/superimposed_cKYSdEfLtp.jpg,label_conflict: made from cKYSdEfLtp.jpg
+data/images/bimby_real/gsuS6CEumR.jpg,label_conflict: identical to HnCsQ9Y4CA.jpg but labelled N vs F
+data/images/bimby_real/HnCsQ9Y4CA.jpg,label_conflict: identical to gsuS6CEumR.jpg but labelled F vs N
+data/images/bimby_superimposed/superimposed_gsuS6CEumR.jpg,label_conflict: made from gsuS6CEumR.jpg
+data/images/bimby_real/irvBsa5JrS.jpg,label_conflict: identical to XohbPAPgeG.jpg but labelled F vs N
+data/images/bimby_real/XohbPAPgeG.jpg,label_conflict: identical to irvBsa5JrS.jpg but labelled N vs F
+data/images/bimby_real/JRyFBgG0Y1.jpg,label_conflict: identical to jesncSp0zi.jpg but labelled N vs F
+data/images/bimby_real/jesncSp0zi.jpg,label_conflict: identical to JRyFBgG0Y1.jpg but labelled F vs N
+data/images/bimby_real/la2JTxlvi3.jpg,label_conflict: identical to wraTKe8fvF.jpg but labelled F vs N
+data/images/bimby_real/wraTKe8fvF.jpg,label_conflict: identical to la2JTxlvi3.jpg but labelled N vs F
+data/images/bimby_real/qSnTn8ycgT.jpg,label_conflict: identical to hAmR28qHpv.jpg but labelled N vs F
+data/images/bimby_real/hAmR28qHpv.jpg,label_conflict: identical to qSnTn8ycgT.jpg but labelled F vs N
