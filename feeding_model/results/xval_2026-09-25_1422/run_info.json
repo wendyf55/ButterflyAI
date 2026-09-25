@@ -1,0 +1,51 @@
+{
+  "script": "Final_feeding_model_xval.py",
+  "started": "2026-09-25T14:22:54",
+  "git_commit": "b71fc0d3839e53e96d3be4cb467aff9cd48a1111",
+  "git_uncommitted_changes": [
+    "M feeding_model/Final_feeding_model_xval.py"
+  ],
+  "python": "3.11.16",
+  "tensorflow": "2.19.1",
+  "keras": "3.15.1",
+  "numpy": "2.1.3",
+  "pandas": "3.0.6",
+  "scikit_learn": "1.9.1",
+  "machine": "macOS-15.7.3-arm64-arm-64bit",
+  "gpus": [
+    "/physical_device:GPU:0"
+  ],
+  "config": {
+    "seed": 321,
+    "img_size": [
+      224,
+      224
+    ],
+    "batch_size": 32,
+    "epochs": 10,
+    "k_folds": 5,
+    "threshold": 0.5,
+    "dropout": 0.5,
+    "dense_units": 512,
+    "trainable_block": "conv5_block",
+    "classes": [
+      "F",
+      "N"
+    ],
+    "drop_untraceable_super": true,
+    "smoke_test": false,
+    "force_cpu": false
+  },
+  "data": {
+    "training_csv": "data/splits/feeding/dev_pool.csv",
+    "training_csv_md5": "eac30824f0503ecd635075117e1ce32f",
+    "excluded_csv": "data/splits/feeding/excluded.csv",
+    "excluded_csv_md5": "6f591b46999c0b3a770d6afa07c77f36",
+    "n_images": 4630,
+    "counts": {
+      "real_F": 2130,
+      "real_N": 1947,
+      "super_N": 553
+    }
+  }
+}
