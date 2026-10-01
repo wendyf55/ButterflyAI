@@ -43,3 +43,118 @@ Epoch 5/10
 Epoch 6/10
 116/116 - 44s - 377ms/step - accuracy: 0.9927 - loss: 0.0228 - val_accuracy: 0.9504 - val_loss: 0.1573
 Epoch 7/10
+116/116 - 43s - 374ms/step - accuracy: 0.9841 - loss: 0.0432 - val_accuracy: 0.9612 - val_loss: 0.1697
+Epoch 8/10
+116/116 - 42s - 361ms/step - accuracy: 0.9914 - loss: 0.0321 - val_accuracy: 0.9547 - val_loss: 0.1369
+Epoch 9/10
+116/116 - 41s - 353ms/step - accuracy: 0.9903 - loss: 0.0246 - val_accuracy: 0.9504 - val_loss: 0.1888
+Epoch 10/10
+116/116 - 40s - 342ms/step - accuracy: 0.9938 - loss: 0.0177 - val_accuracy: 0.9634 - val_loss: 0.1423
+Fold 2 completed (all images). Accuracy: 0.9634, Loss: 0.1423 | F: precision 0.9712, recall 0.9485, F1 0.9597 | N: precision 0.9569, recall 0.9760, F1 0.9664
+
+ Fold 3/5 
+Found 3707 validated image filenames belonging to 2 classes.
+Found 923 validated image filenames belonging to 2 classes.
+Epoch 1/10
+116/116 - 47s - 408ms/step - accuracy: 0.9018 - loss: 0.2405 - val_accuracy: 0.8787 - val_loss: 5.9548
+Epoch 2/10
+116/116 - 42s - 362ms/step - accuracy: 0.9558 - loss: 0.1242 - val_accuracy: 0.9361 - val_loss: 0.1867
+Epoch 3/10
+116/116 - 44s - 380ms/step - accuracy: 0.9676 - loss: 0.0892 - val_accuracy: 0.9523 - val_loss: 0.2022
+Epoch 4/10
+116/116 - 43s - 374ms/step - accuracy: 0.9763 - loss: 0.0567 - val_accuracy: 0.9512 - val_loss: 0.1457
+Epoch 5/10
+116/116 - 43s - 372ms/step - accuracy: 0.9768 - loss: 0.0605 - val_accuracy: 0.9252 - val_loss: 0.3220
+Epoch 6/10
+116/116 - 42s - 365ms/step - accuracy: 0.9857 - loss: 0.0376 - val_accuracy: 0.9307 - val_loss: 0.2277
+Epoch 7/10
+116/116 - 43s - 369ms/step - accuracy: 0.9873 - loss: 0.0359 - val_accuracy: 0.9610 - val_loss: 0.1607
+Epoch 8/10
+116/116 - 43s - 372ms/step - accuracy: 0.9881 - loss: 0.0323 - val_accuracy: 0.9610 - val_loss: 0.1154
+Epoch 9/10
+116/116 - 43s - 370ms/step - accuracy: 0.9930 - loss: 0.0211 - val_accuracy: 0.9307 - val_loss: 0.3224
+Epoch 10/10
+116/116 - 42s - 365ms/step - accuracy: 0.9914 - loss: 0.0215 - val_accuracy: 0.9653 - val_loss: 0.1351
+Fold 3 completed (all images). Accuracy: 0.9653, Loss: 0.1350 | F: precision 0.9602, recall 0.9647, F1 0.9624 | N: precision 0.9698, recall 0.9659, F1 0.9678
+
+ Fold 4/5 
+Found 3697 validated image filenames belonging to 2 classes.
+Found 933 validated image filenames belonging to 2 classes.
+Epoch 1/10
+116/116 - 51s - 440ms/step - accuracy: 0.9010 - loss: 0.2543 - val_accuracy: 0.9035 - val_loss: 2.2025
+Epoch 2/10
+116/116 - 45s - 384ms/step - accuracy: 0.9573 - loss: 0.1134 - val_accuracy: 0.8821 - val_loss: 0.4886
+Epoch 3/10
+116/116 - 44s - 378ms/step - accuracy: 0.9694 - loss: 0.0763 - val_accuracy: 0.9303 - val_loss: 0.3148
+Epoch 4/10
+116/116 - 40s - 349ms/step - accuracy: 0.9735 - loss: 0.0740 - val_accuracy: 0.9539 - val_loss: 0.1751
+Epoch 5/10
+116/116 - 44s - 380ms/step - accuracy: 0.9876 - loss: 0.0321 - val_accuracy: 0.9475 - val_loss: 0.1768
+Epoch 6/10
+116/116 - 41s - 355ms/step - accuracy: 0.9859 - loss: 0.0393 - val_accuracy: 0.9453 - val_loss: 0.1862
+Epoch 7/10
+116/116 - 42s - 360ms/step - accuracy: 0.9886 - loss: 0.0321 - val_accuracy: 0.9400 - val_loss: 0.3685
+Epoch 8/10
+116/116 - 41s - 357ms/step - accuracy: 0.9905 - loss: 0.0268 - val_accuracy: 0.9571 - val_loss: 0.2116
+Epoch 9/10
+116/116 - 41s - 349ms/step - accuracy: 0.9919 - loss: 0.0236 - val_accuracy: 0.9646 - val_loss: 0.1684
+Epoch 10/10
+116/116 - 40s - 347ms/step - accuracy: 0.9932 - loss: 0.0160 - val_accuracy: 0.9593 - val_loss: 0.1868
+Fold 4 completed (all images). Accuracy: 0.9593, Loss: 0.1868 | F: precision 0.9451, recall 0.9672, F1 0.9560 | N: precision 0.9718, recall 0.9526, F1 0.9621
+
+ Fold 5/5 
+Found 3700 validated image filenames belonging to 2 classes.
+Found 930 validated image filenames belonging to 2 classes.
+Epoch 1/10
+116/116 - 48s - 415ms/step - accuracy: 0.9041 - loss: 0.2428 - val_accuracy: 0.9516 - val_loss: 0.5440
+Epoch 2/10
+116/116 - 41s - 351ms/step - accuracy: 0.9578 - loss: 0.1161 - val_accuracy: 0.9581 - val_loss: 0.2108
+Epoch 3/10
+116/116 - 41s - 352ms/step - accuracy: 0.9668 - loss: 0.0841 - val_accuracy: 0.9495 - val_loss: 0.1719
+Epoch 4/10
+116/116 - 41s - 353ms/step - accuracy: 0.9716 - loss: 0.0730 - val_accuracy: 0.9269 - val_loss: 0.3258
+Epoch 5/10
+116/116 - 41s - 350ms/step - accuracy: 0.9865 - loss: 0.0440 - val_accuracy: 0.9667 - val_loss: 0.1244
+Epoch 6/10
+116/116 - 41s - 350ms/step - accuracy: 0.9868 - loss: 0.0352 - val_accuracy: 0.9688 - val_loss: 0.1286
+Epoch 7/10
+116/116 - 41s - 350ms/step - accuracy: 0.9892 - loss: 0.0289 - val_accuracy: 0.9720 - val_loss: 0.1264
+Epoch 8/10
+116/116 - 40s - 349ms/step - accuracy: 0.9914 - loss: 0.0217 - val_accuracy: 0.9688 - val_loss: 0.1283
+Epoch 9/10
+116/116 - 41s - 353ms/step - accuracy: 0.9900 - loss: 0.0260 - val_accuracy: 0.9624 - val_loss: 0.1988
+Epoch 10/10
+116/116 - 40s - 348ms/step - accuracy: 0.9908 - loss: 0.0242 - val_accuracy: 0.9634 - val_loss: 0.1673
+Fold 5 completed (all images). Accuracy: 0.9634, Loss: 0.1597 | F: precision 0.9734, recall 0.9459, F1 0.9594 | N: precision 0.9555, recall 0.9782, F1 0.9667
+
+Cross-Validation Results (5 folds, mean ± SD; F = feeding, N = non-feeding):
+
+  all (n per fold: [916, 928, 923, 933, 930])
+    accuracy     0.9620 ± 0.0029
+    loss         0.1584 ± 0.0207
+    precision_F  0.9574 ± 0.0160
+    recall_F     0.9606 ± 0.0130
+    f1_F         0.9588 ± 0.0027
+    precision_N  0.9666 ± 0.0100
+    recall_N     0.9631 ± 0.0152
+    f1_N         0.9647 ± 0.0032
+
+  real (n per fold: [816, 817, 813, 817, 814])
+    accuracy     0.9657 ± 0.0032
+    loss         0.1431 ± 0.0203
+    precision_F  0.9736 ± 0.0115
+    recall_F     0.9606 ± 0.0130
+    f1_F         0.9669 ± 0.0032
+    precision_N  0.9577 ± 0.0130
+    recall_N     0.9713 ± 0.0130
+    f1_N         0.9643 ± 0.0032
+
+  super (n per fold: [100, 111, 110, 116, 116])
+    accuracy     0.9341 ± 0.0332
+    loss         0.2756 ± 0.1797
+    precision_F  0.0000 ± 0.0000
+    precision_N  1.0000 ± 0.0000
+    recall_N     0.9341 ± 0.0332
+    f1_N         0.9657 ± 0.0177
+
+Saved to /Users/wfrankel/Desktop/Tseng-Lab/ButterflyAI/feeding_model/results/xval_2026-09-25_1422
