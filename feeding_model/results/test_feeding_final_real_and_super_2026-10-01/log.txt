@@ -1,0 +1,14 @@
+Testing /Users/wfrankel/Desktop/Tseng-Lab/ButterflyAI/feeding_model/models/feeding_final_real_and_super_2026-10-01.keras
+Results in /Users/wfrankel/Desktop/Tseng-Lab/ButterflyAI/feeding_model/results/test_feeding_final_real_and_super_2026-10-01
+Found 6353 validated image filenames belonging to 2 classes.
+Found 2785 validated image filenames belonging to 2 classes.
+
+Test results (F = feeding, N = non-feeding):
+test_set           subset    n  n_F  n_N  accuracy  precision_F  recall_F  precision_N  recall_N
+   test1          overall 6353 4127 2226     0.818        0.922     0.785        0.688     0.877
+   test1 bimby_collection 1307 1155  152     0.705        0.926     0.725        0.211     0.559
+   test1        inat_2024 2884  831 2053     0.829        0.731     0.644        0.862     0.904
+   test1   inat_2024_gold 2162 2141   21     0.870        0.995     0.873        0.042     0.571
+ ontario          overall 2785 1230 1555     0.775        0.830     0.618        0.749     0.900
+
+Saved to /Users/wfrankel/Desktop/Tseng-Lab/ButterflyAI/feeding_model/results/test_feeding_final_real_and_super_2026-10-01

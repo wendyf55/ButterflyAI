@@ -1,0 +1,37 @@
+{
+  "script": "test_final_model.py",
+  "started": "2026-10-01T12:28:00",
+  "git_commit": "c1218878d6cc52ba3522ddf7fb8d7895b7e3d8c1",
+  "git_uncommitted_changes": [
+    "M feeding_model/test_final_model.py"
+  ],
+  "tensorflow": "2.19.1",
+  "machine": "macOS-15.7.3-arm64-arm-64bit",
+  "gpus": [
+    "/physical_device:GPU:0"
+  ],
+  "model_file": "feeding_model/models/feeding_final_real_and_super_2026-10-01.keras",
+  "model_md5": "648ce3d80f97fad21af7a7bab2c93513",
+  "config": {
+    "img_size": [
+      224,
+      224
+    ],
+    "threshold": 0.5,
+    "classes": [
+      "F",
+      "N"
+    ]
+  },
+  "test_sets": {
+    "test1": {
+      "csv": "data/splits/feeding/test1.csv",
+      "md5": "54854f75fd3122e15f012029d7f39072"
+    },
+    "ontario": {
+      "csv": "data/splits/feeding/test2_ontario.csv",
+      "md5": "4a088717025ab1368142501b7c2978be"
+    }
+  },
+  "finished": "2026-10-01T12:29:00"
+}

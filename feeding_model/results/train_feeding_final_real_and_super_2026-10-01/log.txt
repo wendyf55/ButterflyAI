@@ -1,0 +1,29 @@
+Run folder: /Users/wfrankel/Desktop/Tseng-Lab/ButterflyAI/feeding_model/results/train_feeding_final_real_and_super_2026-10-01
+Model will be saved to: /Users/wfrankel/Desktop/Tseng-Lab/ButterflyAI/feeding_model/models/feeding_final_real_and_super_2026-10-01.keras
+Dropping 17 excluded + 103 untraceable superimposed; keeping 4630 of 4750
+Training on 4630 images: {('real', 'F'): 2130, ('real', 'N'): 1947, ('super', 'N'): 553}
+Found 4630 validated image filenames belonging to 2 classes.
+Training class indices:  {'F': 0, 'N': 1}
+Epoch 1/10
+145/145 - 47s - 323ms/step - accuracy: 0.9091 - loss: 0.2326
+Epoch 2/10
+145/145 - 42s - 292ms/step - accuracy: 0.9555 - loss: 0.1204
+Epoch 3/10
+145/145 - 44s - 301ms/step - accuracy: 0.9724 - loss: 0.0753
+Epoch 4/10
+145/145 - 44s - 302ms/step - accuracy: 0.9765 - loss: 0.0570
+Epoch 5/10
+145/145 - 44s - 301ms/step - accuracy: 0.9875 - loss: 0.0392
+Epoch 6/10
+145/145 - 43s - 297ms/step - accuracy: 0.9838 - loss: 0.0438
+Epoch 7/10
+145/145 - 43s - 293ms/step - accuracy: 0.9890 - loss: 0.0302
+Epoch 8/10
+145/145 - 43s - 295ms/step - accuracy: 0.9942 - loss: 0.0203
+Epoch 9/10
+145/145 - 43s - 300ms/step - accuracy: 0.9901 - loss: 0.0248
+Epoch 10/10
+145/145 - 43s - 295ms/step - accuracy: 0.9866 - loss: 0.0387
+
+Saved model to /Users/wfrankel/Desktop/Tseng-Lab/ButterflyAI/feeding_model/models/feeding_final_real_and_super_2026-10-01.keras
+Run record in /Users/wfrankel/Desktop/Tseng-Lab/ButterflyAI/feeding_model/results/train_feeding_final_real_and_super_2026-10-01

@@ -47,49 +47,73 @@ For any questions please contact me at <Julie.sieg5678@gmail.com>
 
 ## To Do
 
-Data is now organized in `data/` — see `data/README.md` for which images are used for training, validation and testing, and which script reads which split. The full audit behind it is in the Claude project doc `data-splits-audit.md`.
+### Feeding model — where it stands (2026-10-01)
+
+Final model: `feeding_model/models/feeding_final_real_and_super_2026-10-01.keras` (trained on all 4,630 dev-pool images, real + superimposed). Run records in `feeding_model/results/`.
+
+| | Accuracy | Feeding recall | Non-feeding recall |
+| --- | --- | --- | --- |
+| Cross-validation, real photos (`xval_2026-09-25_1422`) | 0.966 ± 0.003 | 0.961 | 0.971 |
+| Test 1 overall (6,353) | 0.818 | 0.785 | 0.877 |
+| — `inat_2024` (2,884) | 0.829 | 0.644 | 0.904 |
+| — `inat_2024_gold` (2,162; only 21 non-feeding) | 0.870 | 0.873 | — |
+| — `bimby_collection` (1,307) | 0.705 | 0.725 | 0.559 |
+| Test 2 Ontario (2,785) | 0.775 | 0.618 | 0.900 |
+
+- big drop from cross-validation to the test sets (photos from other collections, years and regions)
+- the model misses feeding on new photos (Test 1: 886 feeding called non-feeding vs 273 the other way), so it would undercount feeding
+- the test sets have now been looked at once: choose any further changes on cross-validation, and report new test results as a second look
 
 ### Next
 
+- Test whether the superimposed images help on real photos of butterflies sitting on flowers without feeding (the case they were made for). So far we only know that a model trained without them labels most *composites* "feeding" (30% right vs 93% with them); on real non-feeding photos the two models are tied (non-feeding recall 0.977 real-only vs 0.971 real+super). To do: tag which real non-feeding photos in the dev pool show a butterfly sitting on a flower, then compare the two models on just those photos. Both models' predictions for every image are already saved (`feeding_model/results/xval_2026-10-01_1119/predictions.csv` = real+super, `xval_2026-10-01_1043_real_only/predictions.csv` = real-only), so only the tags are needed, no retraining
+- Error review (optional): look through a sample of the missed feeding photos per test source (tiny butterfly? blurry? mislabelled?). Diagnosis only; note that it uses the test sets
+- Take the `bimby_collection` result (see Qs for J): it's the worst test source (0.705, non-feeding recall 0.559) although it's supposedly the same collection as training, which points to a labelling or source difference
+- Repoint `monarch/Monarch_feeding_test.py`, `monarch/general_feeding_model_eval.py` and `Model_Catalogue_Evaluation.ipynb` at the new model (they still use `REAL_AND_SUPER_Final_feeding_model_unfrozen.keras`)
+
+### Feeding model — improving it (choose on cross-validation; one ~36 min run each)
+
+- Training stability: validation accuracy dips mid-training (fold 1 down to 0.58) before recovering by epoch 10; the final model has no validation set to catch a bad last epoch. Fix drafted but not applied: freeze ResNet's BatchNorm layers, learning rate 1e-4, cosine decay, optional head-only warm-up
+- Closing the gap to new photos: stronger augmentation (random crop/zoom, colour), bilinear resizing instead of nearest-neighbour (every script that scores images must then match), more varied training photos (e.g. iNat-style, lower resolution)
+- Optional: repeat the best recipe with 2–3 seeds
+- Move the shared code (data filter, metrics, run record) into one module: it's copied across `Final_feeding_model_xval.py`, `Final_feeding_model_train_on_ALL.py` and `test_final_model.py`, so the recipe can drift
+
 ### Blocking model reruns (settle these first, so every model is rerun only once)
 
-Reruns wait until the training data is final. Plan and known script bugs: Claude project doc `rerun-plan.md`.
-
-- Feeding (all feeding reruns): Julie's answers on the 102 superimposed images with no traceable source photo and on the label conflicts (see Qs for J). The 7 byte-identical pairs labelled both F and N (17 images incl. superimposed copies) will be left out via `data/splits/feeding/excluded.csv` (drafted, not yet added)
+- Feeding: J's answers on the 103 superimposed images with no traceable source photo (dropped for now via `DROP_UNTRACEABLE_SUPER`; add back and rerun if cleared) and on the label conflicts
 - Monarch: decide whether superimposed monarch images will be added to training — if yes, rerun only after they exist
-- Plant: find a machine for the OVR cross-validation (~50 models, roughly 30–45 h) — likely the UBC datascience GPU; too big for the laptop
-- Before the first real run on the Mac: add the run-record code (saves settings, git commit, log, per-image predictions and metrics for every run), fix the script bugs listed in `rerun-plan.md`, and do the GPU-vs-CPU smoke test (tensorflow-metal has reported silent training bugs)
-- Pin the GPU environment: `conda env export > environment-gpu.yml` (the unpinned `environment.yml` would install a TensorFlow version that breaks tensorflow-metal)
+- Plant: find a machine for the OVR cross-validation (~50 models, roughly 30–45 h) — likely the UBC datascience GPU; too big for the laptop (`Monarch_train.sh` is already a SLURM script)
 
 ### Rerun (results affected by data leakage or bugs)
 
 Feeding
 
-- `Final_feeding_model_xval.py` cross-validation results — the model was reused across folds and was a different architecture from the final model (both fixed; just rerun). Decided: both scripts train a fixed 10 epochs, no early stopping
-- `REAL_AND_SUPER_Final_feeding_model_unfrozen.keras` (production, also used by the monarch pipeline) and `REAL_ONLY_Final_feeding_model_unfrozen.keras` — trained on the old ungrouped 80/20 split. `Final_feeding_model_train_on_ALL.py` now trains on the whole dev pool (4,750 images)
-- `results/Output_feeding_flower_only_real_test.txt` / `_ALL_test.txt` (the 107/132 numbers below) — from a split where a superimposed image and its source photo could land on opposite sides. Rerun the two comparison scripts
-- `results/Output_feeding_test_on_BIMBY2024.txt` (85.4%) and `results/model_catalogue_evaluation.csv/.md` — the old BIMBY-2024 test set contained ~1,950 training images and the old gold set overlapped it. Rerun `Model_Catalogue_Evaluation.ipynb` (now reports Test 1 overall + per source, and Ontario)
+- `results/Output_feeding_flower_only_real_test.txt` / `_ALL_test.txt` (the 107/132 numbers below): superseded by the cross-validation real-only vs real+super comparison; the two comparison scripts can be archived
+- `results/Output_feeding_test_on_BIMBY2024.txt` (85.4%) and `results/model_catalogue_evaluation.csv/.md`: the old BIMBY-2024 test set contained ~1,950 training images. Superseded by `test_feeding_final_real_and_super_2026-10-01`. If the catalogue notebook is rerun: it flips a model's labels based on test accuracy, ranks ~30 models on the test sets (so it can't give an honest number for the winner), and doesn't save per-image scores
 
 Plant
 
-- OVR models in `models/OVR_models/` and the `aug4_*` cross-validation JSONs — the same flower (archive re-pastes) could be in both training and validation. Rerun `Final_plant_OVR_xval.py` (writes to `models/OVR_models_xval/` and `results/`)
-- `Scaling_test_results.csv` — random split; rerun on the new pool (grouped fold 0 held out)
-- run `OVR_test_on_other.py` on the new mixed-plants test set (it reads `models/OVR_models/`; point `MODEL_DIR` at `models/OVR_models_xval/` once the OVR models are retrained)
+- OVR models in `models/OVR_models/` and the `aug4_*` cross-validation JSONs — the same flower (archive re-pastes) could be in both training and validation. Rerun `Final_plant_OVR_xval.py` (writes to `models/OVR_models_xval/` and `results/`). Fix first: model file overwritten each fold (only fold 5 kept); final print loop crashes (`conf_matrix` is a list, use `conf_metrics`); restore_best_weights on the validation fold; metrics on downsampled validation; whole ResNet trainable (the scaling script trains conv5 only)
+- add a script that evaluates the plant models on `data/splits/plant/test_gold.csv` (none exists)
+- `Scaling_test_results.csv` — random split; rerun on the new pool (grouped fold 0 held out). Fix first: saves only macro precision, no model saved, head differs from OVR, no check that all 10 classes are in each subsample
+- run `OVR_test_on_other.py` on the new mixed-plants test set (point `MODEL_DIR` at `models/OVR_models_xval/` once the OVR models are retrained)
 
 Monarch
 
-- `results/Monarch_xval_output_fixed.txt` — plain KFold, 13 duplicate image pairs could straddle folds (minor). Rerun with the grouped folds in `data/splits/monarch/dev_pool.csv`
+- `results/Monarch_xval_output_fixed.txt` — plain KFold, 13 duplicate image pairs could straddle folds (minor). Rerun with the grouped folds in `data/splits/monarch/dev_pool.csv`. Fix first: whole ResNet trainable, Adam 1e-3, no augmentation, simpler head than the feeding model; restore_best_weights on the validation fold; nothing saved beyond the log
 - `results/model2_transfer_eval.md` — the monarch labels were made by reviewing this same model's predictions, so the result is circular. Needs an independently labelled monarch test set
+- `Monarch_feeding_test.py` overwrites `data/metadata/monarch/Monarch_image_predictions.csv` (git-ignored, the record the monarch labels were built from) — write to a new file
 
 ### Housekeeping
 
-- old `.keras` models still sit in `feeding_model/data/Final_Feeding_Images/` and `plant_id_model/data/*/` — move them into `models/` (and update `DATA_MODELS_DIR` in the catalogue notebook)
-- the Script section below still describes old paths — `data/README.md` has the current ones
+- update `data/README.md`'s "Which script reads which split" table: `Final_feeding_model_train_on_ALL.py` no longer overwrites the production model, and `test_final_model.py` is new
+- the Script section below still describes old paths and the old xval behaviour — `data/README.md` has the current paths
+- archive `Feeding_model_only_with_flower_comparison.py` / `_augmentedversion.py` (superseded by the real-only cross-validation)
 
 ### Qs for J
 
-- where the `bimby_collection` photos (BIMBY-2024 Block B, `data/metadata/bimby2024/BIMBY_redo.csv`) came from
-- the 102 superimposed images with no traceable source photo (e.g. `superimposed_1008.jpeg`)
+- where the `bimby_collection` photos (BIMBY-2024 Block B, `data/metadata/bimby2024/BIMBY_redo.csv`) came from and how they were labelled (worst test source: 0.705)
+- the 103 superimposed images with no traceable source photo (e.g. `superimposed_1008.jpeg`)
 - which photos the butterflies in the plant composites were cut from
 - label conflicts: 7 duplicate image pairs in the feeding dev pool have different labels, and 66 images were labelled differently in BIMBY-2024 than in training
 
@@ -100,7 +124,7 @@ Monarch
 - superimposed images for the monarch models
 - independently labelled monarch test set
 - expanding the list of 10 species
-- model tuning with parameters
+- model tuning with parameters (see "Feeding model — improving it")
 
 ### Plant ID Model TODOs
 
@@ -117,9 +141,16 @@ Monarch
 - sort out training, testing, and validation sets (2026-09-24): all data moved into `data/` (`images/`, `metadata/`, `splits/`, `superseded/`) with `data/README.md`; `data/scripts/make_splits.py` builds grouped 5-fold dev pools + test sets for every model
 - removed the ~1,950 training images from the BIMBY-2024 test set; feeding Test 1 = BIMBY-2024 + gold feeding labels (reported per source), Test 2 = Ontario
 - plant: flower_only photos and the archive Cirsium/Sisymbrium batches added to the training pool, species names normalized, duplicate flowers grouped, Joint gold standard is now the plant test set
-- `Final_feeding_model_xval.py`: builds a fresh model every fold (it used to keep training the previous fold's model), with the same architecture and training augmentation as `Final_feeding_model_train_on_ALL.py` (BatchNorm head, only `conv5_block` trainable); one checkpoint file per fold
+- `Final_feeding_model_xval.py`: builds a fresh model every fold (it used to keep training the previous fold's model), with the same architecture and training augmentation as `Final_feeding_model_train_on_ALL.py` (BatchNorm head, only `conv5_block` trainable)
 - all scripts and `Model_Catalogue_Evaluation.ipynb` point at `data/splits/`; `Monarch_feeding_test.py` writes a prediction CSV instead of moving images
-- built the plant "mixed plants" test set (`data/splits/plant/test_mixed_plants.csv`, 138 BIMBY-2024 photos: 24 target species, 114 other plants) to replace the missing `BC2024_plant_otheronly.csv`; `OVR_test_on_other.py` points at it
+- feeding training data settled (2026-09-25): the 17 label-conflict images excluded (`data/splits/feeding/excluded.csv`), the 103 untraceable superimposed images dropped for now; dev pool = 4,630 images
+- `Final_feeding_model_xval.py` reworked (2026-09-25): fixed 10 epochs with nothing chosen on validation, F=0/N=1 pinned, metrics for both classes and for real / superimposed separately, every run saved to its own folder (predictions, metrics, training curves, run record, log), `SMOKE_TEST` / `FORCE_CPU` / `TRAIN_ON_REAL_ONLY` flags
+- GPU environment pinned in `environment-gpu.yml`; Mac GPU checked against the CPU (same training); reruns reproduce exactly
+- first clean feeding cross-validation (`xval_2026-09-25_1422`): real photos 0.966 ± 0.003
+- real-only vs real+superimposed (2026-10-01): tied on real photos (0.969 vs 0.966, p = 0.33); final model = real+super, by the rule set before testing
+- `Final_feeding_model_train_on_ALL.py` rewritten (same filter and recipe as the xval, run record, never overwrites a model) and final model trained (2026-10-01)
+- `test_final_model.py` added; final model tested once on Test 1 (per source) and Ontario (2026-10-01)
+- old `.keras` files moved out of the data folders into `models/`
 
 ## Repository Contents
 

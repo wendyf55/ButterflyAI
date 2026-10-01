@@ -32,7 +32,7 @@ PROJECT_ROOT = MODULE_DIR.parent
 SPLITS_DIR = PROJECT_ROOT / "data" / "splits" / "feeding"
 MODELS_DIR = MODULE_DIR / "models"
 RESULTS_DIR = MODULE_DIR / "results"
-MODEL_PATH = MODELS_DIR / "feeding_final_real_and_super_YYYY-MM-DD.keras"   # <- set to the model you trained
+MODEL_PATH = MODELS_DIR / "feeding_final_real_and_super_2026-10-01.keras" 
 TEST_SETS = {'test1': SPLITS_DIR / "test1.csv",
              'ontario': SPLITS_DIR / "test2_ontario.csv"}
 IMG_HEIGHT = 224
