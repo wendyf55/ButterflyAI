@@ -56,6 +56,8 @@ CLASSES = ['F', 'N']   # CHANGED: fixed class order -> F=0, N=1, so the sigmoid 
 EXCLUDED_CSV = SPLITS_DIR / "excluded.csv"   # 17 label-conflict images (identical pairs labelled F and N)
 DROP_UNTRACEABLE_SUPER = True   # superimposed images with no source photo in the pool (103); off once J clears them
 #just not sure about origin or data leakage issues since we can't trace these
+TRAIN_ON_REAL_ONLY = False   # True = superimposed images are left out of TRAINING only. The validation folds don't change,
+                             # so the real-photo results compare image-for-image with a real+super run
 
 # Quick checks (both False for the real run)
 SMOKE_TEST = False   # True = pipeline check on a few images: 2 folds, 3 epochs, a few minutes. The numbers mean nothing
@@ -74,7 +76,7 @@ if FORCE_CPU:
 # Run folder and log
 
 # CHANGED: run folder + everything printed also goes to log.txt
-RUN_DIR = RESULTS_DIR / (f"xval_{datetime.now():%Y-%m-%d_%H%M}" + ("_smoke" if SMOKE_TEST else "") + ("_cpu" if FORCE_CPU else ""))
+RUN_DIR = RESULTS_DIR / (f"xval_{datetime.now():%Y-%m-%d_%H%M}" + ("_real_only" if TRAIN_ON_REAL_ONLY else "") + ("_smoke" if SMOKE_TEST else "") + ("_cpu" if FORCE_CPU else ""))
 RUN_DIR.mkdir(parents=True, exist_ok=False)   # never overwrite an earlier run
 
 #data/images/bimby_real and data/images/bimby_superimposed contain the 2023 BC BIMBY feeding and non-feeding photos and the superimposed photos
@@ -169,7 +171,7 @@ run_info = {
                'epochs': EPOCHS, 'k_folds': K_FOLDS, 'threshold': PREDICTION_THRESHOLD,
                'dropout': DROPOUT_RATE, 'dense_units': DENSE_UNITS, 'trainable_block': TRAINABLE_BLOCK,
                'classes': CLASSES, 'drop_untraceable_super': DROP_UNTRACEABLE_SUPER,
-               'smoke_test': SMOKE_TEST, 'force_cpu': FORCE_CPU},
+               'smoke_test': SMOKE_TEST, 'force_cpu': FORCE_CPU, 'train_on_real_only': TRAIN_ON_REAL_ONLY},
     'data': {'training_csv': str(TRAINING_CSV.relative_to(PROJECT_ROOT)), 'training_csv_md5': md5(TRAINING_CSV),
              'excluded_csv': str(EXCLUDED_CSV.relative_to(PROJECT_ROOT)), 'excluded_csv_md5': md5(EXCLUDED_CSV),
              'n_images': len(all_df),
@@ -208,7 +210,7 @@ def compute_metrics(df):
         for j, pred_c in enumerate(CLASSES):
             row[f'true_{true_c}_pred_{pred_c}'] = cm[i, j]
     return row
-
+ 
 SUBSETS = {'all': lambda df: df,
            'real': lambda df: df[df['photo_type'] == 'real'],
            'super': lambda df: df[df['photo_type'] == 'super']}
@@ -295,6 +297,9 @@ for fold, (train_idx, val_idx) in enumerate(fold_splits, start=1):   # CHANGED: 
     # CHANGED: take the rows straight from all_df, so photo_type/group/fold travel with each image
     # (needed for the real-only / super-only metrics and predictions.csv)
     train_df = all_df.iloc[train_idx]
+    if TRAIN_ON_REAL_ONLY:
+        train_df = train_df[train_df['photo_type'] == 'real']
+    print(f"Training on {len(train_df)} images ({train_df['photo_type'].value_counts().to_dict()}), validating on {len(val_idx)}")
     val_df = all_df.iloc[val_idx].reset_index(drop=True)
 
     # Create generators
@@ -359,12 +364,12 @@ for fold, (train_idx, val_idx) in enumerate(fold_splits, start=1):   # CHANGED: 
 
 ##########################################################################################################
 # Summary over the folds (gives mean and SD) and finish the run record
-
+ 
 metrics_df = pd.DataFrame(fold_metrics)
 metric_cols = ['accuracy', 'loss'] + [f'{m}_{c}' for c in CLASSES for m in ('precision', 'recall', 'f1')]
 summary = metrics_df.groupby('subset', sort=False)[metric_cols].agg(['mean', 'std'])
 summary.to_csv(RUN_DIR / "metrics_summary.csv")
-
+ 
 print(f"\nCross-Validation Results ({K_FOLDS} folds, mean ± SD; F = feeding, N = non-feeding):")
 for subset in SUBSETS:
     print(f"\n  {subset} (n per fold: {metrics_df.loc[metrics_df['subset'] == subset, 'n'].tolist()})")
@@ -372,7 +377,7 @@ for subset in SUBSETS:
         mean, sd = summary.loc[subset, (col, 'mean')], summary.loc[subset, (col, 'std')]
         if not np.isnan(mean):
             print(f"    {col:<12} {mean:.4f} ± {sd:.4f}")
-
+ 
 run_info['finished'] = datetime.now().isoformat(timespec='seconds')
 save_run_info()
 print(f"\nSaved to {RUN_DIR}")
