@@ -30,4 +30,7 @@ test_data/
 data/metadata/        
 data/superseded/
 
-Claude outputs/                     
+Claude outputs/
+
+*.pdf
+*.xlsx

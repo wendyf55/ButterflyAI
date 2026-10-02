@@ -20,30 +20,15 @@ plant-ID models are unaffected.
 
 **Replaced (2026-09-24):** `data/splits/plant/test_mixed_plants.csv` (138 BIMBY-2024 photos with a plant ID, built by `data/scripts/make_splits.py`) is used instead; `OVR_test_on_other.py` now points at it.
 
-## Hard Drive README.md
+## Project history
 
-This hard drive contains all of the files for the butterlfyAI project
+The project and most of its files come from JS. In September 2026 WF took it over from JS's project hard drive; the scripts and data were reorganized into this repository (see `data/README.md` for where every dataset went). Notes from the hard drive's README:
 
-- the GPU (datascience UBC) and the GitHub <https://github.com/JulieSieg/ButterflyAI/tree/main> contain subsets of this data
-- all monarch related files can be found on the GitHub except for the models (.keras files) and the images (.jpg) which are exclusively on this hard drive. GitHub caps the number of files to 1000 so the monarch images on the GitHub are a subset of the whole dataset
-
-Each folder on this hard drive should contain its own READme file. Please refer to those for details for each model.
-
-The Monarch_models folder contains the code and images required for training a feeding model to identify feeding and non-feeding behaviour in monarchs
-
-The Feeding_models contains the original feeding non-feeding models, training data, and code for testing the efficacy of copy paste data augmentation on BIMBY 2023 data (all butterfly species)
-
-The Plant_ID_Models contains the photos and code for training OVRs on 10 plant species, including with just flowers and with detectron images (for more info email <julie.sieg5678@gmail.com>). Multiclass code is not on this hard drive as it was deleted from the GPU in Aug2026 and has yet to be recovered. I plan to upload it to the GitHub when I either recover it or rewrite it.
-
-The Testing_datasets have the hold out test sets from BIMBY2024 (BC) and Ontario, including the gold standard test set that has both plant and feeding labels.
-
-Detectron folder contains the datasets for cropping butterflies but not the code. This code will be made available on the GitHub once/if its recovered, if not I’ll rewrite it (email me)
-
-butterflyAI contains miscellaneous code from the GPU as of Aug 2026
-
-Disregard Old_feeding_model_ipynbs as all code has been updated and turned into .py files rather than Jupyter notebook formats
-
-For any questions please contact me at <Julie.sieg5678@gmail.com>
+- The UBC datascience GPU and JS's GitHub (<https://github.com/JulieSieg/ButterflyAI/tree/main>) hold subsets of the project files.
+- Monarch models (`.keras`) and images were only on the hard drive. GitHub caps the number of files, so the GitHub copy has a subset of the monarch images.
+- The multiclass plant-ID code was deleted from the GPU in Aug 2026 and has not been recovered.
+- The Detectron2 code used to cut butterflies out of photos was not on the hard drive (only its output images).
+- JS's contact: <julie.sieg5678@gmail.com>. JS may not be available for questions, so open questions are settled with working decisions (see "Qs for JS" and `data/README.md`).
 
 ## To Do
 
@@ -68,7 +53,7 @@ Final model: `feeding_model/models/feeding_final_real_and_super_2026-10-01.keras
 
 - Test whether the superimposed images help on real photos of butterflies sitting on flowers without feeding (the case they were made for). So far we only know that a model trained without them labels most *composites* "feeding" (30% right vs 93% with them); on real non-feeding photos the two models are tied (non-feeding recall 0.977 real-only vs 0.971 real+super). To do: tag which real non-feeding photos in the dev pool show a butterfly sitting on a flower, then compare the two models on just those photos. Both models' predictions for every image are already saved (`feeding_model/results/xval_2026-10-01_1119/predictions.csv` = real+super, `xval_2026-10-01_1043_real_only/predictions.csv` = real-only), so only the tags are needed, no retraining
 - Error review (optional): look through a sample of the missed feeding photos per test source (tiny butterfly? blurry? mislabelled?). Diagnosis only; note that it uses the test sets
-- Take the `bimby_collection` result (see Qs for J): it's the worst test source (0.705, non-feeding recall 0.559) although it's supposedly the same collection as training, which points to a labelling or source difference
+- Take the `bimby_collection` result (see Qs for JS): it's the worst test source (0.705, non-feeding recall 0.559) although it's supposedly the same collection as training, which points to a labelling or source difference
 - Repoint `monarch/Monarch_feeding_test.py`, `monarch/general_feeding_model_eval.py` and `Model_Catalogue_Evaluation.ipynb` at the new model (they still use `REAL_AND_SUPER_Final_feeding_model_unfrozen.keras`)
 
 ### Feeding model — improving it (choose on cross-validation; one ~36 min run each)
@@ -80,9 +65,8 @@ Final model: `feeding_model/models/feeding_final_real_and_super_2026-10-01.keras
 
 ### Blocking model reruns (settle these first, so every model is rerun only once)
 
-- Feeding: J's answers on the 103 superimposed images with no traceable source photo (dropped for now via `DROP_UNTRACEABLE_SUPER`; add back and rerun if cleared) and on the label conflicts
+- Feeding: JS's answers on the 103 superimposed images with no traceable source photo (dropped for now via `DROP_UNTRACEABLE_SUPER`; add back and rerun if cleared) and on the label conflicts
 - Monarch: decide whether superimposed monarch images will be added to training — if yes, rerun only after they exist
-- Plant: find a machine for the OVR cross-validation (~50 models, roughly 30–45 h) — likely the UBC datascience GPU; too big for the laptop (`Monarch_train.sh` is already a SLURM script)
 
 ### Rerun (results affected by data leakage or bugs)
 
@@ -106,16 +90,16 @@ Monarch
 
 ### Housekeeping
 
-- update `data/README.md`'s "Which script reads which split" table: `Final_feeding_model_train_on_ALL.py` no longer overwrites the production model, and `test_final_model.py` is new
-- the Script section below still describes old paths and the old xval behaviour — `data/README.md` has the current paths
+- the monarch and plant entries in the Script section below still describe old paths — `data/README.md` has the current paths
 - archive `Feeding_model_only_with_flower_comparison.py` / `_augmentedversion.py` (superseded by the real-only cross-validation)
 
-### Qs for J
+### Qs for JS
 
 - where the `bimby_collection` photos (BIMBY-2024 Block B, `data/metadata/bimby2024/BIMBY_redo.csv`) came from and how they were labelled (worst test source: 0.705)
 - the 103 superimposed images with no traceable source photo (e.g. `superimposed_1008.jpeg`)
 - which photos the butterflies in the plant composites were cut from
 - label conflicts: 7 duplicate image pairs in the feeding dev pool have different labels, and 66 images were labelled differently in BIMBY-2024 than in training
+- 112 photos in `data/images/bimby2024/` are not listed in any CSV (not used by any split): what are they?
 
 ### Longer term
 
@@ -125,6 +109,9 @@ Monarch
 - independently labelled monarch test set
 - expanding the list of 10 species
 - model tuning with parameters (see "Feeding model — improving it")
+- update the numbers in the paper, unfortunately it has to be done
+- rewrite multiclass plant id code
+- OSR models - incorpoate for plant id
 
 ### Plant ID Model TODOs
 
@@ -151,25 +138,30 @@ Monarch
 - `Final_feeding_model_train_on_ALL.py` rewritten (same filter and recipe as the xval, run record, never overwrites a model) and final model trained (2026-10-01)
 - `test_final_model.py` added; final model tested once on Test 1 (per source) and Ontario (2026-10-01)
 - old `.keras` files moved out of the data folders into `models/`
+- docs updated (2026-10-02): `data/README.md` brought up to date, `feeding_model/README.md` added, feeding entries in the Script section rewritten, project history rewritten
 
-## Repository Contents
+## Repository layout
 
-- `*.py`: scripts for data collection, labeling, training, and evaluation.
-- `data/Monarch_images/`: downloaded monarch photos plus monarch prediction/label CSVs.
-- `data/Monarch_images.csv`: top-level copy of the monarch image manifest.
-- `feeding_non_feeding_models_results/results/*.txt`: captured console output from model training/evaluation runs.
-- `.gitignore`: ignores saved Keras model files (`*.keras`).
+```
+ButterflyAI/
+├── README.md              this file: status, to-do, project history
+├── data/                  all images, original metadata and the train/test splits for every model
+│                          → data/README.md (single source of truth for the data)
+├── feeding_model/         feeding vs non-feeding model: scripts, models/, results/
+│                          → feeding_model/README.md
+├── monarch/               feeding model for monarchs only
+├── plant_id_model/        10-species plant ID model
+├── archive/               older scripts kept for reference
+├── docs/                  notes; PDFs and spreadsheets stay local (git-ignored)
+├── environment.yml        CPU environment (butterflyai)
+└── environment-gpu.yml    pinned Mac GPU environment (butterflyai_gpu)
+```
 
-Expected training/test image folders referenced by scripts, but not present in this checkout:
-
-- `Final_Feeding_Images/`
-- `plant_data_specified/`
-- `specified_flower_photos_detectron_ALL/`
-- `BC2024_plant/`
-- `OVR_models/`
-- `Other_conundrum/`
+Images, `.keras` models and `data/metadata/` are not in git (see `.gitignore`); they live on the local copy.
 
 ## Script
+
+The feeding entries below are current. The monarch and plant entries describe the scripts before the data was moved into `data/`, so their paths are out of date; `data/README.md` has the current inputs and outputs of every script.
 
 ### `Monarch_API_call.py`
 
@@ -207,38 +199,32 @@ Creates manually corrected monarch feeding labels after reviewing model-sorted i
 - Results go to: `data/Monarch_images/Monarch_image_labels.csv`.
 - The checked-in `Monarch_image_labels.csv` has columns `FileName, Species, prediction, score, Label`.
 
-### `Final_feeding_model_train_on_ALL.py`
-
-Trains the final binary feeding/non-feeding classifier on all available labeled feeding data.
-
-- Model used: ImageNet-pretrained ResNet50 backbone (`include_top=False`) with global average pooling, dropout, a 512-unit dense layer, batch normalization, ReLU, more dropout, and a 1-unit sigmoid output.
-- Data used: `Final_Feeding_Images/DataFilenamesRedo_train.csv`; images are read from `Final_Feeding_Images/`.
-- What it does: trains a binary classifier for feeding (`F`) vs. non-feeding (`N`) using `ImageDataGenerator` with ResNet50 preprocessing, horizontal flips, and shear augmentation.
-- Results go to: `Final_Feeding_Images/REAL_AND_SUPER_Final_feeding_model_unfrozen.keras`.
-- Notes: only ResNet50 layers with `"conv5_block"` in their name are trainable; earlier backbone layers are frozen. The script uses all rows in `DataFilenamesRedo_train.csv`; a commented line can restrict training to `photo_type == "real"`.
-
 ### `Final_feeding_model_xval.py`
 
-- Model used: ImageNet-pretrained ResNet50 backbone with global average pooling, dropout, a 512-unit ReLU dense layer, dropout, and a 1-unit sigmoid output.
-- Data used: `Final_Feeding_Images/DataFilenamesRedo.csv`; images are read from `Final_Feeding_Images/`.
-- What it does: performs 5-fold KFold cross-validation, trains the binary feeding classifier, predicts each validation fold, and prints accuracy, precision, recall, F1, and loss.
-- Results go to: console output; best model checkpoint path is `Final_Feeding_Images/FINAL_Real_Feeding_unfrozen_xval_augmented.keras`.
-- Existing captured output: `Monarch_xval_output.txt` reports 5-fold averages of accuracy `0.9055 +/- 0.0448`, precision `0.8963 +/- 0.0557`, recall `0.9681 +/- 0.0250`, F1 `0.9299 +/- 0.0331`, and loss `0.3530 +/- 0.1574`.
-- ~~the model is created once before the fold loop…~~ fixed 2026-09-24: a fresh model is built every fold, using the same architecture as `Final_feeding_model_train_on_ALL.py` (BatchNorm head, only `conv5_block` trainable, same training augmentation). Checkpoints are saved per fold (`…_fold1.keras` … `_fold5.keras`).
+Estimates how well the feeding-model recipe works, with 5-fold cross-validation.
 
-### `Feeding_model_only_with_flower_comparison.py`
+- Data used: `data/splits/feeding/dev_pool.csv` (the `fold` column, 0–4; folds are grouped so a superimposed image stays with its source photo). Leaves out the 17 label-conflict photos in `data/splits/feeding/excluded.csv` and, while `DROP_UNTRACEABLE_SUPER = True`, the 103 superimposed images with no source photo in the pool: 4,630 images.
+- Model: ImageNet ResNet50, only `conv5_block` trainable; head = global average pooling, dropout 0.5, dense 512, BatchNorm, ReLU, dropout 0.5, 1 sigmoid unit. Adam 1e-3, batch 32, 10 epochs, horizontal flip + shear 0.2, threshold 0.5.
+- Labels: F = 0, N = 1, so the output is P(non-feeding). Metrics are reported for both classes, and for real and superimposed images separately.
+- Results go to: a new folder per run, `feeding_model/results/xval_<date>_<time>/` (predictions, per-fold and summary metrics, training curves, run record, log). Fold models are not saved.
+- Settings: `TRAIN_ON_REAL_ONLY`, `SMOKE_TEST` (quick pipeline check), `FORCE_CPU`.
 
-Compares feeding-model performance when training on real images only vs. all images, then testing on images with flowers.
+### `Final_feeding_model_train_on_ALL.py`
 
-- Model used: ImageNet-pretrained ResNet50 binary classifier with global average pooling, dropout, 512-unit ReLU dense layer, dropout, and 1-unit sigmoid output.
-- Data used: `Final_Feeding_Images/DataFilenamesRedo.csv`; images are read from `Final_Feeding_Images/`.
-- What it does: creates an 80/20 stratified split using both `label` and `photo_type`, then filters validation data to real feeding images plus superimposed non-feeding images. In the checked-in script, `train_df = train_real_df`, so it trains only on real images.
-- Results go to: console output only.
-- Existing captured outputs:
-  - `Output_feeding_flower_only_real_test.txt`: real-only training result, macro precision `0.6989`, macro recall `0.5399`, macro F1 `0.5192`.
-  - `Output_feeding_flower_only_ALL_test.txt`: all-image training result, macro precision `0.8792`, macro recall `0.8772`, macro F1 `0.8782`, with 24 manual false positives and 25 manual false negatives.
-- So end conclusion here: when trained only on real images, the feeding model does not handle “butterfly on flower but not feeding” very well, it's biased toward calling all flower-present images feeding.
-- all image model: after training with the superimposed non-feeding examples included, it correctly identified 107/132 fake non-feeding images, while still getting 403/427 real feeding images right.
+Trains the one feeding model we keep, with the same data filter and recipe as the cross-validation, on all 4,630 images.
+
+- Results go to: a new model file `feeding_model/models/feeding_final_<real_and_super|real_only>_<date>.keras` (stops if the file exists; models are never overwritten) and a run record in `feeding_model/results/train_<model name>/`.
+- No validation set: nothing is chosen on data.
+
+### `test_final_model.py`
+
+Tests the final model once on Feeding Test 1 (`data/splits/feeding/test1.csv`, overall and per `source`) and Test 2 (`data/splits/feeding/test2_ontario.csv`).
+
+- Results go to: `feeding_model/results/test_<model name>/` (metrics, per-image predictions, run record, log). The folder can only be made once per model.
+
+### `Feeding_model_only_with_flower_comparison.py` / `Feeding_only_with_flower_comparison_augmentedversion.py`
+
+Superseded by the real-only vs real+superimposed cross-validation (`xval_2026-10-01_1043_real_only` vs `xval_2026-10-01_1119`); to be archived. They hold out dev-pool fold 0 and score real feeding photos + superimposed non-feeding photos. Their old outputs (`results/Output_feeding_flower_only_*.txt`, the 107/132 numbers) came from an ungrouped 80/20 split, where most of the 132 superimposed test images were made from photos in the training split.
 
 ### `Final_plant_OVR_xval.py`
 
@@ -274,31 +260,14 @@ Tests how plant-classifier performance changes as the training dataset size chan
 - Results go to: `specified_flower_photos_detectron_ALL/Scaling_test_results.csv`.
 - Notes: the model output is hard-coded to 10 classes (`Dense(10, softmax)`), so the input CSV must contain exactly 10 plant labels unless the script is changed. Only macro precision is saved to CSV, even though macro recall/F1 and confusion matrices are printed.
 
-## Data Files In This Checkout
-
-- `data/Monarch_images/Monarch_images.csv` and `data/Monarch_images.csv`: manifests with `FileName,Species`; 8,018 monarch image rows plus header.
-- `data/Monarch_images/Monarch_image_predictions.csv`: monarch manifest plus model `prediction` and `score`.
-- `data/Monarch_images/Monarch_non_feeding_ls.csv`: manually curated list of filenames considered non-feeding.
-- `data/Monarch_images/Monarch_image_labels.csv`: monarch manifest plus final `Label` assigned from the manual non-feeding list.
-- `feeding_non_feeding_models_results/results/Monarch_xval_output.txt`: captured feeding-model cross-validation run.
-- `feeding_non_feeding_models_results/results/Output_feeding_flower_only_real_test.txt`: captured real-only feeding-model comparison run.
-- `feeding_non_feeding_models_results/results/Output_feeding_flower_only_ALL_test.txt`: captured all-data feeding-model comparison run.
-- `feeding_non_feeding_models_results/results/Output_feeding_test_on_BIMBY2024.txt`: captured evaluation on a BIMBY 2024 feeding/non-feeding dataset. The corresponding script is not currently checked in.
-
-## Typical Workflow
-
-1. Download monarch metadata with `Monarch_API_call.py`.
-2. Download monarch images and write a manifest with `Monarch_download_from_API.py`.
-3. Train the final feeding classifier with `Final_feeding_model_train_on_ALL.py`.
-4. Use `Monarch_feeding_test.py` to score/sort monarch images.
-5. Manually curate non-feeding images and write final labels with `label_monarchs.py`.
-6. Evaluate feeding-model behavior with `Final_feeding_model_xval.py` and `Feeding_model_only_with_flower_comparison.py`.
-7. Train plant classifiers with `Final_plant_OVR_xval.py` or study multiclass scaling with `Scaling_of_flower_dataset.py`.
-8. Apply saved plant OVR models to other-species data with `OVR_test_on_other.py`.
-
 ## Environment Notes
 
-To create the environment:
+CPU environment:
 
 mamba env create -f environment.yml
 mamba activate butterflyai
+
+Mac GPU environment (pinned versions; used for the 2026 feeding runs):
+
+mamba env create -f environment-gpu.yml
+mamba activate butterflyai_gpu
