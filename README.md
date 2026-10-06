@@ -63,11 +63,6 @@ Final model: `feeding_model/models/feeding_final_real_and_super_2026-10-01.keras
 - Optional: repeat the best recipe with 2–3 seeds
 - Move the shared code (data filter, metrics, run record) into one module: it's copied across `Final_feeding_model_xval.py`, `Final_feeding_model_train_on_ALL.py` and `test_final_model.py`, so the recipe can drift
 
-### Blocking model reruns (settle these first, so every model is rerun only once)
-
-- Feeding: JS's answers on the 103 superimposed images with no traceable source photo (dropped for now via `DROP_UNTRACEABLE_SUPER`; add back and rerun if cleared) and on the label conflicts
-- Monarch: decide whether superimposed monarch images will be added to training — if yes, rerun only after they exist
-
 ### Rerun (results affected by data leakage or bugs)
 
 Feeding
@@ -92,14 +87,6 @@ Monarch
 
 - the monarch and plant entries in the Script section below still describe old paths — `data/README.md` has the current paths
 - archive `Feeding_model_only_with_flower_comparison.py` / `_augmentedversion.py` (superseded by the real-only cross-validation)
-
-### Qs for JS
-
-- where the `bimby_collection` photos (BIMBY-2024 Block B, `data/metadata/bimby2024/BIMBY_redo.csv`) came from and how they were labelled (worst test source: 0.705)
-- the 103 superimposed images with no traceable source photo (e.g. `superimposed_1008.jpeg`)
-- which photos the butterflies in the plant composites were cut from
-- label conflicts: 7 duplicate image pairs in the feeding dev pool have different labels, and 66 images were labelled differently in BIMBY-2024 than in training
-- 112 photos in `data/images/bimby2024/` are not listed in any CSV (not used by any split): what are they?
 
 ### Longer term
 
