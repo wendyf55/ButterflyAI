@@ -59,8 +59,10 @@ DROP_UNTRACEABLE_SUPER = True   # superimposed images with no source photo in th
 TRAIN_ON_REAL_ONLY = False   # True = superimposed images are left out of TRAINING only. The validation folds don't change,
                              # so the real-photo results compare image-for-image with a real+super run
 
-ONLY_FOLDS = [1]   # None = all folds. A list of folds (1-5, as printed) = only these are trained and scored.      
-SAVE_FOLD_MODELS = True  # True = save each fold's last-epoch model as model_fold{k}.keras in the run folder (~230 MB each)
+ONLY_FOLDS = None   # None = all folds. A list of folds (1-5, as printed) = only these are trained and scored.      
+SAVE_FOLD_MODELS = False  # True = save each fold's last-epoch model as model_fold{k}.keras in the run folder (~230 MB each)
+IMAGE_SET = "original"    # images to train AND validate on: "original" = data/images/..., "500px" = shrunk copies in data/images_500px/
+EXTRA_VAL_SET = "500px"   # None, or a second image set the validation fold is ALSO scored on (saved as predictions_<set>.csv)
 
 # Quick checks (both False for the real run)
 SMOKE_TEST = False   # True = pipeline check on a few images: 2 folds, 3 epochs, a few minutes. The numbers mean nothing
@@ -79,7 +81,7 @@ if FORCE_CPU:
 # Run folder and log
 
 # CHANGED: run folder + everything printed also goes to log.txt
-RUN_DIR = RESULTS_DIR / (f"xval_{datetime.now():%Y-%m-%d_%H%M}" + ("_real_only" if TRAIN_ON_REAL_ONLY else "") + ("_smoke" if SMOKE_TEST else "") + ("_cpu" if FORCE_CPU else "") + (f"_folds{''.join(map(str, ONLY_FOLDS))}" if ONLY_FOLDS else ""))
+RUN_DIR = RESULTS_DIR / (f"xval_{datetime.now():%Y-%m-%d_%H%M}" + ("_real_only" if TRAIN_ON_REAL_ONLY else "") + ("_smoke" if SMOKE_TEST else "") + ("_cpu" if FORCE_CPU else "") + (f"_folds{''.join(map(str, ONLY_FOLDS))}" if ONLY_FOLDS else "") + (f"_img{IMAGE_SET}" if IMAGE_SET != "original" else ""))
 RUN_DIR.mkdir(parents=True, exist_ok=False)   # never overwrite an earlier run
 
 #data/images/bimby_real and data/images/bimby_superimposed contain the 2023 BC BIMBY feeding and non-feeding photos and the superimposed photos
@@ -128,6 +130,12 @@ full_df = full_df.rename(columns={'image_path': 'filename'})  # image_path is re
 #run code with just real images (all_df, name is misleading, watch out!)
 #all_df = full_df[full_df['photo_type'] == 'real']
 all_df = full_df
+def image_set_path(path, image_set):
+    """data/images/x/y.jpg -> data/images_500px/x/y.jpg for image_set "500px"; unchanged for "original" """
+    return path if image_set == "original" else path.replace("data/images/", f"data/images_{image_set}/", 1)
+
+# filename stays the original path (so predictions line up across runs); load_path is what actually gets read
+all_df['load_path'] = all_df['filename'].map(lambda p: image_set_path(p, IMAGE_SET))
 
 if SMOKE_TEST:   # same few images every time (first SMOKE_IMAGES of each fold x label x photo_type)
     all_df = all_df.groupby(['fold', 'label', 'photo_type']).head(SMOKE_IMAGES).reset_index(drop=True)
@@ -175,7 +183,8 @@ run_info = {
                'dropout': DROPOUT_RATE, 'dense_units': DENSE_UNITS, 'trainable_block': TRAINABLE_BLOCK,
                'classes': CLASSES, 'drop_untraceable_super': DROP_UNTRACEABLE_SUPER,
                'smoke_test': SMOKE_TEST, 'force_cpu': FORCE_CPU, 'train_on_real_only': TRAIN_ON_REAL_ONLY,
-               'only_folds': ONLY_FOLDS, 'save_fold_models': SAVE_FOLD_MODELS},
+               'only_folds': ONLY_FOLDS, 'save_fold_models': SAVE_FOLD_MODELS,
+                'image_set': IMAGE_SET, 'extra_val_set': EXTRA_VAL_SET},
     'data': {'training_csv': str(TRAINING_CSV.relative_to(PROJECT_ROOT)), 'training_csv_md5': md5(TRAINING_CSV),
              'excluded_csv': str(EXCLUDED_CSV.relative_to(PROJECT_ROOT)), 'excluded_csv_md5': md5(EXCLUDED_CSV),
              'n_images': len(all_df),
@@ -239,6 +248,7 @@ np.random.seed(SEED_VALUE)
 tf.random.set_seed(SEED_VALUE)
 
 all_predictions = []   # CHANGED: one row per validation image, all folds
+extra_predictions = []   # validation fold scored on EXTRA_VAL_SET
 fold_metrics = []      # CHANGED: one row per fold x subset
 
 # Example of a simple data generator setup
@@ -312,7 +322,7 @@ for fold, (train_idx, val_idx) in enumerate(fold_splits, start=1):   # CHANGED: 
     # CHANGED: classes=CLASSES pins F=0, N=1
     train_generator = train_datagen.flow_from_dataframe(
         train_df,
-        x_col='filename',
+        x_col='load_path',
         y_col='label',
         classes = CLASSES,
         target_size = (img_height, img_width),
@@ -323,7 +333,7 @@ for fold, (train_idx, val_idx) in enumerate(fold_splits, start=1):   # CHANGED: 
 
     val_generator = datagen.flow_from_dataframe(
         val_df,
-        x_col='filename',
+        x_col='load_path',
         y_col='label',
         classes = CLASSES,
         target_size = (img_height, img_width),
@@ -360,6 +370,17 @@ for fold, (train_idx, val_idx) in enumerate(fold_splits, start=1):   # CHANGED: 
     all_predictions.append(fold_pred)
     # CHANGED: saved after every fold, so a crash keeps the finished folds
     pd.concat(all_predictions).to_csv(RUN_DIR / "predictions.csv", index=False)
+
+    if EXTRA_VAL_SET is not None:   # same model, same validation photos, other image set
+        extra_df = val_df.assign(load_path=val_df['filename'].map(lambda p: image_set_path(p, EXTRA_VAL_SET)))
+        extra_generator = datagen.flow_from_dataframe(extra_df, x_col='load_path', y_col='label', classes=CLASSES,
+                                                      target_size=(img_height, img_width), batch_size=VAL_BATCH_SIZE,
+                                                      class_mode='binary', shuffle=False)
+        assert len(extra_generator.classes) == len(extra_df), "some extra validation images were not found"
+        extra_scores = model.predict(extra_generator, verbose=0).ravel()
+        extra_predictions.append(fold_pred.assign(score=extra_scores,
+                                                  y_pred=(extra_scores > PREDICTION_THRESHOLD).astype(int)))
+        pd.concat(extra_predictions).to_csv(RUN_DIR / f"predictions_{EXTRA_VAL_SET}.csv", index=False)
 
     # Score this fold (all / real / super)
     for subset, select in SUBSETS.items():
