@@ -61,8 +61,8 @@ TRAIN_ON_REAL_ONLY = False   # True = superimposed images are left out of TRAINI
 
 ONLY_FOLDS = None   # None = all folds. A list of folds (1-5, as printed) = only these are trained and scored.      
 SAVE_FOLD_MODELS = False  # True = save each fold's last-epoch model as model_fold{k}.keras in the run folder (~230 MB each)
-IMAGE_SET = "original"    # images to train AND validate on: "original" = data/images/..., "500px" = shrunk copies in data/images_500px/
-EXTRA_VAL_SET = "500px"   # None, or a second image set the validation fold is ALSO scored on (saved as predictions_<set>.csv)
+IMAGE_SET = "original"
+EXTRA_VAL_SET = None  # None, or a second image set the validation fold is ALSO scored on (saved as predictions_<set>.csv)
 
 # Quick checks (both False for the real run)
 SMOKE_TEST = False   # True = pipeline check on a few images: 2 folds, 3 epochs, a few minutes. The numbers mean nothing
