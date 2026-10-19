@@ -59,6 +59,9 @@ DROP_UNTRACEABLE_SUPER = True   # superimposed images with no source photo in th
 TRAIN_ON_REAL_ONLY = False   # True = superimposed images are left out of TRAINING only. The validation folds don't change,
                              # so the real-photo results compare image-for-image with a real+super run
 
+ONLY_FOLDS = [1]   # None = all folds. A list of folds (1-5, as printed) = only these are trained and scored.      
+SAVE_FOLD_MODELS = True  # True = save each fold's last-epoch model as model_fold{k}.keras in the run folder (~230 MB each)
+
 # Quick checks (both False for the real run)
 SMOKE_TEST = False   # True = pipeline check on a few images: 2 folds, 3 epochs, a few minutes. The numbers mean nothing
 SMOKE_IMAGES = 16    # smoke test: images per fold x label x photo_type (16 real F + 16 real N + 16 super N = 48 per fold)
@@ -76,7 +79,7 @@ if FORCE_CPU:
 # Run folder and log
 
 # CHANGED: run folder + everything printed also goes to log.txt
-RUN_DIR = RESULTS_DIR / (f"xval_{datetime.now():%Y-%m-%d_%H%M}" + ("_real_only" if TRAIN_ON_REAL_ONLY else "") + ("_smoke" if SMOKE_TEST else "") + ("_cpu" if FORCE_CPU else ""))
+RUN_DIR = RESULTS_DIR / (f"xval_{datetime.now():%Y-%m-%d_%H%M}" + ("_real_only" if TRAIN_ON_REAL_ONLY else "") + ("_smoke" if SMOKE_TEST else "") + ("_cpu" if FORCE_CPU else "") + (f"_folds{''.join(map(str, ONLY_FOLDS))}" if ONLY_FOLDS else ""))
 RUN_DIR.mkdir(parents=True, exist_ok=False)   # never overwrite an earlier run
 
 #data/images/bimby_real and data/images/bimby_superimposed contain the 2023 BC BIMBY feeding and non-feeding photos and the superimposed photos
@@ -171,11 +174,12 @@ run_info = {
                'epochs': EPOCHS, 'k_folds': K_FOLDS, 'threshold': PREDICTION_THRESHOLD,
                'dropout': DROPOUT_RATE, 'dense_units': DENSE_UNITS, 'trainable_block': TRAINABLE_BLOCK,
                'classes': CLASSES, 'drop_untraceable_super': DROP_UNTRACEABLE_SUPER,
-               'smoke_test': SMOKE_TEST, 'force_cpu': FORCE_CPU, 'train_on_real_only': TRAIN_ON_REAL_ONLY},
+               'smoke_test': SMOKE_TEST, 'force_cpu': FORCE_CPU, 'train_on_real_only': TRAIN_ON_REAL_ONLY,
+               'only_folds': ONLY_FOLDS, 'save_fold_models': SAVE_FOLD_MODELS},
     'data': {'training_csv': str(TRAINING_CSV.relative_to(PROJECT_ROOT)), 'training_csv_md5': md5(TRAINING_CSV),
              'excluded_csv': str(EXCLUDED_CSV.relative_to(PROJECT_ROOT)), 'excluded_csv_md5': md5(EXCLUDED_CSV),
              'n_images': len(all_df),
-             'counts': {f'{photo_type}_{label}': int(n) for (photo_type, label), n in all_df.groupby(['photo_type', 'label']).size().items()}},
+             'counts': {f'{photo_type}_{label}': int(n) for (photo_type, label), n in all_df.groupby(['photo_type', 'label']).size().items()}}
 }
 
 def save_run_info():
@@ -250,6 +254,8 @@ train_datagen = ImageDataGenerator(preprocessing_function = preprocess_input,
 # Cross validation loop - one pass per 80/20 fold that builds, trains, predicts, and scores
 
 for fold, (train_idx, val_idx) in enumerate(fold_splits, start=1):   # CHANGED: fold counter added
+    if ONLY_FOLDS is not None and fold not in ONLY_FOLDS:   # skipped folds are not trained or scored
+        continue
     print(f"\n Fold {fold}/{K_FOLDS} ")
 
     # CHANGED: reset before each fold so folds are independent
@@ -339,6 +345,9 @@ for fold, (train_idx, val_idx) in enumerate(fold_splits, start=1):   # CHANGED: 
 
     # CHANGED: training curves, for looking at only (nothing is chosen from them)
     pd.DataFrame(history.history).rename_axis('epoch').to_csv(RUN_DIR / f"history_fold{fold}.csv")
+
+    if SAVE_FOLD_MODELS:   # last-epoch weights, the same ones that score val_df below
+        model.save(RUN_DIR / f"model_fold{fold}.keras")
 
     # Predict every validation image and save
     # last-epoch weights; score = sigmoid output = P(non-feeding)

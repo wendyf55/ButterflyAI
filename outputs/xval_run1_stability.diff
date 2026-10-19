@@ -1,0 +1,109 @@
+--- a/feeding_model/Final_feeding_model_xval.py
++++ b/feeding_model/Final_feeding_model_xval.py
+@@ -57,6 +57,15 @@
+ DROP_UNTRACEABLE_SUPER = True   # superimposed images with no source photo in the pool (103); off once J clears them
+ #just not sure about origin or data leakage issues since we can't trace these
+ 
++# Fine-tuning recipe. The values in the comments reproduce the first run (xval_2026-09-25_1422)
++LEARNING_RATE = 1e-4          # Adam learning rate for fine-tuning conv5 (first run: 1e-3, the Keras default)
++LR_SCHEDULE = "cosine"        # "constant" or "cosine" (decays smoothly to ~0 by the last epoch) (first run: "constant")
++FREEZE_BN = True              # True = ResNet's BatchNorm layers stay frozen (inference mode), even inside conv5 (first run: False)
++WARMUP_EPOCHS = 0             # >0 = train only the head for this many epochs first (whole ResNet frozen), then
++                              # fine-tune conv5 for the rest of EPOCHS (first run: 0)
++WARMUP_LEARNING_RATE = 1e-3   # learning rate for the head-only warm-up
++RUN_TAG = "bnfrozen_lr1e-4_cosine"   # added to the run folder name, to tell experiments apart ("" = none)
++
+ # Quick checks (both False for the real run)
+ SMOKE_TEST = False   # True = pipeline check on a few images: 2 folds, 3 epochs, a few minutes. The numbers mean nothing
+ SMOKE_IMAGES = 16    # smoke test: images per fold x label x photo_type (16 real F + 16 real N + 16 super N = 48 per fold)
+@@ -74,7 +83,7 @@
+ # Run folder and log
+ 
+ # CHANGED: run folder + everything printed also goes to log.txt
+-RUN_DIR = RESULTS_DIR / (f"xval_{datetime.now():%Y-%m-%d_%H%M}" + ("_smoke" if SMOKE_TEST else "") + ("_cpu" if FORCE_CPU else ""))
++RUN_DIR = RESULTS_DIR / (f"xval_{datetime.now():%Y-%m-%d_%H%M}" + (f"_{RUN_TAG}" if RUN_TAG else "") + ("_smoke" if SMOKE_TEST else "") + ("_cpu" if FORCE_CPU else ""))
+ RUN_DIR.mkdir(parents=True, exist_ok=False)   # never overwrite an earlier run
+ 
+ #data/images/bimby_real and data/images/bimby_superimposed contain the 2023 BC BIMBY feeding and non-feeding photos and the superimposed photos
+@@ -169,7 +178,9 @@
+                'epochs': EPOCHS, 'k_folds': K_FOLDS, 'threshold': PREDICTION_THRESHOLD,
+                'dropout': DROPOUT_RATE, 'dense_units': DENSE_UNITS, 'trainable_block': TRAINABLE_BLOCK,
+                'classes': CLASSES, 'drop_untraceable_super': DROP_UNTRACEABLE_SUPER,
+-               'smoke_test': SMOKE_TEST, 'force_cpu': FORCE_CPU},
++               'smoke_test': SMOKE_TEST, 'force_cpu': FORCE_CPU,
++               'learning_rate': LEARNING_RATE, 'lr_schedule': LR_SCHEDULE, 'freeze_bn': FREEZE_BN,
++               'warmup_epochs': WARMUP_EPOCHS, 'warmup_learning_rate': WARMUP_LEARNING_RATE, 'run_tag': RUN_TAG},
+     'data': {'training_csv': str(TRAINING_CSV.relative_to(PROJECT_ROOT)), 'training_csv_md5': md5(TRAINING_CSV),
+              'excluded_csv': str(EXCLUDED_CSV.relative_to(PROJECT_ROOT)), 'excluded_csv_md5': md5(EXCLUDED_CSV),
+              'n_images': len(all_df),
+@@ -244,6 +255,21 @@
+                                    shear_range = 0.2
+                                   )
+ 
++# which ResNet layers train
++def set_trainable(base_model, train_block):
++    """train_block=True: only layers in TRAINABLE_BLOCK train (minus their BatchNorm layers if FREEZE_BN).
++    train_block=False: the whole ResNet is frozen (head-only warm-up).
++    A frozen BatchNorm layer runs in inference mode: it uses ImageNet's stored statistics and doesn't update them."""
++    for layer in base_model.layers:
++        frozen_bn = FREEZE_BN and isinstance(layer, BatchNormalization)
++        layer.trainable = train_block and (TRAINABLE_BLOCK in layer.name) and not frozen_bn
++
++def make_optimizer(learning_rate, n_steps, schedule):
++    """Adam with a constant learning rate, or one that decays along a cosine curve to ~0 over n_steps."""
++    if schedule == "cosine":
++        learning_rate = tf.keras.optimizers.schedules.CosineDecay(learning_rate, decay_steps=n_steps)
++    return tf.keras.optimizers.Adam(learning_rate=learning_rate)
++
+ ##############################################################################################
+ # Cross validation loop - one pass per 80/20 fold that builds, trains, predicts, and scores
+ 
+@@ -281,13 +307,8 @@
+ 
+     model = Model(inputs = base_model.input, outputs = predictions)
+ 
+-    for layer in base_model.layers:
+-        if TRAINABLE_BLOCK in layer.name: #tune just the final block ~15-20 layers
+-            layer.trainable = True
+-        else:
+-            layer.trainable = False
+-
+-    model.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
++    # CHANGED: which layers train + model.compile moved to the training step below (set_trainable / make_optimizer),
++    # because compiling needs the number of training steps (for the cosine schedule) and the warm-up recompiles
+ 
+     # CHANGED: no EarlyStopping / ModelCheckpoint. The final model can't use a validation set, so the folds
+     # train the same fixed number of epochs and are scored with the last-epoch weights.
+@@ -325,15 +346,25 @@
+     # flow_from_dataframe silently skips images it can't find; then predictions would no longer line up with val_df
+     assert len(val_generator.classes) == len(val_df), "some validation images were not found"
+ 
+-    history = model.fit(
+-        train_generator,
+-        epochs=EPOCHS,
+-        validation_data=val_generator,
+-        verbose=2   # CHANGED: one line per epoch (readable in log.txt)
+-        )
++    # Train: optional head-only warm-up, then fine-tune the conv5 block. EPOCHS in total either way
++    histories = []
++    if WARMUP_EPOCHS > 0:
++        set_trainable(base_model, train_block=False)
++        model.compile(optimizer=tf.keras.optimizers.Adam(WARMUP_LEARNING_RATE),
++                      loss='binary_crossentropy', metrics=['accuracy'])
++        h = model.fit(train_generator, epochs=WARMUP_EPOCHS, validation_data=val_generator, verbose=2)
++        histories.append(pd.DataFrame(h.history).assign(phase='warmup'))
++
++    set_trainable(base_model, train_block=True)
++    model.compile(optimizer=make_optimizer(LEARNING_RATE, len(train_generator) * (EPOCHS - WARMUP_EPOCHS), LR_SCHEDULE),
++                  loss='binary_crossentropy', metrics=['accuracy'])   # recompile after changing what trains
++    h = model.fit(train_generator, epochs=EPOCHS, initial_epoch=WARMUP_EPOCHS,
++                  validation_data=val_generator,
++                  verbose=2)   # one line per epoch (readable in log.txt)
++    histories.append(pd.DataFrame(h.history).assign(phase='finetune'))
+ 
+     # CHANGED: training curves, for looking at only (nothing is chosen from them)
+-    pd.DataFrame(history.history).rename_axis('epoch').to_csv(RUN_DIR / f"history_fold{fold}.csv")
++    pd.concat(histories, ignore_index=True).rename_axis('epoch').to_csv(RUN_DIR / f"history_fold{fold}.csv")
+ 
+     # Predict every validation image and save
+     # last-epoch weights; score = sigmoid output = P(non-feeding)

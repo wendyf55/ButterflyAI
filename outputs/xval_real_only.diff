@@ -1,0 +1,49 @@
+--- a/feeding_model/Final_feeding_model_xval.py
++++ b/feeding_model/Final_feeding_model_xval.py
+@@ -56,6 +56,8 @@
+ EXCLUDED_CSV = SPLITS_DIR / "excluded.csv"   # 17 label-conflict images (identical pairs labelled F and N)
+ DROP_UNTRACEABLE_SUPER = True   # superimposed images with no source photo in the pool (103); off once J clears them
+ #just not sure about origin or data leakage issues since we can't trace these
++TRAIN_ON_REAL_ONLY = False   # True = superimposed images are left out of TRAINING only. The validation folds don't change,
++                             # so the real-photo results compare image-for-image with a real+super run
+ 
+ # Quick checks (both False for the real run)
+ SMOKE_TEST = False   # True = pipeline check on a few images: 2 folds, 3 epochs, a few minutes. The numbers mean nothing
+@@ -74,7 +76,7 @@
+ # Run folder and log
+ 
+ # CHANGED: run folder + everything printed also goes to log.txt
+-RUN_DIR = RESULTS_DIR / (f"xval_{datetime.now():%Y-%m-%d_%H%M}" + ("_smoke" if SMOKE_TEST else "") + ("_cpu" if FORCE_CPU else ""))
++RUN_DIR = RESULTS_DIR / (f"xval_{datetime.now():%Y-%m-%d_%H%M}" + ("_real_only" if TRAIN_ON_REAL_ONLY else "") + ("_smoke" if SMOKE_TEST else "") + ("_cpu" if FORCE_CPU else ""))
+ RUN_DIR.mkdir(parents=True, exist_ok=False)   # never overwrite an earlier run
+ 
+ #data/images/bimby_real and data/images/bimby_superimposed contain the 2023 BC BIMBY feeding and non-feeding photos and the superimposed photos
+@@ -120,7 +122,8 @@
+ 
+ full_df = full_df.rename(columns={'image_path': 'filename'})  # image_path is relative to the repo root
+ 
+-#run code with just real images (all_df, name is misleading, watch out!)
++#run code with just real images: use TRAIN_ON_REAL_ONLY (settings). The old line below also removed the
++#superimposed images from VALIDATION, so its results couldn't be compared with a real+super run
+ #all_df = full_df[full_df['photo_type'] == 'real']
+ all_df = full_df
+ 
+@@ -169,7 +172,7 @@
+                'epochs': EPOCHS, 'k_folds': K_FOLDS, 'threshold': PREDICTION_THRESHOLD,
+                'dropout': DROPOUT_RATE, 'dense_units': DENSE_UNITS, 'trainable_block': TRAINABLE_BLOCK,
+                'classes': CLASSES, 'drop_untraceable_super': DROP_UNTRACEABLE_SUPER,
+-               'smoke_test': SMOKE_TEST, 'force_cpu': FORCE_CPU},
++               'smoke_test': SMOKE_TEST, 'force_cpu': FORCE_CPU, 'train_on_real_only': TRAIN_ON_REAL_ONLY},
+     'data': {'training_csv': str(TRAINING_CSV.relative_to(PROJECT_ROOT)), 'training_csv_md5': md5(TRAINING_CSV),
+              'excluded_csv': str(EXCLUDED_CSV.relative_to(PROJECT_ROOT)), 'excluded_csv_md5': md5(EXCLUDED_CSV),
+              'n_images': len(all_df),
+@@ -295,6 +298,9 @@
+     # CHANGED: take the rows straight from all_df, so photo_type/group/fold travel with each image
+     # (needed for the real-only / super-only metrics and predictions.csv)
+     train_df = all_df.iloc[train_idx]
++    if TRAIN_ON_REAL_ONLY:
++        train_df = train_df[train_df['photo_type'] == 'real']
++    print(f"Training on {len(train_df)} images ({train_df['photo_type'].value_counts().to_dict()}), validating on {len(val_idx)}")
+     val_df = all_df.iloc[val_idx].reset_index(drop=True)
+ 
+     # Create generators

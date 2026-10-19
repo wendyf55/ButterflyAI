@@ -1,0 +1,61 @@
+Run folder: /Users/wfrankel/Desktop/Tseng-Lab/ButterflyAI/feeding_model/results/xval_2026-10-08_1032_folds1
+Dropping 17 excluded + 103 untraceable superimposed; keeping 4630 of 4750
+Note: uncommitted changes: ['M feeding_model/Final_feeding_model_xval.py']
+
+ Fold 1/5 
+Training on 3714 images ({'real': 3261, 'super': 453}), validating on 916
+Found 3714 validated image filenames belonging to 2 classes.
+Found 916 validated image filenames belonging to 2 classes.
+Epoch 1/10
+117/117 - 47s - 399ms/step - accuracy: 0.9087 - loss: 0.2448 - val_accuracy: 0.5808 - val_loss: 47.6421
+Epoch 2/10
+117/117 - 43s - 366ms/step - accuracy: 0.9607 - loss: 0.1147 - val_accuracy: 0.8788 - val_loss: 0.6218
+Epoch 3/10
+117/117 - 40s - 345ms/step - accuracy: 0.9663 - loss: 0.0902 - val_accuracy: 0.9367 - val_loss: 0.2507
+Epoch 4/10
+117/117 - 40s - 346ms/step - accuracy: 0.9742 - loss: 0.0781 - val_accuracy: 0.9159 - val_loss: 0.4027
+Epoch 5/10
+117/117 - 41s - 350ms/step - accuracy: 0.9798 - loss: 0.0567 - val_accuracy: 0.9541 - val_loss: 0.2077
+Epoch 6/10
+117/117 - 41s - 350ms/step - accuracy: 0.9612 - loss: 0.1075 - val_accuracy: 0.7445 - val_loss: 1.7902
+Epoch 7/10
+117/117 - 41s - 349ms/step - accuracy: 0.9712 - loss: 0.0807 - val_accuracy: 0.6627 - val_loss: 13.9258
+Epoch 8/10
+117/117 - 40s - 345ms/step - accuracy: 0.9728 - loss: 0.0810 - val_accuracy: 0.8755 - val_loss: 0.5700
+Epoch 9/10
+117/117 - 40s - 345ms/step - accuracy: 0.9803 - loss: 0.0566 - val_accuracy: 0.9563 - val_loss: 0.1360
+Epoch 10/10
+117/117 - 41s - 347ms/step - accuracy: 0.9820 - loss: 0.0573 - val_accuracy: 0.9585 - val_loss: 0.1684
+Fold 1 completed (all images). Accuracy: 0.9585, Loss: 0.1684 | F: precision 0.9369, recall 0.9765, F1 0.9563 | N: precision 0.9788, recall 0.9429, F1 0.9605
+
+Cross-Validation Results (5 folds, mean ± SD; F = feeding, N = non-feeding):
+
+  all (n per fold: [916])
+    accuracy     0.9585 ± nan
+    loss         0.1684 ± nan
+    precision_F  0.9369 ± nan
+    recall_F     0.9765 ± nan
+    f1_F         0.9563 ± nan
+    precision_N  0.9788 ± nan
+    recall_N     0.9429 ± nan
+    f1_N         0.9605 ± nan
+
+  real (n per fold: [816])
+    accuracy     0.9669 ± nan
+    loss         0.1238 ± nan
+    precision_F  0.9607 ± nan
+    recall_F     0.9765 ± nan
+    f1_F         0.9686 ± nan
+    precision_N  0.9739 ± nan
+    recall_N     0.9564 ± nan
+    f1_N         0.9651 ± nan
+
+  super (n per fold: [100])
+    accuracy     0.8900 ± nan
+    loss         0.5322 ± nan
+    precision_F  0.0000 ± nan
+    precision_N  1.0000 ± nan
+    recall_N     0.8900 ± nan
+    f1_N         0.9418 ± nan
+
+Saved to /Users/wfrankel/Desktop/Tseng-Lab/ButterflyAI/feeding_model/results/xval_2026-10-08_1032_folds1

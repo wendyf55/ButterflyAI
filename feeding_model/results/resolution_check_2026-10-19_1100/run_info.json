@@ -1,0 +1,27 @@
+{
+  "script": "resolution_check.py",
+  "finished": "2026-10-19T11:01:35",
+  "model": "feeding_model/results/xval_2026-10-08_1032_folds1/model_fold1.keras",
+  "model_md5": "11ffbe52e79dc237869683ade549de05",
+  "fold_run": "feeding_model/results/xval_2026-10-08_1032_folds1",
+  "n_photos": 816,
+  "conditions": {
+    "jpeg_q90": null,
+    "1000px": 1000,
+    "500px": 500
+  },
+  "jpeg_quality": 90,
+  "resample": "LANCZOS",
+  "img_size": [
+    224,
+    224
+  ],
+  "threshold": 0.5,
+  "originals_max_score_diff": 1.18749237065785e-06,
+  "feeding_recall_drop_points": {
+    "1000px": 0.0,
+    "500px": 2.1126760563380254
+  },
+  "verdict": "weak effect",
+  "tensorflow": "2.21.0"
+}

@@ -1,0 +1,5 @@
+label,small,n,accuracy
+F,False,422,0.976303317535545
+F,True,4,1.0
+N,False,386,0.9559585492227979
+N,True,4,1.0
