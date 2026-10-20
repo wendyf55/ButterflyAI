@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-20 15:09",
+  "tensorflow_version": "2.21.0",
+  "threshold": 0.5,
+  "image_size": [
+    224,
+    224
+  ],
+  "resize": "nearest",
+  "n_images": {
+    "gold": 2162,
+    "mixed_plants": 138,
+    "sanity": 200
+  },
+  "models": [
+    {
+      "file": "ovr_model_Achillea_millefolium.keras",
+      "bytes": 296067137,
+      "modified": "2026-08-25"
+    },
+    {
+      "file": "ovr_model_Anaphalis_margaritacea.keras",
+      "bytes": 296067137,
+      "modified": "2026-08-25"
+    },
+    {
+      "file": "ovr_model_Apocynum_androsaemifolium.keras",
+      "bytes": 296067137,
+      "modified": "2026-08-25"
+    },
+    {
+      "file": "ovr_model_Asclepias_speciosa.keras",
+      "bytes": 296067137,
+      "modified": "2026-08-25"
+    },
+    {
+      "file": "ovr_model_Cirsium_arvense.keras",
+      "bytes": 296067137,
+      "modified": "2026-08-25"
+    },
+    {
+      "file": "ovr_model_Ericameria_nauseosa.keras",
+      "bytes": 296067137,
+      "modified": "2026-08-25"
+    },
+    {
+      "file": "ovr_model_Leucanthemum_vulgare.keras",
+      "bytes": 296067137,
+      "modified": "2026-08-25"
+    },
+    {
+      "file": "ovr_model_Medicago_sativa.keras",
+      "bytes": 296067137,
+      "modified": "2026-08-25"
+    },
+    {
+      "file": "ovr_model_Sisybirum_loeselii.keras",
+      "bytes": 296067137,
+      "modified": "2026-08-25"
+    },
+    {
+      "file": "ovr_model_Tripleurospermum_inodorum.keras",
+      "bytes": 296067137,
+      "modified": "2026-08-25"
+    },
+    {
+      "file": "Multiclass_detectron_july22.keras",
+      "bytes": 227455228,
+      "modified": "2025-07-23"
+    }
+  ]
+}
