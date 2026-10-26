@@ -56,6 +56,19 @@ Final model: `feeding_model/models/feeding_final_real_and_super_2026-10-01.keras
 - Take the `bimby_collection` result (see Qs for JS): it's the worst test source (0.705, non-feeding recall 0.559) although it's supposedly the same collection as training, which points to a labelling or source difference
 - Repoint `monarch/Monarch_feeding_test.py`, `monarch/general_feeding_model_eval.py` and `Model_Catalogue_Evaluation.ipynb` at the new model (they still use `REAL_AND_SUPER_Final_feeding_model_unfrozen.keras`)
 
+### To match the paper's Methods (2026-10-26)
+
+The Methods ("Model performance") now describe the multiclass plant model (`Plant_multiclass_xval.py`) and a baseline vs augmented plant comparison, matching the feeding one. Still to do:
+
+- Run `Plant_multiclass_xval.py` with `USE_KINDS = ["plain"]` (baseline: plain flower photos only). The existing run `results/multiclass_xval_2026-10-20_1536` (composites + plain, accuracy 0.887 ± 0.006) is the augmented model
+- Compare the two on plain flower photos only (the `plain` row of `metrics_summary.csv`; augmented model 0.843 ± 0.007), the way the feeding models are compared on real photos. Agree the tie rule before looking at the result
+- Add precision and F1 (per species and macro-averaged) to `Plant_multiclass_xval.py`; it saves only accuracy and recall. The Methods report all four metrics for every model
+- Train BOTH final plant models (baseline: plain only; augmented: composites + plain) on the full dev pool (no script yet: write a plant version of `Final_feeding_model_train_on_ALL.py`; fixed 10 epochs, same recipe as the xval) and save them as new files in `plant_id_model/models/`. The Methods compare baseline vs augmented on the test set
+- Evaluate both once on `data/splits/plant/test_gold.csv` (and `test_mixed_plants.csv`) (no script yet; `score_old_models.py` can be adapted)
+- Feeding: train a final real-only model (`Final_feeding_model_train_on_ALL.py` with `TRAIN_ON_REAL_ONLY = True`) and test it once with `test_final_model.py` on test1 and Ontario, so baseline vs augmented can be compared on the test sets (only the real+super final model exists)
+- Record which statistical test compared baseline vs augmented across folds (the feeding p = 0.33 isn't produced by any script) and the tie rule; use the same for plants
+- Update the plant numbers, the model-performance paragraph and Table S1 in the paper
+
 ### Feeding model — improving it (choose on cross-validation; one ~36 min run each)
 
 - Training stability: validation accuracy dips mid-training (fold 1 down to 0.58) before recovering by epoch 10; the final model has no validation set to catch a bad last epoch. Fix drafted but not applied: freeze ResNet's BatchNorm layers, learning rate 1e-4, cosine decay, optional head-only warm-up

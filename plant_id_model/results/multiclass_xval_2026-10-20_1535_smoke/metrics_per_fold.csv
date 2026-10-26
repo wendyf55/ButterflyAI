@@ -1,0 +1,7 @@
+fold,subset,n,accuracy,recall_Achillea_millefolium,recall_Anaphalis_margaritacea,recall_Apocynum_androsaemifolium,recall_Asclepias_speciosa,recall_Cirsium_arvense,recall_Ericameria_nauseosa,recall_Leucanthemum_vulgare,recall_Medicago_sativa,recall_Sisymbrium_loeselii,recall_Tripleurospermum_inodorum,macro_recall
+1,all,80,0.0375,0.0,0.125,0.0,0.0,0.0,0.125,0.0,0.125,0.0,0.0,0.0375
+1,composite,40,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+1,plain,40,0.075,0.0,0.25,0.0,0.0,0.0,0.25,0.0,0.25,0.0,0.0,0.075
+2,all,80,0.125,0.0,0.125,0.125,0.5,0.125,0.125,0.125,0.125,0.0,0.0,0.125
+2,composite,40,0.1,0.0,0.0,0.0,0.5,0.0,0.25,0.0,0.25,0.0,0.0,0.1
+2,plain,40,0.15,0.0,0.25,0.25,0.5,0.25,0.0,0.25,0.0,0.0,0.0,0.15

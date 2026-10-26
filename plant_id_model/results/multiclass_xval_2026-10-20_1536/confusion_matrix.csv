@@ -1,0 +1,11 @@
+label,Achillea_millefolium,Anaphalis_margaritacea,Apocynum_androsaemifolium,Asclepias_speciosa,Cirsium_arvense,Ericameria_nauseosa,Leucanthemum_vulgare,Medicago_sativa,Sisymbrium_loeselii,Tripleurospermum_inodorum
+Achillea_millefolium,1722,73,13,11,31,24,11,13,19,22
+Anaphalis_margaritacea,120,1482,9,20,23,13,8,14,5,11
+Apocynum_androsaemifolium,13,4,1837,31,6,3,6,10,7,13
+Asclepias_speciosa,14,12,13,1621,17,17,1,7,11,5
+Cirsium_arvense,48,27,19,31,1774,9,6,78,26,15
+Ericameria_nauseosa,10,5,0,1,5,1967,0,4,38,4
+Leucanthemum_vulgare,21,5,15,2,35,4,1663,13,13,434
+Medicago_sativa,27,15,22,15,41,7,5,1817,22,7
+Sisymbrium_loeselii,25,8,8,6,34,25,3,17,1713,24
+Tripleurospermum_inodorum,52,8,15,3,22,13,242,13,41,1870

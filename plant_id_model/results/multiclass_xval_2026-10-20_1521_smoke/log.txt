@@ -1,0 +1,24 @@
+Run folder: /Users/wfrankel/Desktop/Tseng-Lab/ButterflyAI/plant_id_model/results/multiclass_xval_2026-10-20_1521_smoke
+SMOKE TEST: 400 images, 2 folds, 2 epochs. The numbers mean nothing
+400 images
+kind                       composite
+label                               
+Achillea_millefolium              40
+Anaphalis_margaritacea            40
+Apocynum_androsaemifolium         40
+Asclepias_speciosa                40
+Cirsium_arvense                   40
+Ericameria_nauseosa               40
+Leucanthemum_vulgare              40
+Medicago_sativa                   40
+Sisymbrium_loeselii               40
+Tripleurospermum_inodorum         40
+
+===== Fold 1/2 =====
+Training on 320 images, validating on 80
+Found 320 validated image filenames belonging to 10 classes.
+Found 80 validated image filenames belonging to 10 classes.
+Epoch 1/2
+10/10 - 10s - 966ms/step - accuracy: 0.1187 - loss: 3.8536 - val_accuracy: 0.0250 - val_loss: 3.3205
+Epoch 2/2
+10/10 - 4s - 363ms/step - accuracy: 0.1156 - loss: 3.8204 - val_accuracy: 0.0375 - val_loss: 3.1432

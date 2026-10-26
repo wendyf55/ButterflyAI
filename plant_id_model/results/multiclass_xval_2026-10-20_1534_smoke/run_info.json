@@ -1,0 +1,48 @@
+{
+  "script": "Plant_multiclass_xval.py",
+  "started": "2026-10-20T15:34:05",
+  "git_commit": "0603e479e674097643a4cb4fcf4e150fda760490",
+  "git_uncommitted_changes": [],
+  "python": "3.11.16",
+  "tensorflow": "2.19.1",
+  "machine": "macOS-15.7.3-arm64-arm-64bit",
+  "gpus": [
+    "/physical_device:GPU:0"
+  ],
+  "config": {
+    "use_kinds": [
+      "composite",
+      "plain"
+    ],
+    "seed": 321,
+    "img_size": [
+      224,
+      224
+    ],
+    "batch_size": 32,
+    "epochs": 2,
+    "k_folds": 2,
+    "learning_rate": 1e-05,
+    "dropout": 0.5,
+    "dense_units": 512,
+    "trainable_block": "conv5_block",
+    "species": [
+      "Achillea_millefolium",
+      "Anaphalis_margaritacea",
+      "Apocynum_androsaemifolium",
+      "Asclepias_speciosa",
+      "Cirsium_arvense",
+      "Ericameria_nauseosa",
+      "Leucanthemum_vulgare",
+      "Medicago_sativa",
+      "Sisymbrium_loeselii",
+      "Tripleurospermum_inodorum"
+    ],
+    "smoke_test": true
+  },
+  "data": {
+    "training_csv": "data/splits/plant/dev_pool.csv",
+    "training_csv_md5": "ff60c7660feaa7d258175ebb91b10fbe",
+    "n_images": 400
+  }
+}
